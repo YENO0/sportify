@@ -48,6 +48,10 @@
         </button>
     </form>
 
+    <p class="muted-link" style="margin-top:0.75rem;">
+        <a href="{{ route('password.request') }}">Forgot your password?</a>
+    </p>
+
     <p class="muted-link">
         Need an account?
         <a href="{{ route('register') }}">Sign up</a>

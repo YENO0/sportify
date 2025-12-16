@@ -2,10 +2,16 @@
 
 @section('content')
     <div class="top-link">
-        <a href="{{ route('login') }}">Already registered?</a>
+        <a href="{{ route('homepage') }}">← Back to Homepage</a>
     </div>
-    <h1>Create account</h1>
-    <p class="subtitle">Join Sportify to manage your sports data and access the dashboard.</p>
+    <h1>Create Committee Member</h1>
+    <p class="subtitle">Add a new committee member account. Committee members can manage events and students.</p>
+
+    @if (session('success'))
+        <div class="alert" style="background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.4); color: #bbf7d0; margin-bottom: 0.9rem;">
+            {{ session('success') }}
+        </div>
+    @endif
 
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -17,7 +23,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ url('/register') }}">
+    <form method="POST" action="{{ route('admin.committee.store') }}">
         @csrf
 
         <div class="field">
@@ -50,15 +56,12 @@
         </div>
 
         <button type="submit" class="btn-primary">
-            Sign up
+            Create Committee Member
         </button>
     </form>
 
     <p class="muted-link">
-        Already have an account?
-        <a href="{{ route('login') }}">Sign in</a>
+        <a href="{{ route('homepage') }}">Return to homepage</a>
     </p>
 @endsection
-
-
 

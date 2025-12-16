@@ -27,10 +27,12 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        // All self-registered accounts are students by default
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'], // Will be hashed by the model's casts
+            'role' => User::ROLE_STUDENT,
         ]);
 
         Auth::login($user);
