@@ -10,7 +10,7 @@ class EventJoined extends Model
     use HasFactory;
 
     // Table name (optional if follows Laravel convention)
-    protected $table = 'event_joineds';
+    protected $table = 'eventJoined';
 
     // Primary key
     protected $primaryKey = 'eventJoinedID';

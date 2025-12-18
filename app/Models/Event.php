@@ -51,7 +51,7 @@ class Event extends Model
     /**
      * Relationship: Event has many EventJoined
      */
-    public function eventJoineds()
+    public function eventJoined()
     {
         return $this->hasMany(EventJoined::class, 'eventID', 'eventID');
     }
@@ -84,6 +84,6 @@ class Event extends Model
      */
     public function registeredCount()
     {
-        return $this->eventJoineds()->where('status', 'registered')->count();
+        return $this->eventJoined()->where('status', 'registered')->count();
     }
 }

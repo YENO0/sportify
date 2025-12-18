@@ -17,7 +17,7 @@ class PaymentFacade
     public function createStripePayment(Event $event, int $studentId)
     {
         // Capacity check
-        $registeredCount = $event->eventJoineds()
+        $registeredCount = $event->eventJoined()
             ->where('status', 'registered')
             ->count();
 
@@ -43,7 +43,7 @@ class PaymentFacade
 
         return PaymentIntent::create([
             'amount' => (int) round($event->price * 100),
-            'currency' => 'usd',
+            'currency' => 'myr',
             'metadata' => [
                 'event_id'   => $event->eventID,
                 'student_id' => $studentId
