@@ -45,6 +45,18 @@
         </div>
 
         <div class="field">
+            <label for="captcha">Captcha</label>
+            <div class="captcha-container">
+                <span class="captcha-image">{!! captcha_img() !!}</span>
+                <button type="button" class="btn-secondary reload" id="reload">&#x21bb;</button>
+            </div>
+            <input id="captcha" type="text" name="captcha" required>
+            @error('captcha')
+                <div class="error-text">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="field">
             <label for="password_confirmation">Confirm Password</label>
             <input id="password_confirmation" type="password" name="password_confirmation" required>
         </div>
@@ -59,6 +71,24 @@
         <a href="{{ route('login') }}">Sign in</a>
     </p>
 @endsection
+
+@push('scripts')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $('#reload').click(function () {
+        $.ajax({
+            type: 'GET',
+            url: '{{ route('captcha.reload') }}',
+            success: function (data) {
+                $(".captcha-image").html(data.captcha);
+            }
+        });
+    });
+</script>
+@endpush
+
+
+
 
 
 

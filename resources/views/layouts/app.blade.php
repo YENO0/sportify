@@ -128,12 +128,35 @@
         .top-link a:hover {
             color: #e5e7eb;
         }
+        .captcha-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .captcha-image {
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            border-radius: 0.6rem;
+            margin-right: 0.5rem;
+        }
+        .reload {
+            background: #334155;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            color: #e5e7eb;
+            font-size: 1.2rem;
+            border-radius: 0.6rem;
+            cursor: pointer;
+            padding: 0.2rem 0.6rem;
+        }
+        .reload:hover {
+            background: #475569;
+        }
     </style>
 </head>
 <body>
     <div class="card">
         @yield('content')
     </div>
+    @stack('scripts')
 </body>
 </html>
 

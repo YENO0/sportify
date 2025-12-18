@@ -13,6 +13,9 @@
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
+                @if ($errors->has('throttle'))
+                    <li>{{ $errors->first('throttle') }}</li>
+                @endif
             </ul>
         </div>
     @endif

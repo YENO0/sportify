@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use App\Http\Requests\LoginRequest;
+use App\Strategies\LoginContext;
+use App\Strategies\DatabaseLoginStrategy;
 
 class AuthController extends Controller
 {
@@ -22,22 +28,33 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'captcha'  => ['required', 'captcha'],
         ]);
 
-        // All self-registered accounts are students by default
+        // All self-registered users are students
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'], // Will be hashed by the model's casts
-            'role' => User::ROLE_STUDENT,
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
+            'password' => $validated['password'], // hashed via model cast
+            'role'     => User::ROLE_STUDENT,
         ]);
 
         Auth::login($user);
 
         return redirect()->route('homepage');
+    }
+
+    /**
+     * Reload CAPTCHA.
+     */
+    public function reloadCaptcha()
+    {
+        return response()->json([
+            'captcha' => captcha_img(),
+        ]);
     }
 
     /**
@@ -49,29 +66,15 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle an authentication attempt.
+     * Handle login.
      */
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
-
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-
-            return redirect()->intended(route('homepage'));
-        }
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+        $strategy = new DatabaseLoginStrategy();
+        $loginContext = new LoginContext($strategy);
+        return $loginContext->login($request);
     }
 
-    /**
-     * Log the user out.
-     */
     public function logout(Request $request)
     {
         Auth::logout();
@@ -82,5 +85,3 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 }
-
-
