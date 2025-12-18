@@ -13,6 +13,22 @@
         </div>
     @endif
 
+    <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+        @if ($user->profile_picture)
+            <img src="{{ asset('profile_pictures/' . $user->profile_picture) }}" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-right: 1.5rem;">
+        @else
+            <div style="width: 80px; height: 80px; border-radius: 50%; background-color: #334155; display: flex; align-items: center; justify-content: center; margin-right: 1.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </div>
+        @endif
+        <div>
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #e5e7eb;">{{ $user->name }}</h2>
+            <p style="font-size: 1rem; color: #9ca3af;">{{ $user->email }}</p>
+        </div>
+    </div>
+
     <!-- Profile Information -->
     <div style="background:rgba(15,23,42,0.9);border:1px solid rgba(148,163,184,0.3);border-radius:0.75rem;padding:1.5rem;margin-bottom:1rem;">
         <div style="display:grid;gap:1rem;">

@@ -17,9 +17,28 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('profile.update') }}">
+    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
+
+        <div class="field">
+            <label for="profile_picture">Profile Picture</label>
+            <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                @if ($user->profile_picture)
+                    <img src="{{ asset('profile_pictures/' . $user->profile_picture) }}" alt="Profile Picture" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-right: 1.5rem;">
+                @else
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background-color: #334155; display: flex; align-items: center; justify-content: center; margin-right: 1.5rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                @endif
+                <input id="profile_picture" type="file" name="profile_picture">
+            </div>
+            @error('profile_picture')
+                <div class="error-text">{{ $message }}</div>
+            @enderror
+        </div>
 
         <div class="field">
             <label for="name">Name</label>

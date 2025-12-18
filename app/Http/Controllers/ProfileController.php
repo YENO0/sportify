@@ -41,6 +41,7 @@ class ProfileController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ];
 
         // Require current password only if email is being changed
@@ -58,6 +59,13 @@ class ProfileController extends Controller
         $validated = $request->validate($rules, [
             'current_password.required' => 'Current password is required when changing your email address.',
         ]);
+
+        if ($request->hasFile('profile_picture')) {
+            $image = $request->file('profile_picture');
+            $imageName = time().'.'.$image->getClientOriginalExtension();
+            $image->move(public_path('profile_pictures'), $imageName);
+            $user->profile_picture = $imageName;
+        }
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
