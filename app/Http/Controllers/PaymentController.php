@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Payment;
+use App\Models\EventJoined;
+use App\Models\User;
 use App\Services\PaymentFacade;
 use Illuminate\Support\Facades\Auth;
 
@@ -57,8 +59,8 @@ class PaymentController extends Controller
     public function stripePay(Request $request)
     {
         $request->validate([
-            'event_id'   => 'required|exists:events,eventID',
-            'student_id'=> 'required|integer',
+            'event_id'    => 'required|exists:events,eventID',
+            'student_id'  => 'required|integer',
         ]);
 
         $event = Event::findOrFail($request->event_id);
@@ -80,8 +82,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Confirm Stripe payment - UPDATED FOR POPUP
-     * Now returns JSON for AJAX call
+     * Confirm Stripe payment (AJAX)
      */
     public function stripeConfirm(Request $request)
     {
@@ -94,27 +95,23 @@ class PaymentController extends Controller
         $event = Event::findOrFail($request->event_id);
 
         try {
-            // ✅ Confirm payment + generate invoice + PDF + send email
             $payment = $this->paymentFacade->confirmStripePaymentAndInvoice(
                 $event,
                 $request->student_id,
                 $request->payment_intent_id
             );
 
-            // Return JSON response for AJAX modal
             return response()->json([
-                'success' => true,
-                'message' => 'Payment successful!',
-                'payment_id' => $payment->paymentID,
-                'payment_amount' => $payment->paymentAmount,
-                'payment_method' => $payment->paymentMethod,
-                'payment_date' => $payment->paymentDate,
-                'event_name' => $event->event_name,
-                'invoice_url' => $payment->invoice_url ?? null, // If your facade returns this
+                'success'         => true,
+                'message'         => 'Payment successful!',
+                'payment_id'      => $payment->paymentID,
+                'payment_amount'  => $payment->paymentAmount,
+                'payment_method'  => $payment->paymentMethod,
+                'payment_date'    => $payment->paymentDate,
+                'event_name'      => $event->event_name,
             ]);
 
         } catch (\Exception $e) {
-            // Return JSON error for AJAX
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -123,7 +120,29 @@ class PaymentController extends Controller
     }
 
     /**
-     * Payment success page (kept for legacy/reference)
+     * Show all events joined by the logged-in user
+     * WITH successful payments
+     */
+    public function myEvents()
+    {
+        $studentId = Auth::id() ?? 1;
+
+        $eventJoined = EventJoined::with([
+                'event',
+                'payment',
+                'invoice'
+            ])
+            ->where('studentID', $studentId)
+            ->whereHas('payment') // ensures payment exists
+            ->where('status', 'registered')
+            ->orderBy('joinedDate', 'desc')
+            ->get();
+
+        return view('payments.my-events', compact('eventJoined'));
+    }
+
+    /**
+     * Payment success page (legacy)
      */
     public function success($paymentId)
     {
@@ -131,5 +150,16 @@ class PaymentController extends Controller
             ->findOrFail($paymentId);
 
         return view('payments.success', compact('payment'));
+    }
+
+    public function transactionHistory()
+    {
+        // For now, grab a user from the users table (ID = 1 for testing)
+        $user = \App\Models\User::find(1);
+
+        // Get payments using the facade
+        $transactions = $this->paymentFacade->getTransactionHistory($user);
+
+        return view('payments.transaction-history', compact('transactions', 'user'));
     }
 }

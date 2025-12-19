@@ -11,12 +11,14 @@ Route::get('/', function () {
 Route::get('/payments/{event}', [PaymentController::class, 'show'])
     ->name('payments.show');
 
-Route::post('/payments/stripe', [PaymentController::class, 'stripePay'])
-    ->name('payments.stripe');
-
 Route::post('/payments/confirm', [PaymentController::class, 'stripeConfirm'])
     ->name('payments.confirm');
 
-Route::get('/payments/success/{payment}', [PaymentController::class, 'success'])
-    ->name('payments.success');
+Route::get('/my-events', [PaymentController::class, 'myEvents'])
+    ->name('payments.my-events');
 
+    Route::get('/my-events', [PaymentController::class, 'myEvents'])
+    ->name('payments.my-events');
+
+    Route::get('/transactions', [PaymentController::class, 'transactionHistory'])
+    ->name('payments.transaction-history');

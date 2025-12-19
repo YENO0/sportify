@@ -774,30 +774,6 @@
                     <span>Payment ID: <span id="payment-id-text">Loading...</span></span>
                 </div>
             </div>
-
-            <!-- Action Buttons -->
-            <div class="modal-buttons">
-                <a href="/" class="modal-btn modal-btn-primary">
-                    <i class="fas fa-home"></i> Back to Home
-                </a>
-                <a href="/events" class="modal-btn modal-btn-secondary">
-                    <i class="fas fa-calendar"></i> View More Events
-                </a>
-            </div>
-
-            <!-- Optional: Download Receipt -->
-            <div class="download-receipt">
-                <a href="#" id="download-receipt">
-                    <i class="fas fa-download"></i> Download Receipt
-                </a>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="modal-footer">
-            <p>Need help? <a href="/contact">Contact Support</a> • <a href="/terms">Terms & Conditions</a></p>
-            <p>You will receive event details via email 24 hours before the event.</p>
-        </div>
     </div>
 </div>
 

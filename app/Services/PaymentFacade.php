@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\EventJoined;
 use App\Models\Payment;
 use App\Models\Invoice;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -71,17 +72,17 @@ class PaymentFacade
 
             // 2️⃣ Create Payment record
             $payment = Payment::create([
-                'eventJoinedID'              => $eventJoined->eventJoinedID,
-                'paymentMethod'              => 'stripe',
-                'paymentAmount'              => $event->price,
-                'paymentDate'                => now(),
-                'stripe_payment_intent_id'   => $paymentIntentId,
+                'eventJoinedID'            => $eventJoined->eventJoinedID,
+                'paymentMethod'            => 'stripe',
+                'paymentAmount'            => $event->price,
+                'paymentDate'              => now(),
+                'stripe_payment_intent_id' => $paymentIntentId,
             ]);
 
             // 3️⃣ Create Invoice record
             $invoice = Invoice::create([
-                'eventJoinedID'      => $eventJoined->eventJoinedID,
-                'dateTimeGenerated'  => now(),
+                'eventJoinedID'     => $eventJoined->eventJoinedID,
+                'dateTimeGenerated' => now(),
             ]);
 
             // 4️⃣ Generate PDF
@@ -91,8 +92,9 @@ class PaymentFacade
                 'payment' => $payment
             ]);
 
-            // 5️⃣ Determine user email (fallback for now)
-            $email = $this->getUserEmail($studentId);
+            // 5️⃣ Get user's email from users table
+            $user = User::findOrFail($studentId);
+            $email = $user->email;
 
             // 6️⃣ Send email with attached PDF
             Mail::send([], [], function ($message) use ($email, $pdf) {
@@ -107,10 +109,34 @@ class PaymentFacade
     }
 
     /**
-     * TEMP email getter (until users table exists)
+     * Get the role of a user dynamically from the database
      */
-    protected function getUserEmail(int $studentId): string
+    protected function getUserRole(int $studentId): string
     {
-        return 'cllee8088@gmail.com';
+        $user = User::findOrFail($studentId);
+        return $user->role;
+    }
+
+    /**
+     * Get transaction history depending on user role
+     */
+    public function getTransactionHistory(User $user)
+    {
+        $role = $this->getUserRole($user->id);
+
+        if ($role === 'committee') {
+            // Committee sees all payments
+            return Payment::with(['eventJoined.event', 'eventJoined.invoice'])
+                ->orderBy('paymentDate', 'desc')
+                ->get();
+        } else {
+            // Student sees only their payments
+            return Payment::with(['eventJoined.event', 'eventJoined.invoice'])
+                ->whereHas('eventJoined', function($query) use ($user) {
+                    $query->where('studentID', $user->id);
+                })
+                ->orderBy('paymentDate', 'desc')
+                ->get();
+        }
     }
 }

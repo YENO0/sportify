@@ -9,34 +9,24 @@ class EventJoined extends Model
 {
     use HasFactory;
 
-    // Table name (optional if follows Laravel convention)
     protected $table = 'eventJoined';
-
-    // Primary key
     protected $primaryKey = 'eventJoinedID';
-
-    // Auto-incrementing
     public $incrementing = true;
-
-    // Primary key type
     protected $keyType = 'int';
 
-    // Mass assignable attributes
     protected $fillable = [
         'eventID',
         'studentID',
-        'paymentID',
         'status',
         'joinedDate',
     ];
 
-    // Casts
     protected $casts = [
         'joinedDate' => 'datetime',
     ];
 
     /**
-     * Relationship: EventJoined belongs to Event
+     * EventJoined belongs to Event
      */
     public function event()
     {
@@ -44,7 +34,7 @@ class EventJoined extends Model
     }
 
     /**
-     * Relationship: EventJoined has one Payment
+     * EventJoined has one Payment
      */
     public function payment()
     {
@@ -52,7 +42,15 @@ class EventJoined extends Model
     }
 
     /**
-     * (Optional) Convenience: scope for registered students only
+     * EventJoined has one Invoice
+     */
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class, 'eventJoinedID', 'eventJoinedID');
+    }
+
+    /**
+     * Scope: registered only
      */
     public function scopeRegistered($query)
     {
