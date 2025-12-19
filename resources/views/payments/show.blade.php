@@ -2,388 +2,1030 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Payment | {{ $event->event_name }}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Stripe.js library -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: #f4f6f8;
+            padding: 30px;
+            margin: 0;
         }
 
         .container {
-            max-width: 800px;
-            width: 100%;
-            margin: 0 auto;
+            max-width: 1200px;
+            margin: auto;
         }
 
-        .payment-card {
+        .card {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
 
-        .event-header {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        .header {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
             padding: 30px;
             text-align: center;
         }
 
-        .event-header h2 {
+        .header h2 {
+            margin: 0;
             font-size: 2.2rem;
-            margin-bottom: 10px;
-            font-weight: 700;
         }
 
-        .event-header .event-description {
+        .header p {
+            margin: 10px 0 0;
             font-size: 1.1rem;
             opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .payment-content {
+        .content {
             display: flex;
             flex-wrap: wrap;
         }
 
-        .event-details {
-            flex: 1;
+        .left, .right {
+            padding: 35px;
             min-width: 300px;
-            padding: 30px;
+        }
+
+        .left {
+            flex: 0 0 35%;
             border-right: 1px solid #eee;
         }
 
-        .payment-section {
+        .right {
             flex: 1;
-            min-width: 300px;
-            padding: 30px;
-            background-color: #fafafa;
+            min-width: 500px;
         }
 
-        .price-tag {
-            display: inline-block;
-            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        .price {
+            background: #10b981;
             color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 30px;
             font-size: 1.8rem;
-            font-weight: 700;
-            margin: 20px 0;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            margin: 15px 0;
+            min-width: 160px;
+            text-align: center;
         }
 
-        .event-info {
-            margin-top: 25px;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 1.05rem;
-        }
-
-        .info-item i {
-            width: 30px;
-            color: #6366f1;
-            font-size: 1.2rem;
-        }
-
-        .payment-title {
-            font-size: 1.5rem;
-            color: #4f46e5;
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
-
-        .payment-methods {
-            margin-bottom: 25px;
-        }
-
-        .payment-method {
-            display: flex;
-            align-items: center;
-            padding: 15px;
+        .method {
             border: 2px solid #e5e7eb;
             border-radius: 10px;
+            padding: 15px;
             margin-bottom: 15px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            transition: .3s;
+            width: 100%;
         }
 
-        .payment-method:hover {
+        .method:hover {
             border-color: #c7d2fe;
-            background-color: #f8fafc;
         }
 
-        .payment-method.active {
+        .method.active {
             border-color: #6366f1;
-            background-color: #eef2ff;
+            background: #eef2ff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
         }
 
-        .payment-method i {
+        .method i {
             font-size: 1.8rem;
             margin-right: 15px;
             color: #6366f1;
+            width: 40px;
         }
 
-        .payment-method .method-name {
+        .method-content {
+            flex: 1;
+        }
+
+        .method strong {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .method small {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: opacity 0.3s;
             font-weight: 600;
+        }
+
+        .btn:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .notice {
+            color: #6b7280;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Stripe Card Element Styles */
+        .StripeElement {
+            box-sizing: border-box;
+            height: 55px;
+            padding: 16px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background-color: white;
+            margin: 20px 0 25px 0;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            width: 100%;
+        }
+
+        .StripeElement--focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .StripeElement--invalid {
+            border-color: #ef4444;
+        }
+
+        .StripeElement--webkit-autofill {
+            background-color: #fefde5 !important;
+        }
+
+        .card-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+            color: #374151;
             font-size: 1.1rem;
         }
 
-        .payment-method .method-desc {
-            color: #6b7280;
-            font-size: 0.9rem;
-            margin-top: 3px;
-        }
-
-        .stripe-logo {
-            height: 24px;
-            margin-left: auto;
-        }
-
-        .btn-pay {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            color: white;
-            border: none;
-            padding: 18px;
+        .processing {
+            text-align: center;
+            padding: 20px;
+            color: #6366f1;
+            margin: 15px 0;
+            background: #f0f3ff;
             border-radius: 10px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
+            font-size: 1.1rem;
         }
 
-        .btn-pay:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 14px rgba(99, 102, 241, 0.2);
-        }
-
-        .btn-pay:active {
-            transform: translateY(-1px);
-        }
-
-        .btn-pay i {
+        .processing i {
             margin-right: 10px;
-            font-size: 1.4rem;
         }
 
-        .secure-payment {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 20px;
+        .error-message {
+            color: #ef4444;
+            margin-top: 15px;
+            padding: 15px;
+            background: #fee2e2;
+            border-radius: 10px;
+            display: none;
+            font-size: 1rem;
+        }
+        
+        .success-message {
+            color: #10b981;
+            margin-top: 15px;
+            padding: 15px;
+            background: #d1fae5;
+            border-radius: 10px;
+            display: none;
+            font-size: 1rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: #1f2937;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .left p {
+            font-size: 1.1rem;
+            margin: 15px 0;
+            color: #4b5563;
+        }
+
+        .left p strong {
+            color: #1f2937;
+            min-width: 100px;
+            display: inline-block;
+        }
+
+        .secure-note {
+            text-align: center;
+            margin-top: 15px;
             color: #6b7280;
             font-size: 0.9rem;
         }
+        
+        .secure-note i {
+            margin-right: 8px;
+            color: #10b981;
+        }
 
-        .secure-payment i {
+        /* Success Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transform: translateY(30px);
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+
+        .checkmark-circle {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .checkmark {
+            color: white;
+            font-size: 40px;
+            animation: checkmark 0.5s ease-in-out;
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .modal-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        .modal-content {
+            padding: 40px 30px;
+        }
+
+        .confirmation-message {
+            text-align: center;
+            color: #4b5563;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .confirmation-message i {
             color: #10b981;
             margin-right: 8px;
         }
 
-        .error-message {
-            background-color: #fee2e2;
-            border-left: 4px solid #ef4444;
-            color: #991b1b;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 25px;
+        .payment-details {
+            background: #f9fafb;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .payment-details h2 {
+            font-size: 1.4rem;
+            color: #1f2937;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
+            gap: 10px;
         }
 
-        .error-message i {
-            margin-right: 10px;
-            font-size: 1.2rem;
+        .payment-details h2 i {
+            color: #10b981;
         }
 
-        .footer-note {
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .detail-label {
+            color: #6b7280;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-label i {
+            width: 20px;
+            color: #9ca3af;
+        }
+
+        .detail-value {
+            color: #1f2937;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .amount-value {
+            color: #10b981;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .payment-id {
+            background: #f0f9ff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .payment-id i {
+            font-size: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
             text-align: center;
-            margin-top: 25px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .modal-btn-secondary {
+            background: white;
+            color: #4b5563;
+            border: 2px solid #e5e7eb;
+        }
+
+        .modal-btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .modal-footer {
+            text-align: center;
+            padding: 20px;
             color: #9ca3af;
             font-size: 0.9rem;
-            padding: 0 20px 20px;
+            border-top: 1px solid #e5e7eb;
+            background: #f9fafb;
         }
 
-        @media (max-width: 768px) {
-            .payment-content {
+        .modal-footer a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 1000px) {
+            .container {
+                max-width: 95%;
+            }
+            
+            .content {
                 flex-direction: column;
             }
             
-            .event-details {
+            .left, .right {
+                width: 100%;
+                min-width: 100%;
+            }
+            
+            .left {
                 border-right: none;
                 border-bottom: 1px solid #eee;
             }
             
-            .event-header h2 {
+            .header {
+                padding: 25px;
+            }
+            
+            .header h2 {
                 font-size: 1.8rem;
             }
+            
+            .modal-container {
+                max-width: 95%;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+            }
+            
+            .modal-btn {
+                width: 100%;
+            }
+            
+            .detail-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .detail-value {
+                align-self: flex-end;
+            }
+        }
+
+        /* Celebration animation */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f00;
+            opacity: 0;
+            z-index: 1001;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="payment-card">
-            <div class="event-header">
-                <h2>{{ $event->event_name }}</h2>
-                <p class="event-description">{{ $event->event_description }}</p>
+
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <h2>{{ $event->event_name }}</h2>
+            <p>{{ $event->event_description }}</p>
+        </div>
+
+        <div class="content">
+            <!-- EVENT INFO -->
+            <div class="left">
+                <h3>Event Details</h3>
+                <div class="price">
+                    RM {{ number_format($event->price, 2) }}
+                </div>
+                <p><strong>Status:</strong> {{ ucfirst($event->status) }}</p>
+                <p><strong>Capacity:</strong> {{ $event->max_capacity }}</p>
             </div>
-            
-            <div class="payment-content">
-                <div class="event-details">
-                    <h3 class="payment-title">Event Details</h3>
-                    
-                    <div class="price-tag">
-                        RM{{ number_format($event->price, 2) }}
+
+            <!-- PAYMENT -->
+            <div class="right">
+                <h3>Payment Method</h3>
+
+                @if(session('error'))
+                    <div class="error-message" style="display: block;">
+                        {{ session('error') }}
                     </div>
-                    
-                    <div class="event-info">
-                        <div class="info-item">
-                            <i class="fas fa-calendar-alt"></i>
-                            <div>
-                                <strong>Date & Time:</strong> To be announced
-                            </div>
-                        </div>
-                        
-                        <div class="info-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <div>
-                                <strong>Location:</strong> Online / Venue to be confirmed
-                            </div>
-                        </div>
-                        
-                        <div class="info-item">
-                            <i class="fas fa-user-friends"></i>
-                            <div>
-                                <strong>Organizer:</strong> Event Management System
-                            </div>
-                        </div>
-                        
-                        <div class="info-item">
-                            <i class="fas fa-info-circle"></i>
-                            <div>
-                                <strong>Payment includes:</strong> Event access, materials, and certificate
-                            </div>
-                        </div>
+                @endif
+
+                @if(session('success'))
+                    <div class="success-message" style="display: block;">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <div class="method active" data-method="stripe">
+                    <i class="fab fa-cc-stripe"></i>
+                    <div class="method-content">
+                        <strong>Credit / Debit Card</strong>
+                        <small>Pay securely with Stripe</small>
                     </div>
                 </div>
-                
-                <div class="payment-section">
-                    <h3 class="payment-title">Payment Method</h3>
-                    
-                    @if(session('error'))
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>{{ session('error') }}</span>
+
+                <div class="method" data-method="fpx">
+                    <i class="fas fa-university"></i>
+                    <div class="method-content">
+                        <strong>Online Banking (FPX)</strong>
+                        <small>Coming soon</small>
                     </div>
-                    @endif
-                    
-                    <div class="payment-methods">
-                        <div class="payment-method active">
-                            <i class="fab fa-cc-stripe"></i>
-                            <div>
-                                <div class="method-name">Credit/Debit Card</div>
-                                <div class="method-desc">Pay securely with Stripe</div>
-                            </div>
-                            <img src="https://stripe.com/img/v3/home/twitter.png" class="stripe-logo" alt="Stripe">
-                        </div>
-                        
-                        <div class="payment-method">
-                            <i class="fas fa-university"></i>
-                            <div>
-                                <div class="method-name">Online Banking</div>
-                                <div class="method-desc">FPX supported banks (Coming soon)</div>
-                            </div>
-                        </div>
-                        
-                        <div class="payment-method">
-                            <i class="fas fa-wallet"></i>
-                            <div>
-                                <div class="method-name">E-Wallet</div>
-                                <div class="method-desc">GrabPay, Touch 'n Go (Coming soon)</div>
-                            </div>
-                        </div>
+                </div>
+
+                <div class="method" data-method="ewallet">
+                    <i class="fas fa-wallet"></i>
+                    <div class="method-content">
+                        <strong>E-Wallet</strong>
+                        <small>Coming soon</small>
+                    </div>
+                </div>
+
+                <!-- STRIPE PAYMENT FORM -->
+                <div id="stripe-section">
+                    <div class="processing hidden" id="processing">
+                        <i class="fas fa-spinner fa-spin"></i> Processing payment...
                     </div>
                     
-                    <form method="POST" action="{{ route('payments.stripe') }}" id="payment-form">
+                    <div class="error-message" id="card-errors"></div>
+                    
+                    <form id="stripe-form" method="POST">
                         @csrf
                         <input type="hidden" name="event_id" value="{{ $event->eventID }}">
-                        <input type="hidden" name="student_id" value="1"> <!-- replace with Auth::id() later -->
+                        <input type="hidden" name="student_id" value="{{ auth()->id() ?? '1' }}">
+                        <input type="hidden" name="payment_intent_id" id="payment_intent_id">
                         
-                        <button type="submit" class="btn-pay">
-                            <i class="fas fa-lock"></i> Pay RM{{ number_format($event->price, 2) }} Now
+                        <label class="card-label">Card Details</label>
+                        <div id="card-element">
+                            <!-- Stripe Card Element will be inserted here -->
+                        </div>
+                        
+                        <button type="submit" id="pay-btn" class="btn">
+                            <i class="fas fa-lock" style="margin-right: 10px;"></i>
+                            Pay RM {{ number_format($event->price, 2) }}
                         </button>
+                        
+                        <div class="secure-note">
+                            <i class="fas fa-shield-alt"></i>
+                            Your payment is secure and encrypted
+                        </div>
                     </form>
-                    
-                    <div class="secure-payment">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Your payment is secured with 256-bit SSL encryption</span>
-                    </div>
                 </div>
-            </div>
-            
-            <div class="footer-note">
-                <p>You will receive a confirmation email with event details after successful payment.</p>
-                <p>Need help? Contact support@eventsystem.com</p>
+
+                <!-- COMING SOON MESSAGE -->
+                <div id="coming-soon" class="hidden notice">
+                    <i class="fas fa-tools" style="margin-right: 10px;"></i>
+                    This payment method is not available yet. Please use Stripe for now.
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // Add interactivity to payment method selection
-        document.addEventListener('DOMContentLoaded', function() {
-            const paymentMethods = document.querySelectorAll('.payment-method');
-            
-            paymentMethods.forEach(method => {
-                method.addEventListener('click', function() {
-                    // Remove active class from all methods
-                    paymentMethods.forEach(m => m.classList.remove('active'));
-                    
-                    // Add active class to clicked method
-                    this.classList.add('active');
-                    
-                    // In a real application, you would change the form action based on selected method
-                    // For now, we only have Stripe
-                    if (this.querySelector('.fa-cc-stripe')) {
-                        document.getElementById('payment-form').action = "{{ route('payments.stripe') }}";
-                    }
-                });
-            });
-            
-            // Form submission animation
-            const form = document.getElementById('payment-form');
-            const submitBtn = form.querySelector('.btn-pay');
-            
-            form.addEventListener('submit', function() {
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
-                submitBtn.disabled = true;
+<!-- Success Modal (initially hidden) -->
+<div class="modal-overlay" id="successModal">
+    <div class="modal-container">
+        <button class="close-modal" id="closeModal">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="modal-header">
+            <div class="checkmark-circle">
+                <i class="fas fa-check checkmark"></i>
+            </div>
+            <h1>Payment Successful!</h1>
+            <p>Thank you for your payment. Your registration has been confirmed.</p>
+        </div>
+
+        <div class="modal-content">
+            <div class="confirmation-message">
+                <i class="fas fa-envelope"></i>
+                A confirmation email has been sent to your registered email address.
+            </div>
+
+            <div class="payment-details">
+                <h2><i class="fas fa-receipt"></i> Payment Details</h2>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Event</span>
+                    </div>
+                    <div class="detail-value" id="modal-event-name">{{ $event->event_name }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Amount Paid</span>
+                    </div>
+                    <div class="detail-value amount-value" id="modal-amount">RM{{ number_format($event->price, 2) }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Payment Method</span>
+                    </div>
+                    <div class="detail-value" id="modal-method">Stripe</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Payment Date</span>
+                    </div>
+                    <div class="detail-value" id="modal-date">{{ now()->format('F j, Y') }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Status</span>
+                    </div>
+                    <div class="detail-value" style="color: #10b981;">
+                        <i class="fas fa-check-circle"></i> Completed
+                    </div>
+                </div>
+
+                <div class="payment-id" id="modal-payment-id">
+                    <i class="fas fa-hashtag"></i>
+                    <span>Payment ID: <span id="payment-id-text">Loading...</span></span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="modal-buttons">
+                <a href="/" class="modal-btn modal-btn-primary">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+                <a href="/events" class="modal-btn modal-btn-secondary">
+                    <i class="fas fa-calendar"></i> View More Events
+                </a>
+            </div>
+
+            <!-- Optional: Download Receipt -->
+            <div class="download-receipt">
+                <a href="#" id="download-receipt">
+                    <i class="fas fa-download"></i> Download Receipt
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+            <p>Need help? <a href="/contact">Contact Support</a> • <a href="/terms">Terms & Conditions</a></p>
+            <p>You will receive event details via email 24 hours before the event.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // DOM Elements
+        const methods = document.querySelectorAll('.method');
+        const stripeSection = document.getElementById('stripe-section');
+        const comingSoon = document.getElementById('coming-soon');
+        const cardErrors = document.getElementById('card-errors');
+        const processingElement = document.getElementById('processing');
+        const payButton = document.getElementById('pay-btn');
+        const stripeForm = document.getElementById('stripe-form');
+        const successModal = document.getElementById('successModal');
+        const closeModal = document.getElementById('closeModal');
+        
+        // Check if we have a client secret (passed from Laravel controller)
+        const clientSecret = "{{ $clientSecret ?? '' }}";
+        
+        // Initialize Stripe
+        const stripe = Stripe("{{ config('services.stripe.key') }}");
+        const elements = stripe.elements();
+        
+        // Create and mount Card Element
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#374151',
+                    fontFamily: '"Poppins", sans-serif',
+                    '::placeholder': {
+                        color: '#9ca3af',
+                    },
+                },
+                invalid: {
+                    color: '#ef4444',
+                }
+            }
+        });
+        
+        // Mount the card element
+        if (document.getElementById('card-element')) {
+            cardElement.mount('#card-element');
+        }
+        
+        // Handle card validation errors
+        cardElement.addEventListener('change', function(event) {
+            if (event.error) {
+                cardErrors.textContent = event.error.message;
+                cardErrors.style.display = 'block';
+            } else {
+                cardErrors.style.display = 'none';
+            }
+        });
+        
+        // Update payment UI based on selected method
+        function updatePaymentUI(method) {
+            if (method === 'stripe') {
+                stripeSection.classList.remove('hidden');
+                comingSoon.classList.add('hidden');
+                
+                // Re-mount card element if it was unmounted
+                if (!cardElement._component) {
+                    cardElement.mount('#card-element');
+                }
+            } else {
+                stripeSection.classList.add('hidden');
+                comingSoon.classList.remove('hidden');
+                
+                // Unmount card element to clean up
+                if (cardElement._component) {
+                    cardElement.unmount();
+                }
+            }
+        }
+        
+        // Method selection click handlers
+        methods.forEach(m => {
+            m.addEventListener('click', () => {
+                methods.forEach(x => x.classList.remove('active'));
+                m.classList.add('active');
+                updatePaymentUI(m.dataset.method);
             });
         });
-    </script>
+        
+        // Initialize Stripe UI
+        updatePaymentUI('stripe');
+        
+        // Modal controls
+        closeModal.addEventListener('click', () => {
+            successModal.classList.remove('active');
+        });
+        
+        // Close modal when clicking outside
+        successModal.addEventListener('click', (e) => {
+            if (e.target === successModal) {
+                successModal.classList.remove('active');
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && successModal.classList.contains('active')) {
+                successModal.classList.remove('active');
+            }
+        });
+        
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#10b981', '#6366f1', '#8b5cf6', '#f59e0b', '#ef4444'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = '-10px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.opacity = '1';
+                    confetti.style.borderRadius = '50%';
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    document.body.appendChild(confetti);
+                    
+                    // Animation
+                    const animation = confetti.animate([
+                        { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                        { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                    ], {
+                        duration: Math.random() * 3000 + 2000,
+                        easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)'
+                    });
+                    
+                    // Remove after animation
+                    animation.onfinish = () => confetti.remove();
+                }, i * 100);
+            }
+        }
+        
+        // FORM SUBMIT HANDLER - Now shows modal instead of redirecting
+        stripeForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Reset errors
+            cardErrors.style.display = 'none';
+            
+            // Show processing
+            processingElement.classList.remove('hidden');
+            payButton.disabled = true;
+            payButton.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i> Processing...';
+            
+            try {
+                // Check if client secret is available
+                if (!clientSecret) {
+                    throw new Error('Payment initialization failed. Please refresh the page and try again.');
+                }
+                
+                // Confirm the payment with Stripe
+                const { paymentIntent, error } = await stripe.confirmCardPayment(
+                    clientSecret,
+                    {
+                        payment_method: {
+                            card: cardElement,
+                            billing_details: {
+                                name: 'Customer'
+                            }
+                        }
+                    }
+                );
+                
+                if (error) {
+                    throw new Error(error.message);
+                }
+                
+                if (paymentIntent.status === 'succeeded') {
+                    // Set the payment intent ID in the hidden field
+                    document.getElementById('payment_intent_id').value = paymentIntent.id;
+                    
+                    // Send payment confirmation to server via AJAX
+                    const formData = new FormData(stripeForm);
+                    
+                    try {
+                        const response = await fetch('{{ route("payments.confirm") }}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            }
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (response.ok && result.success) {
+                            // Update modal with actual payment data
+                            if (result.payment_id) {
+                                document.getElementById('payment-id-text').textContent = result.payment_id;
+                            }
+                            
+                            // Create confetti effect
+                            createConfetti();
+                            
+                            // Show success modal
+                            setTimeout(() => {
+                                successModal.classList.add('active');
+                                processingElement.classList.add('hidden');
+                            }, 1000);
+                            
+                        } else {
+                            throw new Error(result.message || 'Payment confirmation failed');
+                        }
+                    } catch (error) {
+                        throw new Error('Failed to confirm payment: ' + error.message);
+                    }
+                } else {
+                    throw new Error('Payment was not successful. Status: ' + paymentIntent.status);
+                }
+            } catch (error) {
+                // Show error message
+                cardErrors.textContent = error.message;
+                cardErrors.style.display = 'block';
+                
+                // Reset button
+                payButton.disabled = false;
+                payButton.innerHTML = '<i class="fas fa-lock" style="margin-right: 10px;"></i> Pay RM {{ number_format($event->price, 2) }}';
+                processingElement.classList.add('hidden');
+            }
+        });
+    });
+</script>
 </body>
 </html>

@@ -5,7 +5,10 @@ namespace App\Services;
 use App\Models\Event;
 use App\Models\EventJoined;
 use App\Models\Payment;
+use App\Models\Invoice;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 
@@ -52,12 +55,13 @@ class PaymentFacade
     }
 
     /**
-     * Confirm Stripe payment and persist records
+     * Confirm Stripe payment, persist records, generate invoice, PDF, and send email
      */
-    public function confirmStripePayment(Event $event, int $studentId, string $paymentIntentId)
+    public function confirmStripePaymentAndInvoice(Event $event, int $studentId, string $paymentIntentId)
     {
         return DB::transaction(function () use ($event, $studentId, $paymentIntentId) {
 
+            // 1️⃣ Create EventJoined record
             $eventJoined = EventJoined::create([
                 'eventID'   => $event->eventID,
                 'studentID' => $studentId,
@@ -65,13 +69,48 @@ class PaymentFacade
                 'joinedDate'=> now(),
             ]);
 
-            return Payment::create([
+            // 2️⃣ Create Payment record
+            $payment = Payment::create([
                 'eventJoinedID'              => $eventJoined->eventJoinedID,
                 'paymentMethod'              => 'stripe',
                 'paymentAmount'              => $event->price,
                 'paymentDate'                => now(),
                 'stripe_payment_intent_id'   => $paymentIntentId,
             ]);
+
+            // 3️⃣ Create Invoice record
+            $invoice = Invoice::create([
+                'eventJoinedID'      => $eventJoined->eventJoinedID,
+                'dateTimeGenerated'  => now(),
+            ]);
+
+            // 4️⃣ Generate PDF
+            $pdf = Pdf::loadView('invoices.invoice', [
+                'invoice' => $invoice,
+                'event'   => $event,
+                'payment' => $payment
+            ]);
+
+            // 5️⃣ Determine user email (fallback for now)
+            $email = $this->getUserEmail($studentId);
+
+            // 6️⃣ Send email with attached PDF
+            Mail::send([], [], function ($message) use ($email, $pdf) {
+                $message->to($email)
+                    ->subject('Your Event Payment Invoice')
+                    ->attachData($pdf->output(), 'invoice.pdf')
+                    ->text('Thank you for your payment. Your invoice is attached.');
+            });
+
+            return $payment;
         });
+    }
+
+    /**
+     * TEMP email getter (until users table exists)
+     */
+    protected function getUserEmail(int $studentId): string
+    {
+        return 'cllee8088@gmail.com';
     }
 }
