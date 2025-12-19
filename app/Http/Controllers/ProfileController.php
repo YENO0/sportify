@@ -42,6 +42,9 @@ class ProfileController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'gender' => ['required', 'string', Rule::in(['male', 'female', 'other'])],
+            'birthday' => ['required', 'date', 'before_or_equal:today', 'before_or_equal:' . now()->subYears(16)->format('Y-m-d')],
+            'contact' => ['required', 'string', 'max:255'],
         ];
 
         // Require current password only if email is being changed
@@ -69,6 +72,9 @@ class ProfileController extends Controller
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
+        $user->gender = $validated['gender'] ?? $user->gender;
+        $user->birthday = $validated['birthday'] ?? $user->birthday;
+        $user->contact = $validated['contact'] ?? $user->contact;
 
         if (!empty($validated['password'])) {
             $user->password = $validated['password'];

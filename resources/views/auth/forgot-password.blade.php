@@ -1,21 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="top-link">
-        <a href="{{ route('login') }}">Back to login</a>
-    </div>
-
     <h1>Forgot password</h1>
     <p class="subtitle">Enter your email and we will send you a reset link.</p>
 
     @if (session('status'))
-        <div class="alert alert-danger" style="border-color:rgba(52,211,153,0.5);background:rgba(16,185,129,0.08);color:#bbf7d0;">
+        <div class="alert alert-success"> {{-- Changed to alert-success --}}
             {{ session('status') }}
         </div>
     @endif
 
     @if ($errors->any())
-        <div class="alert alert-danger">
+        <div class="alert alert-error"> {{-- Changed to alert-error --}}
             <ul style="margin: 0; padding-left: 1.1rem;">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>

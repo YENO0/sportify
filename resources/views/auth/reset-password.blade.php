@@ -1,15 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="top-link">
-        <a href="{{ route('login') }}">Back to login</a>
-    </div>
-
     <h1>Reset password</h1>
     <p class="subtitle">Choose a new password for your account.</p>
 
     @if ($errors->any())
-        <div class="alert alert-danger">
+        <div class="alert alert-error">
             <ul style="margin: 0; padding-left: 1.1rem;">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>

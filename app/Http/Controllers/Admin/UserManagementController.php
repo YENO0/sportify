@@ -27,8 +27,9 @@ class UserManagementController extends Controller
         $studentCount = User::where('role', User::ROLE_STUDENT)->count();
         $committeeCount = User::where('role', User::ROLE_COMMITTEE)->count();
         $adminCount = User::where('role', User::ROLE_ADMIN)->count();
+        $totalUsers = $studentCount + $committeeCount + $adminCount;
         
-        return view('admin.users.index', compact('users', 'role', 'studentCount', 'committeeCount', 'adminCount'));
+        return view('admin.users.index', compact('users', 'role', 'studentCount', 'committeeCount', 'adminCount', 'totalUsers'));
     }
 
     /**

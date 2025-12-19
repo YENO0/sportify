@@ -1,14 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="top-link">
-        <a href="{{ route('login') }}">Already registered?</a>
-    </div>
     <h1>Create account</h1>
     <p class="subtitle">Join Sportify to manage your sports data and access the dashboard.</p>
 
     @if ($errors->any())
-        <div class="alert alert-danger">
+        <div class="alert alert-error">
             <ul style="margin: 0; padding-left: 1.1rem;">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -48,7 +45,7 @@
             <label for="captcha">Captcha</label>
             <div class="captcha-container">
                 <span class="captcha-image">{!! captcha_img() !!}</span>
-                <button type="button" class="btn-secondary reload" id="reload">&#x21bb;</button>
+                <button type="button" class="btn btn-secondary" id="reload">&#x21bb;</button>
             </div>
             <input id="captcha" type="text" name="captcha" required>
             @error('captcha')

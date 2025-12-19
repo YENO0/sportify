@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User; // Import the User model
 
 class HomeController extends Controller
 {
@@ -15,7 +16,9 @@ class HomeController extends Controller
         $user = Auth::user();
 
         if ($user->isAdmin()) {
-            return view('homepage.admin');
+            $totalUsers = User::count();
+            $adminCount = User::where('role', 'admin')->count();
+            return view('homepage.admin', compact('totalUsers', 'adminCount'));
         } elseif ($user->isCommittee()) {
             return view('homepage.committee');
         } else {

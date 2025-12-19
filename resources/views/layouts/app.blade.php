@@ -7,21 +7,21 @@
     <style>
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0f172a;
-            color: #e5e7eb;
+            background: #f8fafc; /* Light background */
+            color: #1f2937; /* Dark grey text */
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .card {
-            background: #020617;
+            background: #ffffff; /* White card background */
             border-radius: 1rem;
             padding: 2rem 2.5rem;
             width: 100%;
             max-width: 420px;
-            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(148, 163, 184, 0.2);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Lighter border */
         }
         .card h1 {
             font-size: 1.75rem;
@@ -30,7 +30,7 @@
         }
         .card p.subtitle {
             font-size: 0.9rem;
-            color: #9ca3af;
+            color: #4b5563; /* Darker subtitle */
             margin-bottom: 1.5rem;
         }
         label {
@@ -39,7 +39,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            color: #9ca3af;
+            color: #374151; /* Darker label */
             margin-bottom: 0.35rem;
         }
         input[type="text"],
@@ -48,17 +48,17 @@
             width: 100%;
             padding: 0.7rem 0.85rem;
             border-radius: 0.6rem;
-            border: 1px solid rgba(148, 163, 184, 0.5);
-            background: rgba(15, 23, 42, 0.9);
-            color: #e5e7eb;
+            border: 1px solid rgba(209, 213, 219, 1); /* Light border */
+            background: #f9fafb; /* Lighter input background */
+            color: #1f2937; /* Darker input text */
             font-size: 0.95rem;
             outline: none;
             transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
         }
         input:focus {
             border-color: #38bdf8;
-            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
-            background: rgba(15, 23, 42, 1);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3); /* Lighter focus shadow */
+            background: #ffffff; /* White on focus */
         }
         .btn-primary {
             width: 100%;
@@ -68,29 +68,29 @@
             border-radius: 0.75rem;
             font-weight: 600;
             font-size: 0.95rem;
-            color: #0f172a;
+            color: #ffffff; /* White text */
             background: linear-gradient(135deg, #22c55e, #16a34a);
             cursor: pointer;
             transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
-            box-shadow: 0 18px 40px rgba(22, 163, 74, 0.5);
+            box-shadow: 0 18px 40px rgba(34, 197, 94, 0.3); /* Lighter shadow */
         }
         .btn-primary:hover {
             filter: brightness(1.05);
             transform: translateY(-1px);
-            box-shadow: 0 22px 50px rgba(22, 163, 74, 0.6);
+            box-shadow: 0 22px 50px rgba(34, 197, 94, 0.4); /* Lighter shadow */
         }
         .btn-primary:active {
             transform: translateY(0);
-            box-shadow: 0 14px 30px rgba(22, 163, 74, 0.5);
+            box-shadow: 0 14px 30px rgba(34, 197, 94, 0.3); /* Lighter shadow */
         }
         .muted-link {
             font-size: 0.85rem;
-            color: #9ca3af;
+            color: #4b5563; /* Darker muted link */
             text-align: center;
             margin-top: 1rem;
         }
         .muted-link a {
-            color: #38bdf8;
+            color: #2563eb; /* Darker blue link */
             text-decoration: none;
             font-weight: 500;
         }
@@ -98,7 +98,7 @@
             text-decoration: underline;
         }
         .error-text {
-            color: #f97373;
+            color: #ef4444; /* Standard red */
             font-size: 0.78rem;
             margin-top: 0.25rem;
         }
@@ -109,9 +109,9 @@
             margin-bottom: 0.9rem;
         }
         .alert-danger {
-            background: rgba(248, 113, 113, 0.08);
-            border: 1px solid rgba(248, 113, 113, 0.4);
-            color: #fecaca;
+            background: rgba(254, 226, 226, 1); /* Light red background */
+            border: 1px solid rgba(252, 165, 165, 1); /* Red border */
+            color: #991b1b; /* Dark red text */
         }
         .field {
             margin-bottom: 0.9rem;
@@ -122,11 +122,11 @@
             margin-bottom: 0.5rem;
         }
         .top-link a {
-            color: #9ca3af;
+            color: #4b5563; /* Darker link */
             text-decoration: none;
         }
         .top-link a:hover {
-            color: #e5e7eb;
+            color: #1f2937; /* Even darker on hover */
         }
         .captcha-container {
             display: flex;
@@ -134,21 +134,21 @@
             margin-bottom: 0.5rem;
         }
         .captcha-image {
-            border: 1px solid rgba(148, 163, 184, 0.5);
+            border: 1px solid rgba(209, 213, 219, 1); /* Light border */
             border-radius: 0.6rem;
             margin-right: 0.5rem;
         }
         .reload {
-            background: #334155;
-            border: 1px solid rgba(148, 163, 184, 0.5);
-            color: #e5e7eb;
+            background: #e5e7eb; /* Light grey background */
+            border: 1px solid rgba(209, 213, 219, 1); /* Light border */
+            color: #374151; /* Darker text */
             font-size: 1.2rem;
             border-radius: 0.6rem;
             cursor: pointer;
             padding: 0.2rem 0.6rem;
         }
         .reload:hover {
-            background: #475569;
+            background: #d1d5db; /* Darker grey on hover */
         }
     </style>
 </head>
