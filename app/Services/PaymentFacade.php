@@ -9,9 +9,11 @@ use App\Models\Invoice;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
+use Illuminate\Support\Facades\Cache;
 
 class PaymentFacade
 {
@@ -56,11 +58,172 @@ class PaymentFacade
     }
 
     /**
+     * Send 2FA verification code to user's email
+     */
+    public function sendVerificationCode(Event $event, int $studentId)
+    {
+        // Get user
+        $user = User::findOrFail($studentId);
+        
+        // Log user details for debugging
+        Log::info('Attempting to send verification code', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'event_id' => $event->eventID
+        ]);
+        
+        // Generate 6-digit code
+        $verificationCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        
+        // Store in cache for 10 minutes
+        $cacheKey = 'verification_code_' . $studentId . '_' . $event->eventID;
+        Cache::put($cacheKey, [
+            'code' => $verificationCode,
+            'attempts' => 0,
+            'verified' => false,
+            'created_at' => now()
+        ], now()->addMinutes(10));
+
+        Log::info('Verification code generated and cached', [
+            'cache_key' => $cacheKey,
+        ]);
+
+        try {
+            // Send simple text email with just the code
+            Mail::raw(
+                "Your Sportify Events verification code is: $verificationCode\n\n" .
+                "This code will expire in 10 minutes.\n\n" .
+                "Do not share this code with anyone.", 
+                function ($message) use ($user, $event) {
+                    $message->to($user->email)
+                        ->subject('Payment Verification Code - ' . $event->event_name);
+                }
+            );
+            
+            Log::info('Verification email sent successfully', [
+                'to' => $user->email,
+                'event' => $event->event_name
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Failed to send verification email', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new \Exception('Failed to send verification email: ' . $e->getMessage());
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Verification code sent to your email'
+        ];
+    }
+
+    /**
+     * Verify 2FA code
+     */
+    public function verifyCode(Event $event, int $studentId, string $code)
+    {
+        $cacheKey = 'verification_code_' . $studentId . '_' . $event->eventID;
+        $verificationData = Cache::get($cacheKey);
+
+        if (!$verificationData) {
+            Log::warning('Verification code not found or expired', [
+                'cache_key' => $cacheKey,
+                'student_id' => $studentId,
+                'event_id' => $event->eventID
+            ]);
+            throw new \Exception('Verification code expired or not found.');
+        }
+
+        // Check attempts
+        if ($verificationData['attempts'] >= 3) {
+            Cache::forget($cacheKey);
+            Log::warning('Too many verification attempts', [
+                'student_id' => $studentId,
+                'event_id' => $event->eventID
+            ]);
+            throw new \Exception('Too many attempts. Please request a new code.');
+        }
+
+        // Verify code
+        if ($verificationData['code'] !== $code) {
+            // Increment attempts
+            $verificationData['attempts']++;
+            Cache::put($cacheKey, $verificationData, now()->addMinutes(10));
+
+            $attemptsLeft = 3 - $verificationData['attempts'];
+            
+            Log::warning('Invalid verification code entered', [
+                'student_id' => $studentId,
+                'event_id' => $event->eventID,
+                'attempts_left' => $attemptsLeft
+            ]);
+            
+            throw new \Exception('Invalid verification code. ' . $attemptsLeft . ' attempts left.');
+        }
+
+        // Mark as verified
+        $verificationData['verified'] = true;
+        Cache::put($cacheKey, $verificationData, now()->addMinutes(10));
+
+        Log::info('Verification code verified successfully', [
+            'student_id' => $studentId,
+            'event_id' => $event->eventID
+        ]);
+
+        return [
+            'success' => true,
+            'message' => 'Code verified successfully'
+        ];
+    }
+
+    /**
+     * Check if 2FA is verified
+     */
+    public function isVerified(Event $event, int $studentId): bool
+    {
+        $cacheKey = 'verification_code_' . $studentId . '_' . $event->eventID;
+        $verificationData = Cache::get($cacheKey);
+
+        return $verificationData && $verificationData['verified'] === true;
+    }
+
+    /**
+     * Clear verification data
+     */
+    public function clearVerification(Event $event, int $studentId): void
+    {
+        $cacheKey = 'verification_code_' . $studentId . '_' . $event->eventID;
+        Cache::forget($cacheKey);
+        
+        Log::info('Verification data cleared', [
+            'student_id' => $studentId,
+            'event_id' => $event->eventID
+        ]);
+    }
+
+    /**
      * Confirm Stripe payment, persist records, generate invoice, PDF, and send email
      */
     public function confirmStripePaymentAndInvoice(Event $event, int $studentId, string $paymentIntentId)
     {
+        // Check if 2FA is verified first
+        if (!$this->isVerified($event, $studentId)) {
+            Log::warning('Payment attempt without 2FA verification', [
+                'student_id' => $studentId,
+                'event_id' => $event->eventID
+            ]);
+            throw new \Exception('Payment requires 2FA verification first.');
+        }
+
         return DB::transaction(function () use ($event, $studentId, $paymentIntentId) {
+
+            Log::info('Starting payment confirmation transaction', [
+                'event_id' => $event->eventID,
+                'student_id' => $studentId,
+                'payment_intent_id' => $paymentIntentId
+            ]);
 
             // 1️⃣ Create EventJoined record
             $eventJoined = EventJoined::create([
@@ -68,6 +231,10 @@ class PaymentFacade
                 'studentID' => $studentId,
                 'status'    => 'registered',
                 'joinedDate'=> now(),
+            ]);
+
+            Log::info('EventJoined record created', [
+                'event_joined_id' => $eventJoined->eventJoinedID
             ]);
 
             // 2️⃣ Create Payment record
@@ -79,10 +246,19 @@ class PaymentFacade
                 'stripe_payment_intent_id' => $paymentIntentId,
             ]);
 
+            Log::info('Payment record created', [
+                'payment_id' => $payment->paymentID,
+                'amount' => $payment->paymentAmount
+            ]);
+
             // 3️⃣ Create Invoice record
             $invoice = Invoice::create([
                 'eventJoinedID'     => $eventJoined->eventJoinedID,
                 'dateTimeGenerated' => now(),
+            ]);
+
+            Log::info('Invoice record created', [
+                'invoice_id' => $invoice->invoiceID
             ]);
 
             // 4️⃣ Generate PDF
@@ -92,17 +268,58 @@ class PaymentFacade
                 'payment' => $payment
             ]);
 
-            // 5️⃣ Get user's email from users table
+            // 5️⃣ Get user's email
             $user = User::findOrFail($studentId);
             $email = $user->email;
 
-            // 6️⃣ Send email with attached PDF
-            Mail::send([], [], function ($message) use ($email, $pdf) {
-                $message->to($email)
-                    ->subject('Your Event Payment Invoice')
-                    ->attachData($pdf->output(), 'invoice.pdf')
-                    ->text('Thank you for your payment. Your invoice is attached.');
-            });
+            Log::info('Sending payment confirmation email', [
+                'to' => $email,
+                'event' => $event->event_name
+            ]);
+
+            // 6️⃣ Send confirmation email with PDF attachment
+            try {
+                Mail::raw(
+                    "Thank you for your payment!\n\n" .
+                    "Your registration for {$event->event_name} has been confirmed.\n\n" .
+                    "Payment Details:\n" .
+                    "- Event: {$event->event_name}\n" .
+                    "- Amount: RM " . number_format($event->price, 2) . "\n" .
+                    "- Payment Method: Stripe\n" .
+                    "- Payment Date: " . now()->format('F j, Y') . "\n" .
+                    "- Payment ID: {$payment->paymentID}\n\n" .
+                    "Your invoice is attached to this email.\n\n" .
+                    "Thank you for using Sportify Events!",
+                    function ($message) use ($email, $pdf, $event) {
+                        $message->to($email)
+                            ->subject('Payment Confirmation - ' . $event->event_name)
+                            ->attachData($pdf->output(), 'invoice.pdf', [
+                                'mime' => 'application/pdf',
+                            ]);
+                    }
+                );
+
+                Log::info('Payment confirmation email sent successfully', [
+                    'to' => $email,
+                    'payment_id' => $payment->paymentID
+                ]);
+                
+            } catch (\Exception $e) {
+                Log::error('Failed to send payment confirmation email', [
+                    'error' => $e->getMessage(),
+                    'to' => $email
+                ]);
+                // Don't throw exception - payment is already processed
+            }
+
+            // 7️⃣ Clear verification data after successful payment
+            $this->clearVerification($event, $studentId);
+
+            Log::info('Payment confirmation completed successfully', [
+                'payment_id' => $payment->paymentID,
+                'student_id' => $studentId,
+                'event_id' => $event->eventID
+            ]);
 
             return $payment;
         });

@@ -15,6 +15,129 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Previous styles remain the same, add these new styles */
+
+        .timer-container {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+        }
+
+        .timer-container.expiring {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            animation: pulse 1s infinite;
+        }
+
+        .timer-text {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .timer-warning {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* Modal for timeout */
+        .timeout-modal {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .modal-header-timeout {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-header-timeout::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ef4444, #dc2626 100%);
+        }
+
+        .timeout-modal .checkmark-circle {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .timeout-modal .checkmark {
+            content: "\f00d";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        /* Disabled state */
+        .disabled-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            border-radius: 14px;
+            flex-direction: column;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .disabled-overlay h3 {
+            color: #ef4444;
+            margin-bottom: 15px;
+        }
+
+        .disabled-overlay p {
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: opacity 0.3s;
+        }
+
+        .retry-btn:hover {
+            opacity: 0.9;
+        }
+
+        .payment-expired {
+            pointer-events: none;
+            position: relative;
+        }
+
         * {
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
@@ -305,8 +428,19 @@
             overflow: hidden;
             transform: translateY(30px);
             transition: transform 0.3s ease;
-            max-height: 90vh;
+            max-height: 85vh;
             overflow-y: auto;
+        }
+
+        /* Hide scrollbar for modal */
+        .modal-container::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
+
+        .modal-container {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
 
         .modal-overlay.active .modal-container {
@@ -600,15 +734,124 @@
             z-index: 1001;
             pointer-events: none;
         }
+
+        /* Verification Code Modal Styles */
+        .verification-modal .modal-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        }
+
+        .code-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .code-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            outline: none;
+        }
+
+        .code-input.filled {
+            border-color: #10b981;
+            background: #f0f9ff;
+        }
+
+        .code-input.error {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .verification-info {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .verification-error {
+            color: #ef4444;
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: #fee2e2;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .resend-code {
+            text-align: center;
+            margin-top: 20px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .resend-link {
+            color: #6366f1;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .resend-link:hover {
+            text-decoration: underline;
+        }
+
+        .resend-link.disabled {
+            color: #9ca3af;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        .countdown {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .processing-verification {
+            text-align: center;
+            color: #6366f1;
+            margin: 20px 0;
+            font-size: 16px;
+        }
+
+        .processing-verification i {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="card">
+    <div class="card" id="payment-card">
         <div class="header">
             <h2>{{ $event->event_name }}</h2>
             <p>{{ $event->event_description }}</p>
+        </div>
+        <br/>
+
+        <!-- Timer Section -->
+        <div class="timer-container" id="timer-container">
+            <div class="timer-text">
+                <i class="fas fa-clock"></i> Complete your payment in:
+            </div>
+            <div class="timer-display" id="timer-display">03:00</div>
+            <div class="timer-warning">
+                Your payment session will expire after 3 minutes
+            </div>
         </div>
 
         <div class="content">
@@ -620,6 +863,7 @@
                 </div>
                 <p><strong>Status:</strong> {{ ucfirst($event->status) }}</p>
                 <p><strong>Capacity:</strong> {{ $event->max_capacity }}</p>
+                <p><strong>Payment Time Limit:</strong> 3 minutes</p>
             </div>
 
             <!-- PAYMENT -->
@@ -664,9 +908,6 @@
 
                 <!-- STRIPE PAYMENT FORM -->
                 <div id="stripe-section">
-                    <div class="processing hidden" id="processing">
-                        <i class="fas fa-spinner fa-spin"></i> Processing payment...
-                    </div>
                     
                     <div class="error-message" id="card-errors"></div>
                     
@@ -698,6 +939,68 @@
                     <i class="fas fa-tools" style="margin-right: 10px;"></i>
                     This payment method is not available yet. Please use Stripe for now.
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Verification Code Modal -->
+<div class="modal-overlay verification-modal" id="verificationModal">
+    <div class="modal-container">
+        <button class="close-modal" id="closeVerificationModal">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="modal-header">
+            <div class="checkmark-circle">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1>Payment Verification</h1>
+            <p>Enter the 6-digit verification code sent to your email</p>
+        </div>
+
+        <div class="modal-content">
+            <div class="verification-info">
+                <p>For security purposes, please enter the verification code sent to:</p>
+                <p style="font-weight: 600; color: #1f2937; margin-top: 5px;">
+                    {{ auth()->user()->email ?? 'your email' }}
+                </p>
+            </div>
+
+            <div class="code-inputs" id="codeInputs">
+                <input type="text" class="code-input" maxlength="1" data-index="0" autocomplete="off">
+                <input type="text" class="code-input" maxlength="1" data-index="1" autocomplete="off">
+                <input type="text" class="code-input" maxlength="1" data-index="2" autocomplete="off">
+                <input type="text" class="code-input" maxlength="1" data-index="3" autocomplete="off">
+                <input type="text" class="code-input" maxlength="1" data-index="4" autocomplete="off">
+                <input type="text" class="code-input" maxlength="1" data-index="5" autocomplete="off">
+            </div>
+
+            <div class="verification-error" id="verificationError">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="verificationErrorText">Invalid verification code. Please try again.</span>
+            </div>
+
+            <div class="processing-verification hidden" id="processingVerification">
+                <i class="fas fa-spinner fa-spin"></i> Verifying code...
+            </div>
+
+            <div class="resend-code">
+                <p>Didn't receive the code? 
+                    <a href="javascript:void(0)" id="resendCode" class="resend-link">Resend code</a>
+                    <span id="countdown" class="countdown hidden">(60s)</span>
+                </p>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" id="verifyCodeBtn" disabled>
+                    <i class="fas fa-check"></i>
+                    Verify & Continue Payment
+                </button>
+                <button class="modal-btn modal-btn-secondary" id="cancelVerificationBtn">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
             </div>
         </div>
     </div>
@@ -774,6 +1077,76 @@
                     <span>Payment ID: <span id="payment-id-text">Loading...</span></span>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Timeout Modal -->
+<div class="modal-overlay timeout-modal" id="timeoutModal" style="color:red;">
+    <div class="modal-container" style="color:red">
+        <div class="modal-header-timeout">
+            <div class="checkmark-circle">
+                <i class="fas fa-times checkmark"></i>
+            </div>
+            <h1>Payment Session Expired</h1>
+            <p>Your payment session has timed out. Please start over.</p>
+        </div>
+
+        <div class="modal-content">
+            <div class="confirmation-message">
+                <i class="fas fa-exclamation-triangle" style="color:red;"></i>
+                For security reasons, payment sessions expire after 3 minutes of inactivity.
+            </div>
+
+            <div class="payment-details">
+                <h2><i class="fas fa-clock" style="color:red;"></i> What happened?</h2>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-hourglass-end"></i>
+                        <span>Time Limit</span>
+                    </div>
+                    <div class="detail-value">3 minutes</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Event</span>
+                    </div>
+                    <div class="detail-value">{{ $event->event_name }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Amount</span>
+                    </div>
+                    <div class="detail-value">RM {{ number_format($event->price, 2) }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Status</span>
+                    </div>
+                    <div class="detail-value" style="color: #ef4444;">
+                        <i class="fas fa-times-circle"></i> Expired
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" id="retryPaymentBtn">
+                    <i class="fas fa-redo"></i>
+                    Start New Payment
+                </button>
+                <button class="modal-btn modal-btn-secondary" id="cancelPaymentBtn">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -784,14 +1157,46 @@
         const stripeSection = document.getElementById('stripe-section');
         const comingSoon = document.getElementById('coming-soon');
         const cardErrors = document.getElementById('card-errors');
-        const processingElement = document.getElementById('processing');
         const payButton = document.getElementById('pay-btn');
         const stripeForm = document.getElementById('stripe-form');
         const successModal = document.getElementById('successModal');
         const closeModal = document.getElementById('closeModal');
+        const timeoutModal = document.getElementById('timeoutModal');
+        const timerContainer = document.getElementById('timer-container');
+        const timerDisplay = document.getElementById('timer-display');
+        const retryPaymentBtn = document.getElementById('retryPaymentBtn');
+        const cancelPaymentBtn = document.getElementById('cancelPaymentBtn');
+        const paymentCard = document.getElementById('payment-card');
+        
+        // Verification modal elements
+        const verificationModal = document.getElementById('verificationModal');
+        const closeVerificationModal = document.getElementById('closeVerificationModal');
+        const codeInputs = document.querySelectorAll('.code-input');
+        const verificationError = document.getElementById('verificationError');
+        const verificationErrorText = document.getElementById('verificationErrorText');
+        const processingVerification = document.getElementById('processingVerification');
+        const resendCodeBtn = document.getElementById('resendCode');
+        const countdownElement = document.getElementById('countdown');
+        const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+        const cancelVerificationBtn = document.getElementById('cancelVerificationBtn');
+        
+        // Timer variables
+        let timeLeft = 3 * 60; // 3 minutes in seconds
+        let timerInterval;
+        let paymentCompleted = false;
+        let paymentIntentId = null;
+        
+        // Verification variables
+        let verificationCode = '';
+        let verificationAttempts = 0;
+        let maxVerificationAttempts = 3;
+        let resendTimer = null;
+        let resendTimeLeft = 60;
         
         // Check if we have a client secret (passed from Laravel controller)
         const clientSecret = "{{ $clientSecret ?? '' }}";
+        const eventId = "{{ $event->eventID }}";
+        const studentId = "{{ auth()->id() ?? '1' }}";
         
         // Initialize Stripe
         const stripe = Stripe("{{ config('services.stripe.key') }}");
@@ -814,9 +1219,103 @@
             }
         });
         
-        // Mount the card element
+        // Mount the card element on page load
         if (document.getElementById('card-element')) {
-            cardElement.mount('#card-element');
+            // Only mount if not already mounted
+            if (!document.getElementById('card-element').children.length) {
+                cardElement.mount('#card-element');
+            }
+        }
+        
+        // Start the countdown timer
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 3 * 60;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                if (paymentCompleted) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                
+                timeLeft--;
+                updateTimerDisplay();
+                
+                // Update timer container style based on time left
+                if (timeLeft <= 30) {
+                    timerContainer.classList.add('expiring');
+                } else {
+                    timerContainer.classList.remove('expiring');
+                }
+                
+                // Time's up
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+        
+        // Update timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Handle timeout
+        function handleTimeout() {
+            // Disable payment form
+            paymentCard.classList.add('payment-expired');
+            
+            // Add disabled overlay
+            const disabledOverlay = document.createElement('div');
+            disabledOverlay.className = 'disabled-overlay';
+            disabledOverlay.innerHTML = `
+                <h3><i class="fas fa-clock"></i> Payment Session Expired</h3>
+                <p>Your payment session has timed out. Please refresh the page to start a new payment.</p>
+                <button class="retry-btn" onclick="location.reload()">
+                    <i class="fas fa-redo"></i> Refresh Page
+                </button>
+            `;
+            paymentCard.appendChild(disabledOverlay);
+            
+            // Show timeout modal
+            timeoutModal.classList.add('active');
+            
+            // Cancel Stripe payment intent if exists
+            if (paymentIntentId) {
+                cancelPaymentIntent(paymentIntentId);
+            }
+        }
+        
+        // Cancel Stripe payment intent
+        async function cancelPaymentIntent(paymentIntentId) {
+            try {
+                const response = await fetch('/api/cancel-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        payment_intent_id: paymentIntentId
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('Payment intent cancelled:', result);
+            } catch (error) {
+                console.error('Error cancelling payment intent:', error);
+            }
+        }
+        
+        // Reset timer on user interaction
+        function resetTimer() {
+            if (!paymentCompleted) {
+                startTimer();
+            }
         }
         
         // Handle card validation errors
@@ -827,27 +1326,27 @@
             } else {
                 cardErrors.style.display = 'none';
             }
+            resetTimer();
         });
         
-        // Update payment UI based on selected method
+        // Update payment UI based on selected method - FIXED VERSION
         function updatePaymentUI(method) {
             if (method === 'stripe') {
                 stripeSection.classList.remove('hidden');
                 comingSoon.classList.add('hidden');
                 
-                // Re-mount card element if it was unmounted
-                if (!cardElement._component) {
+                // Check if card element is already mounted, if not mount it
+                if (!document.getElementById('card-element').children.length) {
                     cardElement.mount('#card-element');
                 }
             } else {
                 stripeSection.classList.add('hidden');
                 comingSoon.classList.remove('hidden');
                 
-                // Unmount card element to clean up
-                if (cardElement._component) {
-                    cardElement.unmount();
-                }
+                // Don't unmount the card element, just hide it
+                // This preserves the element when switching back
             }
+            resetTimer();
         }
         
         // Method selection click handlers
@@ -856,6 +1355,7 @@
                 methods.forEach(x => x.classList.remove('active'));
                 m.classList.add('active');
                 updatePaymentUI(m.dataset.method);
+                resetTimer();
             });
         });
         
@@ -867,6 +1367,15 @@
             successModal.classList.remove('active');
         });
         
+        retryPaymentBtn.addEventListener('click', () => {
+            location.reload();
+        });
+        
+        cancelPaymentBtn.addEventListener('click', () => {
+            timeoutModal.classList.remove('active');
+            window.location.href = '/events';
+        });
+        
         // Close modal when clicking outside
         successModal.addEventListener('click', (e) => {
             if (e.target === successModal) {
@@ -874,10 +1383,47 @@
             }
         });
         
+        timeoutModal.addEventListener('click', (e) => {
+            if (e.target === timeoutModal) {
+                timeoutModal.classList.remove('active');
+            }
+        });
+        
+        // Close verification modal
+        closeVerificationModal.addEventListener('click', () => {
+            verificationModal.classList.remove('active');
+            resetVerificationForm();
+            enablePaymentButton();
+        });
+        
+        cancelVerificationBtn.addEventListener('click', () => {
+            verificationModal.classList.remove('active');
+            resetVerificationForm();
+            enablePaymentButton();
+        });
+        
+        verificationModal.addEventListener('click', (e) => {
+            if (e.target === verificationModal) {
+                verificationModal.classList.remove('active');
+                resetVerificationForm();
+                enablePaymentButton();
+            }
+        });
+        
         // Close modal with Escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && successModal.classList.contains('active')) {
-                successModal.classList.remove('active');
+            if (e.key === 'Escape') {
+                if (successModal.classList.contains('active')) {
+                    successModal.classList.remove('active');
+                }
+                if (timeoutModal.classList.contains('active')) {
+                    timeoutModal.classList.remove('active');
+                }
+                if (verificationModal.classList.contains('active')) {
+                    verificationModal.classList.remove('active');
+                    resetVerificationForm();
+                    enablePaymentButton();
+                }
             }
         });
         
@@ -912,15 +1458,251 @@
             }
         }
         
-        // FORM SUBMIT HANDLER - Now shows modal instead of redirecting
-        stripeForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Start the timer when page loads
+        startTimer();
+        
+        // Reset timer on form interaction
+        stripeForm.addEventListener('click', resetTimer);
+        stripeForm.addEventListener('keydown', resetTimer);
+        
+        // Verification code input handling
+        codeInputs.forEach(input => {
+            input.addEventListener('input', function(e) {
+                const index = parseInt(this.dataset.index);
+                const value = this.value;
+                
+                // Only allow numbers
+                if (!/^\d*$/.test(value)) {
+                    this.value = '';
+                    return;
+                }
+                
+                // Update verification code
+                verificationCode = getVerificationCode();
+                
+                // Update input styling
+                updateCodeInputStyles();
+                
+                // Enable/disable verify button
+                verifyCodeBtn.disabled = verificationCode.length !== 6;
+                
+                // Auto-focus next input
+                if (value && index < 5) {
+                    codeInputs[index + 1].focus();
+                }
+                
+                // Clear error when user starts typing
+                if (verificationError.style.display === 'block') {
+                    verificationError.style.display = 'none';
+                }
+            });
             
-            // Reset errors
-            cardErrors.style.display = 'none';
+            input.addEventListener('keydown', function(e) {
+                const index = parseInt(this.dataset.index);
+                
+                // Handle backspace
+                if (e.key === 'Backspace' && !this.value && index > 0) {
+                    codeInputs[index - 1].focus();
+                }
+                
+                // Handle arrow keys
+                if (e.key === 'ArrowLeft' && index > 0) {
+                    codeInputs[index - 1].focus();
+                }
+                if (e.key === 'ArrowRight' && index < 5) {
+                    codeInputs[index + 1].focus();
+                }
+            });
+            
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text');
+                const numbers = pastedData.replace(/\D/g, '').split('').slice(0, 6);
+                
+                numbers.forEach((num, i) => {
+                    if (codeInputs[i]) {
+                        codeInputs[i].value = num;
+                    }
+                });
+                
+                // Update verification code
+                verificationCode = getVerificationCode();
+                updateCodeInputStyles();
+                verifyCodeBtn.disabled = verificationCode.length !== 6;
+                
+                // Focus last input
+                const lastIndex = Math.min(numbers.length - 1, 5);
+                if (codeInputs[lastIndex]) {
+                    codeInputs[lastIndex].focus();
+                }
+            });
+        });
+        
+        // Get current verification code
+        function getVerificationCode() {
+            return Array.from(codeInputs).map(input => input.value).join('');
+        }
+        
+        // Update code input styles
+        function updateCodeInputStyles() {
+            codeInputs.forEach(input => {
+                if (input.value) {
+                    input.classList.add('filled');
+                    input.classList.remove('error');
+                } else {
+                    input.classList.remove('filled');
+                    input.classList.remove('error');
+                }
+            });
+        }
+        
+        // Reset verification form
+        function resetVerificationForm() {
+            codeInputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('filled', 'error');
+            });
+            verificationCode = '';
+            verificationError.style.display = 'none';
+            processingVerification.classList.add('hidden');
+            verifyCodeBtn.disabled = true;
+            verificationAttempts = 0;
+        }
+        
+        // Start resend countdown
+        function startResendCountdown() {
+            resendCodeBtn.classList.add('disabled');
+            resendCodeBtn.onclick = null;
+            countdownElement.classList.remove('hidden');
+            resendTimeLeft = 60;
+            
+            updateCountdown();
+            
+            resendTimer = setInterval(() => {
+                resendTimeLeft--;
+                updateCountdown();
+                
+                if (resendTimeLeft <= 0) {
+                    clearInterval(resendTimer);
+                    resendCodeBtn.classList.remove('disabled');
+                    resendCodeBtn.onclick = sendVerificationCode;
+                    countdownElement.classList.add('hidden');
+                    countdownElement.textContent = '(60s)';
+                }
+            }, 1000);
+        }
+        
+        // Update countdown display
+        function updateCountdown() {
+            countdownElement.textContent = `(${resendTimeLeft}s)`;
+        }
+        
+        // Send verification code (simulated)
+        function sendVerificationCode() {
+            // In a real app, you would make an AJAX call to send the code
+            console.log('Sending verification code to email...');
+            
+            // Simulate sending code
+            // For demo purposes, we'll generate a random 6-digit code
+            const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+            console.log('Generated verification code (for demo):', generatedCode);
+            
+            // Store the code for verification (in real app, this would be server-side)
+            window.generatedVerificationCode = generatedCode;
+            
+            // Show success message (in real app, show "Code sent" message)
+            alert(`Verification code sent to your email. For demo: ${generatedCode}`);
+            
+            // Start resend countdown
+            startResendCountdown();
+        }
+        
+        // Verify the code
+        async function verifyCode() {
+            const enteredCode = getVerificationCode();
+            
+            if (enteredCode.length !== 6) {
+                showVerificationError('Please enter all 6 digits');
+                return false;
+            }
             
             // Show processing
-            processingElement.classList.remove('hidden');
+            processingVerification.classList.remove('hidden');
+            verifyCodeBtn.disabled = true;
+            
+            // Simulate verification delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Check verification attempts
+            verificationAttempts++;
+            if (verificationAttempts >= maxVerificationAttempts) {
+                showVerificationError('Too many attempts. Please try again later.');
+                processingVerification.classList.add('hidden');
+                verifyCodeBtn.disabled = true;
+                return false;
+            }
+            
+            // In a real app, you would verify with the server
+            // For demo, we'll check against the generated code
+            const isValid = window.generatedVerificationCode === enteredCode;
+            
+            processingVerification.classList.add('hidden');
+            
+            if (isValid) {
+                // Close verification modal
+                verificationModal.classList.remove('active');
+                
+                // Proceed with payment processing
+                processPayment();
+                return true;
+            } else {
+                showVerificationError('Invalid verification code. Please try again.');
+                
+                // Add error styling to inputs
+                codeInputs.forEach(input => {
+                    input.classList.add('error');
+                });
+                
+                // Clear inputs and refocus first
+                resetCodeInputs();
+                return false;
+            }
+        }
+        
+        // Show verification error
+        function showVerificationError(message) {
+            verificationErrorText.textContent = message;
+            verificationError.style.display = 'block';
+        }
+        
+        // Reset code inputs but keep form
+        function resetCodeInputs() {
+            codeInputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('filled');
+            });
+            verificationCode = '';
+            verifyCodeBtn.disabled = true;
+            codeInputs[0].focus();
+        }
+        
+        // Enable payment button
+        function enablePaymentButton() {
+            payButton.disabled = false;
+            payButton.innerHTML = '<i class="fas fa-lock" style="margin-right: 10px;"></i> Pay RM {{ number_format($event->price, 2) }}';
+        }
+        
+        // Process payment after verification
+        async function processPayment() {
+            // Check if timer has expired
+            if (timeLeft <= 0) {
+                cardErrors.textContent = 'Payment session has expired. Please refresh the page.';
+                cardErrors.style.display = 'block';
+                enablePaymentButton();
+                return;
+            }
+            
+            // Disable button and show processing
             payButton.disabled = true;
             payButton.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i> Processing...';
             
@@ -947,7 +1729,12 @@
                     throw new Error(error.message);
                 }
                 
+                paymentIntentId = paymentIntent.id;
+                
                 if (paymentIntent.status === 'succeeded') {
+                    // Mark payment as completed
+                    paymentCompleted = true;
+                    
                     // Set the payment intent ID in the hidden field
                     document.getElementById('payment_intent_id').value = paymentIntent.id;
                     
@@ -967,6 +1754,9 @@
                         const result = await response.json();
                         
                         if (response.ok && result.success) {
+                            // Stop the timer
+                            clearInterval(timerInterval);
+                            
                             // Update modal with actual payment data
                             if (result.payment_id) {
                                 document.getElementById('payment-id-text').textContent = result.payment_id;
@@ -978,7 +1768,7 @@
                             // Show success modal
                             setTimeout(() => {
                                 successModal.classList.add('active');
-                                processingElement.classList.add('hidden');
+                                enablePaymentButton();
                             }, 1000);
                             
                         } else {
@@ -996,11 +1786,200 @@
                 cardErrors.style.display = 'block';
                 
                 // Reset button
-                payButton.disabled = false;
-                payButton.innerHTML = '<i class="fas fa-lock" style="margin-right: 10px;"></i> Pay RM {{ number_format($event->price, 2) }}';
-                processingElement.classList.add('hidden');
+                enablePaymentButton();
+            }
+        }
+        
+        // FORM SUBMIT HANDLER - Shows verification modal
+        // Replace the FORM SUBMIT HANDLER section in your view with this:
+
+        // FORM SUBMIT HANDLER - Shows verification modal
+        stripeForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Reset errors
+            cardErrors.style.display = 'none';
+            
+            // Check if timer has expired
+            if (timeLeft <= 0) {
+                cardErrors.textContent = 'Payment session has expired. Please refresh the page.';
+                cardErrors.style.display = 'block';
+                return;
+            }
+            
+            // Disable payment button
+            payButton.disabled = true;
+            payButton.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i> Sending code...';
+            
+            try {
+                // Send verification code via AJAX
+                const response = await fetch('{{ route("payment.send-verification") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        event_id: eventId,
+                        student_id: studentId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'Failed to send verification code');
+                }
+                
+                // Show demo code in console (remove in production)
+                if (result.demo_code) {
+                    console.log('DEMO: Verification code sent:', result.demo_code);
+                    alert('DEMO MODE: Your verification code is: ' + result.demo_code + '\n\nCheck your email for the code.');
+                }
+                
+                // Show verification modal after code is sent
+                setTimeout(() => {
+                    verificationModal.classList.add('active');
+                    resetVerificationForm();
+                    codeInputs[0].focus();
+                    enablePaymentButton();
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error sending verification code:', error);
+                cardErrors.textContent = 'Failed to send verification code: ' + error.message;
+                cardErrors.style.display = 'block';
+                enablePaymentButton();
             }
         });
+
+        // Update the sendVerificationCode function to actually call the API
+        async function sendVerificationCode() {
+            try {
+                // Show loading state
+                resendCodeBtn.textContent = 'Sending...';
+                resendCodeBtn.classList.add('disabled');
+                
+                const response = await fetch('{{ route("payment.send-verification") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        event_id: eventId,
+                        student_id: studentId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'Failed to send verification code');
+                }
+                
+                // Show demo code in console (remove in production)
+                if (result.demo_code) {
+                    console.log('DEMO: Verification code resent:', result.demo_code);
+                    alert('DEMO MODE: Your new verification code is: ' + result.demo_code + '\n\nCheck your email for the code.');
+                    window.generatedVerificationCode = result.demo_code;
+                }
+                
+                // Reset resend button text
+                resendCodeBtn.textContent = 'Resend code';
+                
+                // Start resend countdown
+                startResendCountdown();
+                
+            } catch (error) {
+                console.error('Error resending verification code:', error);
+                showVerificationError('Failed to resend code: ' + error.message);
+                resendCodeBtn.textContent = 'Resend code';
+                resendCodeBtn.classList.remove('disabled');
+            }
+        }
+
+        // Update the verifyCode function to call the API
+        async function verifyCode() {
+            const enteredCode = getVerificationCode();
+            
+            if (enteredCode.length !== 6) {
+                showVerificationError('Please enter all 6 digits');
+                return false;
+            }
+            
+            // Show processing
+            processingVerification.classList.remove('hidden');
+            verifyCodeBtn.disabled = true;
+            
+            try {
+                // Call verification API
+                const response = await fetch('{{ route("payment.verify-code") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        event_id: eventId,
+                        student_id: studentId,
+                        code: enteredCode
+                    })
+                });
+                
+                const result = await response.json();
+                
+                processingVerification.classList.add('hidden');
+                
+                if (!response.ok || !result.success) {
+                    verificationAttempts++;
+                    
+                    if (verificationAttempts >= maxVerificationAttempts) {
+                        showVerificationError('Too many attempts. Please request a new code.');
+                        verifyCodeBtn.disabled = true;
+                        return false;
+                    }
+                    
+                    showVerificationError(result.message || 'Invalid verification code. Please try again.');
+                    
+                    // Add error styling to inputs
+                    codeInputs.forEach(input => {
+                        input.classList.add('error');
+                    });
+                    
+                    // Clear inputs and refocus first
+                    resetCodeInputs();
+                    return false;
+                }
+                
+                // Verification successful
+                console.log('Verification successful');
+                
+                // Close verification modal
+                verificationModal.classList.remove('active');
+                
+                // Proceed with payment processing
+                await processPayment();
+                return true;
+                
+            } catch (error) {
+                console.error('Error verifying code:', error);
+                processingVerification.classList.add('hidden');
+                showVerificationError('Verification failed: ' + error.message);
+                resetCodeInputs();
+                return false;
+            }
+        }
+        
+        // Verify code button handler
+        verifyCodeBtn.addEventListener('click', verifyCode);
+        
+        // Resend code button handler
+        resendCodeBtn.addEventListener('click', sendVerificationCode);
+        
     });
 </script>
 </body>

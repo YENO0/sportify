@@ -17,12 +17,12 @@ class UserSeeder extends Seeder
         // Student user
         DB::table('users')->insert([
             'name' => 'John Student',
-            'email' => 'student@example.com',
+            'email' => 'cllee8088@gmail.com',
             'gender' => 'male',
             'birthday' => '2000-01-01',
             'contact' => '0123456789',
             'password' => Hash::make('password123'), // always hash passwords
-            'role' => 'student',
+            'role' => 'committee',
             'profile_picture' => null,
             'created_at' => now(),
             'updated_at' => now(),
@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
         // Committee user
         DB::table('users')->insert([
             'name' => 'Jane Committee',
-            'email' => 'committee@example.com',
+            'email' => 'cllee8088@gmail.com',
             'gender' => 'female',
             'birthday' => '1995-05-05',
             'contact' => '0987654321',
