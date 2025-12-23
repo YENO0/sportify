@@ -2,87 +2,580 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Transaction History</title>
+    <title>Transaction History | Sportify Events</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-light: #818cf8;
+            --secondary-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --dark-color: #1f2937;
+            --gray-color: #6b7280;
+            --light-gray: #f3f4f6;
+            --white: #ffffff;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .table-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .table-container {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f4f6f8;
-            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f4f6f8 0%, #e5e7eb 100%);
+            min-height: 100vh;
+            padding: 30px;
+            color: var(--dark-color);
+            /* Hide body scrollbar for a cleaner look */
+            scrollbar-width: none; /* Firefox */
         }
+
+        /* Hide scrollbar for Chrome, Safari and Opera on body */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
         .container {
-            max-width: 1000px;
-            margin: auto;
+            max-width: 1200px;
+            margin: 0 auto;
         }
+
+        /* Header Styles */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            color: var(--gray-color);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-details h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--white);
+        }
+
+        .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+        .stat-icon.amount { background: linear-gradient(135deg, #10b981, #34d399); }
+        .stat-icon.events { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+
+        .stat-content h3 {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 40px;
+            overflow-x: auto;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-width: 800px;
         }
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
+
+        thead {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
         }
+
         th {
-            background: #6366f1;
-            color: white;
+            padding: 20px;
+            text-align: left;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
         }
-        tr:last-child td {
+
+        th:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        th i {
+            margin-right: 10px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--light-gray);
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        tbody tr:last-child {
             border-bottom: none;
         }
-        .status {
-            padding: 5px 10px;
-            border-radius: 5px;
-            color: white;
+
+        td {
+            padding: 20px;
+            color: var(--dark-color);
         }
-        .status.registered { background: #10b981; }
-        .status.cancelled { background: #ef4444; }
+
+        /* Status Badges */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .status i {
+            margin-right: 6px;
+        }
+
+        .status.registered { 
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .status.pending { 
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .status.cancelled { 
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .status.completed { 
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        /* Event Info */
+        .event-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .event-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark-color);
+        }
+
+        .event-description {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Amount */
+        .amount {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+
+        /* Date */
+        .date {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-color);
+        }
+
+        .date i {
+            color: var(--primary-color);
+        }
+
+        /* No Data State */
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .no-data-icon {
+            font-size: 4rem;
+            color: var(--light-gray);
+            margin-bottom: 20px;
+        }
+
+        .no-data h3 {
+            color: var(--gray-color);
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .no-data p {
+            color: var(--gray-color);
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+
+        .primary-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Footer */
+        .page-footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--light-gray);
+            margin-top: 40px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            th, td {
+                padding: 15px 10px;
+            }
+            
+            .table-container {
+                border-radius: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            
+            .page-header, .stats-container, .page-footer {
+                display: none;
+            }
+            
+            .table-container {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            
+            table {
+                min-width: auto;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>Transaction History</h2>
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-history"></i> Transaction History</h1>
+        <p>View all your payment transactions and event registrations</p>
+        
+        <div class="user-info">
+            <div class="user-avatar">
+                {{ strtoupper(substr($user->name ?? 'User', 0, 1)) }}
+            </div>
+            <div class="user-details">
+                <h3>{{ $user->name ?? 'User' }}</h3>
+                <p><i class="fas fa-envelope"></i> {{ $user->email ?? 'user@example.com' }}</p>
+            </div>
+        </div>
+    </div>
 
-    @if($transactions->isEmpty())
-        <p>No transactions found.</p>
-    @else
-        <table>
-            <thead>
-                <tr>
-                    <th>Event Name</th>
-                    <th>Description</th>
-                    <th>Payment Amount</th>
-                    <th>Status</th>
-                    <th>Joined Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($transactions as $transaction)
-                    @php
-                        $joined = $transaction->eventJoined;
-                        $event = $joined->event ?? null;
-                        $invoice = $joined->invoice ?? null;
-                    @endphp
-                    <tr>
-                        <td>{{ $event->event_name ?? 'N/A' }}</td>
-                        <td>{{ $event->event_description ?? 'N/A' }}</td>
-                        <td>RM {{ number_format($transaction->paymentAmount, 2) }}</td>
-                        <td>
-                            <span class="status {{ $joined->status ?? '' }}">
-                                {{ ucfirst($joined->status ?? 'N/A') }}
-                            </span>
-                        </td>
-                        <td>{{ $joined->joinedDate ?? 'N/A' }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <!-- Stats Cards -->
+    @if(!$transactions->isEmpty())
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon total">
+                <i class="fas fa-receipt"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Transactions</h3>
+                <div class="stat-value">{{ $transactions->count() }}</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon amount">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Amount</h3>
+                <div class="stat-value">RM {{ number_format($transactions->sum('paymentAmount'), 2) }}</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon events">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Events Attended</h3>
+                @php
+                    $uniqueEvents = $transactions->map(function($transaction) {
+                        return $transaction->eventJoined->event->eventID ?? null;
+                    })->filter()->unique()->count();
+                @endphp
+                <div class="stat-value">{{ $uniqueEvents }}</div>
+            </div>
+        </div>
+    </div>
     @endif
+
+    <!-- Transactions Table -->
+    <div class="table-container">
+        @if($transactions->isEmpty())
+            <div class="no-data">
+                <div class="no-data-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3>No Transactions Found</h3>
+                <p>You haven't made any payments yet. Register for events to see your transaction history here.</p>
+                <a href="{{ route('events.index') }}" class="primary-btn">
+                    <i class="fas fa-calendar-plus"></i> Browse Events
+                </a>
+            </div>
+        @else
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-calendar-check"></i> Event</th>
+                        <th><i class="fas fa-info-circle"></i> Description</th>
+                        <th><i class="fas fa-money-bill-wave"></i> Amount</th>
+                        <th><i class="fas fa-tag"></i> Status</th>
+                        <th><i class="fas fa-calendar-alt"></i> Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($transactions as $transaction)
+                        @php
+                            $joined = $transaction->eventJoined;
+                            $event = $joined->event ?? null;
+                            $invoice = $joined->invoice ?? null;
+                        @endphp
+                        <tr>
+                            <td>
+                                <div class="event-info">
+                                    <div class="event-name">{{ $event->event_name ?? 'N/A' }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="event-description">
+                                    {{ Str::limit($event->event_description ?? 'No description available', 80) }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="amount">RM {{ number_format($transaction->paymentAmount, 2) }}</div>
+                            </td>
+                            <td>
+                                @php
+                                    $statusClass = match($joined->status ?? '') {
+                                        'registered' => 'registered',
+                                        'cancelled' => 'cancelled',
+                                        'pending' => 'pending',
+                                        default => 'completed'
+                                    };
+                                @endphp
+                                <span class="status {{ $statusClass }}">
+                                    <i class="fas fa-{{ $statusClass === 'registered' ? 'check-circle' : ($statusClass === 'cancelled' ? 'times-circle' : 'clock') }}"></i>
+                                    {{ ucfirst($joined->status ?? 'Completed') }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="date">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ \Carbon\Carbon::parse($joined->joinedDate ?? $transaction->paymentDate)->format('M d, Y') }}
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    </div>
+
+    <!-- Page Footer -->
+    <div class="page-footer">
+        <p>© {{ date('Y') }} Sportify Events. All rights reserved.</p>
+        <p>Need help? <a href="mailto:support@sportify.com" style="color: var(--primary-color); text-decoration: none;">Contact Support</a></p>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth hover effect for table rows
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.01)';
+                this.style.transition = 'transform 0.2s ease';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    });
+</script>
 </body>
 </html>
