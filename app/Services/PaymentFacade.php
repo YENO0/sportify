@@ -143,7 +143,7 @@ class PaymentFacade
                 'student_id' => $studentId,
                 'event_id' => $event->eventID
             ]);
-            throw new \Exception('Too many attempts. Please request a new code.');
+            throw new \Exception('Too many attempts. Please try again later.');
         }
 
         // Verify code
