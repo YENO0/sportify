@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Patterns\Factory;
+
+use InvalidArgumentException;
+
+/**
+ * Factory Manager - Provides a simple way to get the right factory
+ */
+class EquipmentFactoryManager
+{
+    /**
+     * Get the appropriate factory based on sport type ID
+     * Factory Method Pattern: Creates factory based on sport type
+     *
+     * @param int|null $sportTypeId
+     * @return EquipmentFactoryInterface
+     * @throws InvalidArgumentException
+     */
+    public static function getFactory(?int $sportTypeId = null): EquipmentFactoryInterface
+    {
+        if ($sportTypeId) {
+            $sportType = \App\Models\SportType::find($sportTypeId);
+            return new SportTypeBasedEquipmentFactory($sportType);
+        }
+        
+        // Fallback to sport type based factory without specific sport type
+        return new SportTypeBasedEquipmentFactory();
+    }
+
+    /**
+     * Create equipment using the appropriate factory
+     * Factory Method Pattern: Uses sport type to determine factory behavior
+     *
+     * @param int|null $sportTypeId
+     * @param array $data
+     * @return \App\Models\Equipment
+     */
+    public static function create(?int $sportTypeId, array $data): \App\Models\Equipment
+    {
+        $factory = self::getFactory($sportTypeId);
+        return $factory->createEquipment($data);
+    }
+
+    /**
+     * Legacy method for backward compatibility
+     * @deprecated Use create() with sport_type_id instead
+     */
+    public static function createLegacy(string $type, array $data): \App\Models\Equipment
+    {
+        return match (strtolower($type)) {
+            'sports' => (new SportsEquipmentFactory())->createEquipment($data),
+            'gym' => (new GymEquipmentFactory())->createEquipment($data),
+            'outdoor' => (new OutdoorEquipmentFactory())->createEquipment($data),
+            default => throw new InvalidArgumentException("Unknown equipment type: {$type}"),
+        };
+    }
+}
+
