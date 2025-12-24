@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
         // Committee user
         DB::table('users')->insert([
             'name' => 'Jane Committee',
-            'email' => 'cllee8088@gmail.com',
+            'email' => 'committee@example.com',
             'gender' => 'female',
             'birthday' => '1995-05-05',
             'contact' => '0987654321',

@@ -1349,28 +1349,19 @@
         // Modal controls
         closeModal.addEventListener('click', () => {
             successModal.classList.remove('active');
+            // Redirect to homepage after closing modal
+            setTimeout(() => {
+                window.location.href = '/'; // Change '/' to your homepage URL if different
+            }, 300); // Small delay for smooth transition
         });
-        
+
         retryPaymentBtn.addEventListener('click', () => {
             location.reload();
         });
-        
+
         cancelPaymentBtn.addEventListener('click', () => {
             timeoutModal.classList.remove('active');
-            window.location.href = '/events';
-        });
-        
-        // Close modal when clicking outside
-        successModal.addEventListener('click', (e) => {
-            if (e.target === successModal) {
-                successModal.classList.remove('active');
-            }
-        });
-        
-        timeoutModal.addEventListener('click', (e) => {
-            if (e.target === timeoutModal) {
-                timeoutModal.classList.remove('active');
-            }
+            window.location.href = '/'; // Redirect to homepage
         });
         
         // Close verification modal
@@ -1386,6 +1377,23 @@
             enablePaymentButton();
         });
         
+        // Close modal when clicking outside
+        successModal.addEventListener('click', (e) => {
+            if (e.target === successModal) {
+                successModal.classList.remove('active');
+                // Redirect to homepage after closing modal
+                setTimeout(() => {
+                    window.location.href = '/'; // Change '/' to your homepage URL if different
+                }, 300); // Small delay for smooth transition
+            }
+        });
+        
+        timeoutModal.addEventListener('click', (e) => {
+            if (e.target === timeoutModal) {
+                timeoutModal.classList.remove('active');
+            }
+        });
+        
         verificationModal.addEventListener('click', (e) => {
             if (e.target === verificationModal) {
                 verificationModal.classList.remove('active');
@@ -1399,6 +1407,10 @@
             if (e.key === 'Escape') {
                 if (successModal.classList.contains('active')) {
                     successModal.classList.remove('active');
+                    // Redirect to homepage after closing modal
+                    setTimeout(() => {
+                        window.location.href = '/'; // Change '/' to your homepage URL if different
+                    }, 300); // Small delay for smooth transition
                 }
                 if (timeoutModal.classList.contains('active')) {
                     timeoutModal.classList.remove('active');
@@ -1774,9 +1786,6 @@
             }
         }
         
-        // FORM SUBMIT HANDLER - Shows verification modal
-        // Replace the FORM SUBMIT HANDLER section in your view with this:
-
         // FORM SUBMIT HANDLER - Shows verification modal
         stripeForm.addEventListener('submit', async function(e) {
             e.preventDefault();
