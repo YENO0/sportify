@@ -34,6 +34,14 @@ class EventJoined extends Model
     }
 
     /**
+     * EventJoined belongs to User
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'studentID', 'id');
+    }
+
+    /**
      * EventJoined has one Payment
      */
     public function payment()

@@ -57,9 +57,6 @@ class PaymentFacade
         ]);
     }
 
-    /**
-     * Send 2FA verification code to user's email
-     */
     public function sendVerificationCode(Event $event, int $studentId)
     {
         // Get user
@@ -119,9 +116,6 @@ class PaymentFacade
         ];
     }
 
-    /**
-     * Verify 2FA code
-     */
     public function verifyCode(Event $event, int $studentId, string $code)
     {
         $cacheKey = 'verification_code_' . $studentId . '_' . $event->eventID;
@@ -178,9 +172,6 @@ class PaymentFacade
         ];
     }
 
-    /**
-     * Check if 2FA is verified
-     */
     public function isVerified(Event $event, int $studentId): bool
     {
         $cacheKey = 'verification_code_' . $studentId . '_' . $event->eventID;
@@ -342,13 +333,21 @@ class PaymentFacade
         $role = $this->getUserRole($user->id);
 
         if ($role === 'committee') {
-            // Committee sees all payments
-            return Payment::with(['eventJoined.event', 'eventJoined.invoice'])
+            // Committee sees all payments with user data
+            return Payment::with([
+                    'eventJoined.event', 
+                    'eventJoined.invoice',
+                    'eventJoined.user'  // ✅ Added user relationship
+                ])
                 ->orderBy('paymentDate', 'desc')
                 ->get();
         } else {
-            // Student sees only their payments
-            return Payment::with(['eventJoined.event', 'eventJoined.invoice'])
+            // Student sees only their payments (user is themselves)
+            return Payment::with([
+                    'eventJoined.event', 
+                    'eventJoined.invoice',
+                    'eventJoined.user'  // ✅ Added user relationship
+                ])
                 ->whereHas('eventJoined', function($query) use ($user) {
                     $query->where('studentID', $user->id);
                 })

@@ -44,6 +44,21 @@ class Payment extends Model
     }
 
     /**
+     * Relationship: Access the User via EventJoined
+     */
+    public function user()
+    {
+        return $this->hasOneThrough(
+            User::class,
+            EventJoined::class,
+            'eventJoinedID', // Foreign key on EventJoined table
+            'id',            // Foreign key on User table (users.id)
+            'eventJoinedID', // Local key on Payment
+            'studentID'      // Local key on EventJoined (studentID references users.id)
+        );
+    }
+
+    /**
      * Convenience relationship: Access the Event via EventJoined
      */
     public function event()

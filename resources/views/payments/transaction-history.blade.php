@@ -54,7 +54,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -166,6 +166,7 @@
         .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
         .stat-icon.amount { background: linear-gradient(135deg, #10b981, #34d399); }
         .stat-icon.events { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+        .stat-icon.users { background: linear-gradient(135deg, #ec4899, #f472b6); }
 
         .stat-content h3 {
             font-size: 0.9rem;
@@ -194,7 +195,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;
+            min-width: 1000px;
         }
 
         thead {
@@ -297,6 +298,52 @@
             color: var(--gray-color);
             font-size: 0.9rem;
             line-height: 1.4;
+        }
+
+        /* User Info Column */
+        .user-column {
+            min-width: 200px;
+        }
+
+        .user-info-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 1rem;
+        }
+
+        .user-email {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-color);
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+
+        .user-email i {
+            color: var(--primary-color);
+            font-size: 0.8rem;
+        }
+
+        /* User Avatar in table */
+        .user-avatar-small {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
         }
 
         /* Amount */
@@ -429,7 +476,7 @@
     <!-- Page Header -->
     <div class="page-header">
         <h1><i class="fas fa-history"></i> Transaction History</h1>
-        <p>View all your payment transactions and event registrations</p>
+        <p>View all payment transactions and event registrations</p>
         
         <div class="user-info">
             <div class="user-avatar">
@@ -479,6 +526,23 @@
                 <div class="stat-value">{{ $uniqueEvents }}</div>
             </div>
         </div>
+
+        @if($user->role === 'committee')
+        <div class="stat-card">
+            <div class="stat-icon users">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Unique Users</h3>
+                @php
+                    $uniqueUsers = $transactions->map(function($transaction) {
+                        return $transaction->eventJoined->studentID ?? null;
+                    })->filter()->unique()->count();
+                @endphp
+                <div class="stat-value">{{ $uniqueUsers }}</div>
+            </div>
+        </div>
+        @endif
     </div>
     @endif
 
@@ -498,6 +562,9 @@
                     <tr>
                         <th><i class="fas fa-calendar-check"></i> Event</th>
                         <th><i class="fas fa-info-circle"></i> Description</th>
+                        @if($user->role === 'committee')
+                        <th class="user-column"><i class="fas fa-user"></i> User</th>
+                        @endif
                         <th><i class="fas fa-money-bill-wave"></i> Amount</th>
                         <th><i class="fas fa-tag"></i> Status</th>
                         <th><i class="fas fa-calendar-alt"></i> Date</th>
@@ -509,6 +576,9 @@
                             $joined = $transaction->eventJoined;
                             $event = $joined->event ?? null;
                             $invoice = $joined->invoice ?? null;
+                            
+                            // Get user details for committee view
+                            $transactionUser = $joined->user ?? null;
                         @endphp
                         <tr>
                             <td>
@@ -521,6 +591,36 @@
                                     {{ Str::limit($event->event_description ?? 'No description available', 80) }}
                                 </div>
                             </td>
+                            
+                            @if($user->role === 'committee')
+                            <td class="user-column">
+                                @if($transactionUser)
+                                <div class="user-info-cell">
+                                    <div>
+                                        <div class="user-name">{{ $transactionUser->name ?? 'Unknown User' }}</div>
+                                        <div class="user-email">
+                                            <i class="fas fa-envelope"></i>
+                                            {{ $transactionUser->email ?? 'No email' }}
+                                        </div>
+                                    </div>
+                                </div>
+                                @else
+                                <div class="user-info-cell">
+                                    <div class="user-avatar-small">
+                                        ?
+                                    </div>
+                                    <div>
+                                        <div class="user-name">User Not Found</div>
+                                        <div class="user-email">
+                                            <i class="fas fa-envelope"></i>
+                                            N/A
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
+                            </td>
+                            @endif
+                            
                             <td>
                                 <div class="amount">RM {{ number_format($transaction->paymentAmount, 2) }}</div>
                             </td>
