@@ -379,7 +379,7 @@
             align-items: center;
             gap: 10px;
             padding: 14px 32px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
             color: var(--white);
             text-decoration: none;
             border-radius: 10px;
@@ -640,40 +640,5 @@
         <p>Need assistance with your events? <a href="mailto:support@sportify.com">Contact our support team</a></p>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add click handlers to event rows
-        const tableRows = document.querySelectorAll('tbody tr');
-        
-        tableRows.forEach(row => {
-            row.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateX(5px)';
-                this.style.transition = 'transform 0.2s ease';
-            });
-            
-            row.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateX(0)';
-            });
-            
-            // Click on event row to show full details
-            row.addEventListener('click', function() {
-                const eventName = this.querySelector('.event-name').textContent.trim();
-                const eventDescription = this.querySelector('.event-description').textContent.trim();
-                const amount = this.querySelector('.amount').textContent.trim();
-                const paymentMethod = this.querySelector('.payment-method')?.textContent.trim() || 'Not specified';
-                const status = this.querySelector('.status').textContent.trim();
-                const dateItems = this.querySelectorAll('.date-item');
-                const joinedDate = dateItems[0]?.textContent.trim() || 'N/A';
-                const eventDate = dateItems[1]?.textContent.trim() || 'Date not set';
-                
-                alert(`Event Details:\n\n🎯 ${eventName}\n\n📝 ${eventDescription}\n\n💰 ${amount}\n💳 ${paymentMethod}\n📊 ${status}\n📅 ${joinedDate}\n🗓️ ${eventDate}`);
-            });
-            
-            // Add pointer cursor to indicate clickability
-            row.style.cursor = 'pointer';
-        });
-    });
-</script>
 </body>
 </html>

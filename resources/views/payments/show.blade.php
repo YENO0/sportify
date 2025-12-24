@@ -890,22 +890,6 @@
                     </div>
                 </div>
 
-                <div class="method" data-method="fpx">
-                    <i class="fas fa-university"></i>
-                    <div class="method-content">
-                        <strong>Online Banking (FPX)</strong>
-                        <small>Coming soon</small>
-                    </div>
-                </div>
-
-                <div class="method" data-method="ewallet">
-                    <i class="fas fa-wallet"></i>
-                    <div class="method-content">
-                        <strong>E-Wallet</strong>
-                        <small>Coming soon</small>
-                    </div>
-                </div>
-
                 <!-- STRIPE PAYMENT FORM -->
                 <div id="stripe-section">
                     
