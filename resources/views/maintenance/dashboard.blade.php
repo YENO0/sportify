@@ -171,7 +171,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $maintenance->assignedUser->name ?? 'Unassigned' }}
+                                    {{ $maintenance->assignedUser?->name ?? 'Unassigned' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button onclick="updateStatus({{ $maintenance->id }}, 'in_progress')" class="text-blue-600 hover:text-blue-900 mr-3">Start</button>
@@ -234,7 +234,7 @@
                                     {{ $maintenance->end_date ? $maintenance->end_date->format('M d, Y') : 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $maintenance->assignedUser->name ?? 'Unassigned' }}
+                                    {{ $maintenance->assignedUser?->name ?? 'Unassigned' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button onclick="updateStatus({{ $maintenance->id }}, 'completed')" class="text-green-600 hover:text-green-900">Complete</button>
@@ -290,7 +290,7 @@
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900">{{ $maintenance->title }}</div>
                                 @if($maintenance->description)
-                                    <div class="text-sm text-gray-500">{{ Str::limit($maintenance->description, 50) }}</div>
+                                    <div class="text-sm text-gray-500">{{ \Illuminate\Support\Str::limit($maintenance->description, 50) }}</div>
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -313,7 +313,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $maintenance->assignedUser->name ?? 'Unassigned' }}
+                                {{ $maintenance->assignedUser?->name ?? 'Unassigned' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button onclick="updateStatus({{ $maintenance->id }}, 'in_progress')" class="text-blue-600 hover:text-blue-900 mr-3">Start</button>
