@@ -358,7 +358,7 @@
             </div>
             <div class="info-item">
                 <span class="info-label">Student ID:</span>
-                <span class="info-value">{{ $student->studentID ?? 'N/A' }}</span>
+                <span class="info-value">{{ $student->id ?? 'N/A' }}</span>
             </div>
         </div>
         <div class="info-section">
@@ -391,12 +391,8 @@
                 <span class="info-value">{{ \Carbon\Carbon::parse($event->event_start_date)->format('d M Y') }}</span>
             </div>
             <div class="info-item">
-                <span class="info-label">Location:</span>
-                <span class="info-value">{{ $event->location ?? 'To be announced' }}</span>
-            </div>
-            <div class="info-item">
                 <span class="info-label">Registration ID:</span>
-                <span class="info-value">REG-{{ $payment->eventJoined->eventJoinedID ?? $payment->paymentID }}</span>
+                <span class="info-value">{{ $payment->eventJoined->eventJoinedID ?? $payment->paymentID }}</span>
             </div>
         </div>
     </div>
@@ -434,14 +430,6 @@
         <div class="total-row">
             <span class="total-label">Subtotal</span>
             <span class="total-value">RM {{ number_format($payment->paymentAmount, 2) }}</span>
-        </div>
-        <div class="total-row">
-            <span class="total-label">Processing Fee</span>
-            <span class="total-value">RM 0.00</span>
-        </div>
-        <div class="total-row">
-            <span class="total-label">Service Tax</span>
-            <span class="total-value">RM 0.00</span>
         </div>
         <div class="total-row grand-total">
             <span class="total-label">Total Paid</span>

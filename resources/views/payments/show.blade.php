@@ -1922,7 +1922,7 @@
                     verificationAttempts++;
                     
                     if (verificationAttempts >= maxVerificationAttempts) {
-                        showVerificationError('Too many attempts. Please request a new code.');
+                        showVerificationError('Too many attempts. Please try again later.');
                         verifyCodeBtn.disabled = true;
                         return false;
                     }
