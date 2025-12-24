@@ -491,9 +491,6 @@
                 </div>
                 <h3>No Transactions Found</h3>
                 <p>You haven't made any payments yet. Register for events to see your transaction history here.</p>
-                <a href="{{ route('events.index') }}" class="primary-btn">
-                    <i class="fas fa-calendar-plus"></i> Browse Events
-                </a>
             </div>
         @else
             <table>
