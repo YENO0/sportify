@@ -1148,69 +1148,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-<<<<<<< HEAD
-                    </div>
-                @else
-                    <p class="text-gray-500 text-center py-8">No equipment borrowed for this event.</p>
-                    @if(!$event->hasEnded())
-                        <div class="text-center">
-                            <a href="{{ route('equipment-borrowings.create', $event) }}" class="text-blue-600 hover:text-blue-900">
-                                Borrow equipment for this event
-                            </a>
-                        </div>
-                    @endif
-                @endif
-            </div>
-        </div>
-
-        <!-- Actions Sidebar -->
-        <div class="space-y-6">
-            <div class="bg-white shadow rounded-lg p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions</h2>
-                <div class="space-y-3">
-                    <a href="{{ route('events.edit', $event) }}" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 block text-center">
-                        Edit Event
-                    </a>
-                    
-                    @if($event->equipmentBorrowings->where('status', 'borrowed')->count() > 0 && !$event->hasEnded())
-                        <form action="{{ route('events.testReturn', $event) }}" method="POST" class="w-full">
-                            @csrf
-                            <button type="submit" class="w-full bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-yellow-700" 
-                                onclick="return confirm('This will set the event end date/time to the past and process automatic returns. Continue?')">
-                                Test Return Logic
-                            </button>
-                        </form>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Event Status -->
-            <div class="bg-white shadow rounded-lg p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Event Status</h2>
-                <div class="space-y-2">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Event Status</span>
-                        <span class="font-medium">
-                            @if($event->hasEnded())
-                                <span class="text-red-600">Ended</span>
-                            @elseif($event->isOngoing())
-                                <span class="text-green-600">Ongoing</span>
-                            @else
-                                <span class="text-blue-600">Upcoming</span>
-                            @endif
-                        </span>
-                    </div>
-                    <div class="text-xs text-gray-500 mt-2">
-                        @if($event->hasEnded())
-                            Event ended on {{ $event->end_date->format('M d, Y') }} at {{ is_string($event->end_time) ? $event->end_time : $event->end_time->format('H:i') }}
-                        @elseif($event->isOngoing())
-                            Event is currently ongoing
-                        @else
-                            Event starts on {{ $event->start_date->format('M d, Y') }} at {{ is_string($event->start_time) ? $event->start_time : $event->start_time->format('H:i') }}
-                        @endif
-                    </div>
-                </div>
-=======
                     @else
                         <div class="participants-empty">No participants registered yet.</div>
                     @endif
@@ -1334,13 +1271,10 @@
                     <span>Total</span>
                     <span>{{ $event->price == 0 ? 'RM 0.00' : 'RM ' . number_format($event->price, 2) }}</span>
                 </div>
->>>>>>> origin/kuanyik
             </div>
         </div>
     </div>
 </div>
-<<<<<<< HEAD
-=======
 @endif
 
 @push('scripts')
@@ -1364,6 +1298,5 @@
 </script>
 @endpush
 
->>>>>>> origin/kuanyik
 @endsection
 

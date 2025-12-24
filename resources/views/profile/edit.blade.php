@@ -4,36 +4,6 @@
 <style>
     /* Full-width layout overrides */
     body { display: block; }
-    .card {
-        max-width: none; width: 100%; min-height: 100vh;
-        border-radius: 0; padding: 0; background: #f8fafc; /* Light background */
-        border: none; box-shadow: none;
-    }
-
-    /* Re-usable website styles from homepage */
-    .navbar {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 1rem 2rem; background: rgba(255, 255, 255, 0.8); /* Lighter navbar background */
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Lighter border */
-        position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px);
-    }
-    .navbar .brand { font-size: 1.5rem; font-weight: 700; color: #1f2937; /* Darker text */ }
-    .navbar .user-info { display: flex; align-items: center; gap: 1rem; }
-    .navbar .user-info span { font-size: 0.9rem; color: #4b5563; /* Darker text */ }
-    .navbar a.logout-btn {
-        text-decoration: none; background: #e5e7eb; /* Light background */
-        border: none; color: #374151; /* Darker text */
-        padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;
-        font-size: 0.8rem; font-weight: 600; transition: background 0.2s ease;
-    }
-    .navbar a.logout-btn:hover { background: #d1d5db; /* Darker hover background */ }
-    .navbar .logout-btn {
-        background: #e5e7eb; /* Light background */
-        border: none; color: #374151; /* Darker text */
-        padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;
-        font-size: 0.8rem; font-weight: 600; transition: background 0.2s ease;
-    }
-    .navbar .logout-btn:hover { background: #d1d5db; /* Darker hover background */ }
     .main-footer {
         text-align: center; padding: 2rem; margin-top: 2rem;
         background: #f0f4f8; /* Light grey background */
@@ -173,18 +143,6 @@
     }
     .btn-primary:hover { transform: translateY(-2px); }
 </style>
-
-<nav class="navbar">
-    <a href="{{ route('homepage') }}" class="brand" style="text-decoration:none;">Sportify</a>
-    <div class="user-info">
-        <span>Welcome, {{ auth()->user()->name }}</span>
-        <a href="{{ route('profile.show') }}" class="logout-btn" style="text-decoration: none; background: #e5e7eb;">Profile</a>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="logout-btn">Log Out</button>
-        </form>
-    </div>
-</nav>
 
 <header class="profile-header">
     <h1>Edit Profile</h1>
