@@ -47,7 +47,8 @@ class FacilityClosureNotification extends Notification
         $rebookLink = route('bookings.index'); // Changed to bookings.index
 
         return (new MailMessage)
-                    ->subject("Facility Closure: {$facilityName} - {$status}")
+                    ->from(config('mail.from.address'), 'System')
+                    ->subject("Rebook your facility")
                     ->greeting("Hello!")
                     ->line("The {$facilityName} is currently unavailable due to {$status}. Your booking from {$this->booking->start_time->format('M d, Y H:i')} to {$this->booking->end_time->format('M d, Y H:i')} has been cancelled.")
                     ->action('Rebook Now', $rebookLink)
