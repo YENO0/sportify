@@ -7,17 +7,8 @@ use App\Http\Controllers\Api\EquipmentBorrowingApiController;
 use App\Http\Controllers\Api\BrandApiController;
 use App\Http\Controllers\Api\SportTypeApiController;
 use App\Http\Controllers\Api\MaintenanceApiController;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+use Illuminate\Http\Request;
+use App\Http\Controllers\Api\StudentController;
 
 Route::prefix('v1')->group(function () {
     // Equipment API
@@ -48,5 +39,15 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('maintenance', MaintenanceApiController::class)->names('api.v1.maintenance');
     Route::post('maintenance/{id}/status', [MaintenanceApiController::class, 'updateStatus'])->name('api.v1.maintenance.status');
     Route::get('maintenance/upcoming/list', [MaintenanceApiController::class, 'getUpcoming'])->name('api.v1.maintenance.upcoming.list');
-});
 
+    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+        return $request->user();
+    });
+    
+    Route::get('/test', function(){
+        return ['message'=> 'API is working'];
+    });
+    
+    Route::apiResource('students', StudentController::class);
+
+});
