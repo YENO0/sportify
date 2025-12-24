@@ -11,8 +11,10 @@ class Booking extends Model
 
     protected $fillable = [
         'facility_id',
+        'user_id',
         'start_time',
         'end_time',
+        'status',
     ];
 
     protected $casts = [
