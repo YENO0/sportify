@@ -15,8 +15,8 @@
 
     <div class="bg-white shadow overflow-hidden sm:rounded-b-lg p-6">
         <div class="mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">{{ $notification->data['title'] ?? 'N/A' }}</h2>
-            <p class="text-gray-600 text-sm">Sender: {{ $notification->data['sender'] ?? 'N/A' }}</p>
+            <h2 class="text-xl font-semibold text-gray-800">{{ $notification->data['title'] ?? 'Rebook your facility' }}</h2>
+            <p class="text-gray-600 text-sm">Sender: {{ $notification->data['sender'] ?? 'System' }}</p>
             <p class="text-gray-600 text-sm">Date: {{ \Carbon\Carbon::parse($notification->created_at)->format('d/m/Y H:i') }}</p>
         </div>
 
