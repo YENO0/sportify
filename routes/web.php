@@ -15,6 +15,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\EventJoinedController;
+use App\Http\Controllers\PaymentController;
 // Home / welcome page
 Route::get('/', function () {
     return view('welcome');
@@ -198,3 +199,24 @@ Route::post('/eventJoined/{eventJoined}/cancel', [EventJoinedController::class, 
 
 Route::get('/events/{event}/registrations', [EventJoinedController::class, 'index'])
     ->name('events.registrations');
+
+Route::get('/payments/{event}', [PaymentController::class, 'show'])
+    ->name('payments.show');
+
+Route::post('/payments/confirm', [PaymentController::class, 'stripeConfirm'])
+    ->name('payments.confirm');
+
+Route::get('/my-events', [PaymentController::class, 'myEvents'])
+    ->name('payments.my-events');
+
+Route::get('/transactions', [PaymentController::class, 'transactionHistory'])
+    ->name('payments.transaction-history');
+
+Route::post('/payment/send-verification-code', [PaymentController::class, 'sendVerificationCode'])
+    ->name('payment.send-verification');
+
+Route::post('/payment/verify-code', [PaymentController::class, 'verifyCode'])
+    ->name('payment.verify-code');
+
+Route::post('/payment/check-verification', [PaymentController::class, 'checkVerification'])
+    ->name('payment.check-verification');

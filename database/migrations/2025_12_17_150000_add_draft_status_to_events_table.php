@@ -14,7 +14,7 @@ return new class extends Migration
         if ($driver === 'sqlite') {
             // SQLite doesn't support ALTER ENUM, so we need to recreate the table
             DB::statement('CREATE TABLE events_new (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                eventID INTEGER PRIMARY KEY AUTOINCREMENT,
                 event_name TEXT NOT NULL,
                 event_description TEXT,
                 event_poster TEXT,
@@ -49,7 +49,7 @@ return new class extends Migration
         if ($driver === 'sqlite') {
             // Revert to original enum values
             DB::statement('CREATE TABLE events_old (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                eventID INTEGER PRIMARY KEY AUTOINCREMENT,
                 event_name TEXT NOT NULL,
                 event_description TEXT,
                 event_poster TEXT,

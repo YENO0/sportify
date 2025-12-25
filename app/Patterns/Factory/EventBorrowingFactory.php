@@ -18,7 +18,7 @@ class EventBorrowingFactory extends AbstractBorrowingFactory
     protected function prepareBorrowingData(Equipment $equipment, Event $event, array $data): array
     {
         return [
-            'event_id' => $event->id,
+            'event_id' => $event->eventID,
             'equipment_id' => $equipment->id,
             'quantity' => $data['quantity'],
             'status' => 'borrowed',

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('events', function (Blueprint $table) {
-            $table->id(); // eventID 
+            $table->id('eventID'); // eventID 
 
             // Event basic details
             $table->string('event_name');
@@ -26,6 +26,8 @@ return new class extends Migration
             $table->integer('max_capacity');
             // Facility is not ready yet; keep nullable for now
             $table->unsignedBigInteger('facility_id')->nullable();
+            // Event entry price
+            $table->decimal('price', 10, 2)->default(0);
             // Ownership & approval
             $table->unsignedBigInteger('committee_id');
             $table->unsignedBigInteger('approved_by')->nullable();
@@ -36,13 +38,12 @@ return new class extends Migration
 
             $table->timestamp('approved_at')->nullable();
 
+            // Event rejection remark
+            $table->text('rejection_remark')
+                  ->nullable();
+
             // Timestamps
             $table->timestamps();
-
-            // Foreign keys (optional but recommended)
-            // $table->foreign('facility_id')->references('id')->on('facility');
-            $table->foreign('committee_id')->references('id')->on('user');
-            $table->foreign('approved_by')->references('id')->on('user');
         });
     }
 

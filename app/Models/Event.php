@@ -23,11 +23,26 @@ use App\States\EventStatus\CompletedState;
 use App\States\EventStatus\CancelledState;
 use InvalidArgumentException;
 use App\Models\EventJoined;
+use App\Models\Payment;
+use App\Models\EquipmentBorrowing;
 
 class Event extends Model
 {
     use HasFactory;
 
+    // Table name (optional if follows Laravel convention)
+    protected $table = 'events';
+
+    // Primary key
+    protected $primaryKey = 'eventID';
+
+    // Auto-incrementing
+    public $incrementing = true;
+
+    // Primary key type
+    protected $keyType = 'int';
+
+    // Mass assignable attributes
     protected $fillable = [
         'event_name',
         'event_description',
@@ -54,6 +69,15 @@ class Event extends Model
      */
     protected $attributes = [
         'facility_id' => null,
+    ];
+
+    // Casts
+    protected $casts = [
+        'event_start_date' => 'datetime',
+        'event_end_date' => 'datetime',
+        'registration_due_date' => 'datetime',
+        'price' => 'decimal:2',
+        'approved_at' => 'datetime',
     ];
 
     // Committee who created the event
@@ -83,6 +107,37 @@ class Event extends Model
     public function registrations()
     {
         return $this->hasMany(EventJoined::class, 'eventID');
+    }
+
+    /**
+     * Relationship: Event has many EventJoined (alias for registrations for payment compatibility)
+     */
+    public function eventJoined()
+    {
+        return $this->registrations();
+    }
+
+    /**
+     * Convenience: Access all payments for this event through EventJoined
+     */
+    public function payments()
+    {
+        return $this->hasManyThrough(
+            Payment::class,
+            EventJoined::class,
+            'eventID',       // Foreign key on EventJoined table
+            'eventJoinedID', // Foreign key on Payment table
+            'eventID',       // Local key on Event table
+            'eventJoinedID'  // Local key on EventJoined table
+        );
+    }
+
+    /**
+     * Equipment borrowings for this event
+     */
+    public function equipmentBorrowings()
+    {
+        return $this->hasMany(EquipmentBorrowing::class, 'event_id', 'eventID');
     }
 
     /**
@@ -126,5 +181,21 @@ class Event extends Model
             'Cancelled' => new CancelledState($this),
             default => throw new InvalidArgumentException("Unknown event lifecycle status '{$this->event_status}'."),
         };
+    }
+
+    /**
+     * Scope: Only active events (registration not passed)
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('registration_due_date', '>=', now());
+    }
+
+    /**
+     * Helper: Count of registered participants
+     */
+    public function registeredCount()
+    {
+        return $this->registrations()->where('status', 'registered')->count();
     }
 }

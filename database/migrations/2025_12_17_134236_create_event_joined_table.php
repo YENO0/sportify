@@ -17,6 +17,7 @@ return new class extends Migration
             // References
             $table->unsignedBigInteger('eventID');
             $table->unsignedBigInteger('studentID');
+            $table->unsignedBigInteger('paymentID');
 
             // Registration status
             $table->enum('status', ['registered', 'cancelled'])
@@ -38,7 +39,7 @@ return new class extends Migration
 
             // Foreign key to events table
             $table->foreign('eventID')
-                  ->references('id')
+                  ->references('eventID')
                   ->on('events')
                   ->onDelete('cascade');
 

@@ -10,6 +10,7 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
+    
     public function run(): void
     {
         // User::factory(10)->create();
@@ -26,6 +27,9 @@ class DatabaseSeeder extends Seeder
             'role' => User::ROLE_ADMIN,
         ]);
         
-        $this->call(EventRegistrationDummySeeder::class);
+        $this->call([
+            EventSeeder::class,
+            EventRegistrationDummySeeder::class,
+        ]);
     }
 }

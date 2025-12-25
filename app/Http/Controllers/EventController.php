@@ -583,7 +583,7 @@ protected $eventService;
         // Check if student is already registered (only for approved events)
         $isRegistered = false;
         if ($event->status === 'approved' && \Illuminate\Support\Facades\Schema::hasTable('eventJoined')) {
-            $isRegistered = \App\Models\EventJoined::where('eventID', $event->id)
+            $isRegistered = \App\Models\EventJoined::where('eventID', $event->eventID)
                 ->where('studentID', $studentId)
                 ->where('status', 'registered')
                 ->exists();

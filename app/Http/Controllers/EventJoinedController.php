@@ -17,7 +17,7 @@ class EventJoinedController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'event_id' => ['required', 'integer', 'exists:events,id'],
+            'event_id' => ['required', 'integer', 'exists:events,eventID'],
         ]);
 
         $event = Event::find($data['event_id']);
@@ -33,7 +33,7 @@ class EventJoinedController extends Controller
         // Hardcoded: replace with authenticated student id when available
         $studentId = 1;
 
-        $exists = EventJoined::where('eventID', $event->id)
+        $exists = EventJoined::where('eventID', $event->eventID)
             ->where('studentID', $studentId)
             ->exists();
 
@@ -41,14 +41,14 @@ class EventJoinedController extends Controller
             return $this->errorResponse($request, 'You are already registered for this event.', 409);
         }
 
-        $registeredCount = EventJoined::where('eventID', $event->id)
+        $registeredCount = EventJoined::where('eventID', $event->eventID)
             ->where('status', 'registered')
             ->count();
 
         $status = $registeredCount >= $event->max_capacity ? 'waitlisted' : 'registered';
 
         $registration = EventJoined::create([
-            'eventID' => $event->id,
+            'eventID' => $event->eventID,
             'studentID' => $studentId,
             'paymentID' => null, // Placeholder; replace when payment module is ready
             'status' => $status,

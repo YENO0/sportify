@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('equipment_borrowings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+            $table->unsignedBigInteger('event_id');
+            $table->foreign('event_id')->references('eventID')->on('events')->onDelete('cascade');
             $table->foreignId('equipment_id')->constrained('equipment')->onDelete('cascade');
             $table->integer('quantity');
             $table->string('status')->default('borrowed'); // borrowed, returned
