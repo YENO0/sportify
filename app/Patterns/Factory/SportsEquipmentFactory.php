@@ -33,6 +33,7 @@ class SportsEquipmentFactory extends AbstractEquipmentFactory
         if (isset($data['requires_inspection']) && $data['requires_inspection']) {
             $equipment->update(['status' => 'maintenance']);
         }
+<<<<<<< HEAD
 
         // Factory Method: Handle image uploads for sports equipment
         // Sports equipment images are stored in equipment-specific folders

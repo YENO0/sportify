@@ -10,7 +10,11 @@
     </div>
 
     <div class="bg-white shadow sm:rounded-lg">
+<<<<<<< HEAD
         <form action="{{ route('inventory.store') }}" method="POST" class="space-y-8 p-6" enctype="multipart/form-data">
+=======
+        <form action="{{ route('inventory.store') }}" method="POST" class="space-y-8 p-6">
+>>>>>>> origin/eewen
             @csrf
 
             <!-- Section 1: Basic Information -->
@@ -24,6 +28,7 @@
                     </div>
 
                     <div>
+<<<<<<< HEAD
                         <label for="sport_type_id" class="block text-sm font-medium text-gray-700">Sport Type *</label>
                         <select name="sport_type_id" id="sport_type_id" required
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
@@ -38,6 +43,17 @@
                             Factory Method pattern will create equipment based on sport type.
                             <a href="{{ route('sport-types.create') }}" target="_blank" class="text-blue-600 hover:text-blue-900">Add new sport type</a>
                         </p>
+=======
+                        <label for="type" class="block text-sm font-medium text-gray-700">Equipment Type *</label>
+                        <select name="type" id="type" required
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select Type</option>
+                            <option value="sports" {{ old('type') == 'sports' ? 'selected' : '' }}>Sports Equipment</option>
+                            <option value="gym" {{ old('type') == 'gym' ? 'selected' : '' }}>Gym Equipment</option>
+                            <option value="outdoor" {{ old('type') == 'outdoor' ? 'selected' : '' }}>Outdoor Equipment</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">Factory Method pattern will create equipment based on type</p>
+>>>>>>> origin/eewen
                     </div>
 
                     <div class="sm:col-span-2">
@@ -79,6 +95,7 @@
                 </div>
             </div>
 
+<<<<<<< HEAD
             <!-- Section 3: Images (Decorator Pattern) -->
             <div class="border-b border-gray-200 pb-6">
                 <h2 class="text-lg font-medium text-gray-900 mb-4">Equipment Images</h2>
@@ -114,6 +131,9 @@
             </div>
 
             <!-- Section 4: Inventory Details -->
+=======
+            <!-- Section 3: Inventory Details -->
+>>>>>>> origin/eewen
             <div class="border-b border-gray-200 pb-6">
                 <h2 class="text-lg font-medium text-gray-900 mb-4">Inventory Details</h2>
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -128,7 +148,11 @@
                     <input type="number" name="minimum_stock_amount" id="minimum_stock_amount" value="{{ old('minimum_stock_amount') }}" min="0"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Auto-set by Factory Method">
+<<<<<<< HEAD
                     <p class="mt-1 text-xs text-gray-500">Factory Method will set default based on sport type if left empty</p>
+=======
+                    <p class="mt-1 text-xs text-gray-500">Factory Method will set default based on equipment type if left empty</p>
+>>>>>>> origin/eewen
                 </div>
 
                 <div>
@@ -151,7 +175,11 @@
                 </div>
             </div>
 
+<<<<<<< HEAD
             <!-- Section 5: Features (Decorator Pattern) -->
+=======
+            <!-- Section 4: Features (Decorator Pattern) -->
+>>>>>>> origin/eewen
             <div class="border-b border-gray-200 pb-6">
                 <h2 class="text-lg font-medium text-gray-900 mb-4">Additional Features (Decorator Pattern)</h2>
                 <p class="text-sm text-gray-600 mb-4">Add optional features to your equipment using the Decorator pattern</p>
@@ -222,6 +250,7 @@
 </div>
 
 <script>
+<<<<<<< HEAD
     // Store selected files globally - MUST be declared before any functions use them
     var selectedFiles = [];
     var fileDataUrls = {};
@@ -609,5 +638,33 @@
             }
         }
     });
+=======
+    document.getElementById('add_insurance').addEventListener('change', function() {
+        document.getElementById('insurance-details').style.display = this.checked ? 'block' : 'none';
+    });
+    document.getElementById('add_warranty').addEventListener('change', function() {
+        document.getElementById('warranty-details').style.display = this.checked ? 'block' : 'none';
+    });
+    document.getElementById('add_maintenance_tracking').addEventListener('change', function() {
+        document.getElementById('maintenance-details').style.display = this.checked ? 'block' : 'none';
+    });
+    document.getElementById('add_low_stock_alert').addEventListener('change', function() {
+        document.getElementById('low-stock-details').style.display = this.checked ? 'block' : 'none';
+    });
+    
+    // Show if already checked
+    if (document.getElementById('add_insurance').checked) {
+        document.getElementById('insurance-details').style.display = 'block';
+    }
+    if (document.getElementById('add_warranty').checked) {
+        document.getElementById('warranty-details').style.display = 'block';
+    }
+    if (document.getElementById('add_maintenance_tracking').checked) {
+        document.getElementById('maintenance-details').style.display = 'block';
+    }
+    if (document.getElementById('add_low_stock_alert').checked) {
+        document.getElementById('low-stock-details').style.display = 'block';
+    }
+>>>>>>> origin/eewen
 </script>
 @endsection

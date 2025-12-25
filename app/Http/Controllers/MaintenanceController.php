@@ -21,7 +21,6 @@ class MaintenanceController extends Controller
         try {
             // Process completed maintenances and return quantities (Decorator Pattern)
             $this->processCompletedMaintenances();
-
             // Build query for all maintenances
             $query = Maintenance::with(['equipment.brand', 'equipment.sportType', 'assignedUser']);
 

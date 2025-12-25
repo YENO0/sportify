@@ -65,7 +65,9 @@ class PaymentFacade
         // Log user details for debugging
         Log::info('Attempting to send verification code', [
             'user_id' => $user->id,
-            'email' => $user->email,
+            'email_raw' => $user->email,
+            'email_length' => strlen($user->email),
+            'email_hex' => bin2hex($user->email),
             'event_id' => $event->eventID
         ]);
         
@@ -86,19 +88,48 @@ class PaymentFacade
         ]);
 
         try {
+            // Ensure email is clean and valid - remove any URLs that might have been appended
+            $email = trim($user->email);
+            
+            // Remove any URLs that might have been accidentally appended to the email
+            // This handles cases where email might be "email@example.comhttp://..."
+            $email = preg_replace('/https?:\/\/[^\s]+$/', '', $email);
+            $email = trim($email);
+            
+            // Additional cleanup - remove any trailing URLs
+            if (preg_match('/^(.+?@.+?\.[a-z]{2,})/i', $email, $matches)) {
+                $email = $matches[1];
+            }
+            
+            // Validate email format
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                Log::error('Invalid email format after cleanup', [
+                    'original_email' => $user->email,
+                    'cleaned_email' => $email,
+                    'user_id' => $user->id
+                ]);
+                throw new \Exception('Invalid email address format. Please check your email in your profile.');
+            }
+            
+            Log::info('Email cleaned and validated', [
+                'original' => $user->email,
+                'cleaned' => $email,
+                'user_id' => $user->id
+            ]);
+            
             // Send simple text email with just the code
             Mail::raw(
                 "Your Sportify Events verification code is: $verificationCode\n\n" .
                 "This code will expire in 10 minutes.\n\n" .
                 "Do not share this code with anyone.", 
-                function ($message) use ($user, $event) {
-                    $message->to($user->email)
+                function ($message) use ($email, $event) {
+                    $message->to($email)
                         ->subject('Payment Verification Code - ' . $event->event_name);
                 }
             );
             
             Log::info('Verification email sent successfully', [
-                'to' => $user->email,
+                'to' => $email,
                 'event' => $event->event_name
             ]);
             
@@ -261,7 +292,16 @@ class PaymentFacade
 
             // 5️⃣ Get user's email
             $user = User::findOrFail($studentId);
-            $email = $user->email;
+            $email = trim($user->email);
+            
+            // Validate email format
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                Log::error('Invalid email format for payment confirmation', [
+                    'email' => $email,
+                    'user_id' => $user->id
+                ]);
+                throw new \Exception('Invalid email address format.');
+            }
 
             Log::info('Sending payment confirmation email', [
                 'to' => $email,

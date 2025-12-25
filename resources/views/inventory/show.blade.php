@@ -15,6 +15,7 @@
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <!-- Main Details -->
         <div class="lg:col-span-2 space-y-6">
+<<<<<<< HEAD
             <!-- Equipment Images -->
             @if($equipment->images->count() > 0)
                 <div class="bg-white shadow rounded-lg p-6">
@@ -41,10 +42,13 @@
                 </div>
             @endif
 
+=======
+>>>>>>> origin/eewen
             <div class="bg-white shadow rounded-lg p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Basic Information</h2>
                 <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                     <div>
+<<<<<<< HEAD
                         <dt class="text-sm font-medium text-gray-500">Sport Type</dt>
                         <dd class="mt-1 text-sm text-gray-900">
                             @if($equipment->sportType)
@@ -56,6 +60,13 @@
                                     Not Set
                                 </span>
                             @endif
+=======
+                        <dt class="text-sm font-medium text-gray-500">Type</dt>
+                        <dd class="mt-1 text-sm text-gray-900">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                {{ ucfirst($equipment->type) }}
+                            </span>
+>>>>>>> origin/eewen
                         </dd>
                     </div>
                     @if($equipment->brand)
@@ -337,6 +348,7 @@
     function hideReturnModal() {
         document.getElementById('returnModal').classList.add('hidden');
     }
+<<<<<<< HEAD
 
     function openImageModal(url, alt) {
         document.getElementById('modalImage').src = url;
@@ -357,5 +369,8 @@
         <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white hover:text-gray-300 text-2xl font-bold bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center">×</button>
     </div>
 </div>
+=======
+</script>
+>>>>>>> origin/eewen
 @endsection
 

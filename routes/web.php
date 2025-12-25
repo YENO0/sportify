@@ -16,11 +16,19 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\EventJoinedController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\FacilityController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\FacilityTimetableController;
+use App\Http\Controllers\FacilityMaintenanceController;
+use App\Http\Controllers\NotificationController;
+
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+
 // Home / welcome page
 Route::get('/', function () {
     return view('welcome');
 });
-
 // Add this new route
 Route::get('/sports', [SportController::class, 'index']);
 
@@ -68,6 +76,10 @@ Route::prefix('sport-types')->name('sport-types.')->group(function () {
 });
 
 // Event Management Routes
+// IMPORTANT: Specific routes must come BEFORE parameterized routes
+Route::get('/events/approved', [EventController::class, 'approved'])
+    ->name('events.approved');
+
 Route::prefix('events')->name('events.')->group(function () {
     Route::get('/', [EventController::class, 'index'])->name('index');
     Route::get('/create', [EventController::class, 'create'])->name('create');
@@ -110,6 +122,11 @@ Route::middleware('guest')->group(function () {
 // Authenticated routes
 Route::middleware(['auth', 'profile.complete'])->group(function () {
     Route::get('/homepage', [HomeController::class, 'index'])->name('homepage');
+    
+    // Committee Dashboard
+    Route::get('/committee/dashboard', function () {
+        return view('committee.dashboard');
+    })->name('committee.dashboard');
 
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -132,10 +149,9 @@ Route::middleware(['auth', 'profile.complete'])->group(function () {
         Route::get('/admin/committee/create', [CommitteeController::class, 'create'])->name('admin.committee.create');
         Route::post('/admin/committee', [CommitteeController::class, 'store'])->name('admin.committee.store');
 
-        // Example: admin-only route for managing events
-        Route::get('/admin/events', function () {
-            return 'Admin events management (placeholder)';
-        })->name('admin.events');
+        // Admin events management
+        Route::get('/admin/events', [EventController::class, 'adminIndex'])
+            ->name('admin.events.index');
     });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -171,13 +187,6 @@ Route::post('/events/{event}/reject', [EventController::class, 'reject'])
 
 Route::post('/events/{event}/cancel', [EventController::class, 'cancel'])
     ->name('events.cancel');
-
-Route::get('/events/approved', [EventController::class, 'approved'])
-    ->name('events.approved');
-
-// Admin routes for event approval
-Route::get('/admin/events', [EventController::class, 'adminIndex'])
-    ->name('admin.events.index');
 
 // Public event details page (for students)
 Route::get('/events/{event}/show', [EventController::class, 'show'])
@@ -220,3 +229,29 @@ Route::post('/payment/verify-code', [PaymentController::class, 'verifyCode'])
 
 Route::post('/payment/check-verification', [PaymentController::class, 'checkVerification'])
     ->name('payment.check-verification');
+
+// Facility Maintenance Routes (Admin only)
+Route::middleware(['auth', 'role:admin'])->prefix('facilities/maintenance')->name('facilities.maintenance.')->group(function () {
+    Route::get('/', [FacilityMaintenanceController::class, 'index'])->name('index');
+    Route::get('/create', [FacilityMaintenanceController::class, 'create'])->name('create');
+    Route::post('/', [FacilityMaintenanceController::class, 'store'])->name('store');
+    Route::get('/{facilityMaintenance}/edit', [FacilityMaintenanceController::class, 'edit'])->name('edit');
+    Route::put('/{facilityMaintenance}', [FacilityMaintenanceController::class, 'update'])->name('update');
+    Route::delete('/{facilityMaintenance}', [FacilityMaintenanceController::class, 'destroy'])->name('destroy');
+});
+
+// Facility Management Routes
+Route::resource('facilities', FacilityController::class);
+Route::get('facility-photos/{filename}', [FacilityController::class, 'getFacilityPhoto'])->name('facilities.photo');
+Route::get('facility-timetable', [FacilityTimetableController::class, 'index'])->name('facilities.timetable');
+
+// Notification Routes (authenticated)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/{notification}', [NotificationController::class, 'show'])->name('notifications.show');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    
+    // Bookings Routes
+    Route::resource('bookings', BookingController::class);
+});

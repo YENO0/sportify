@@ -26,6 +26,7 @@ class InventoryController extends Controller
         $this->equipmentService = $equipmentService;
         $this->sportTypeService = $sportTypeService;
     }
+
     /**
      * Display the inventory dashboard
      */
@@ -401,6 +402,4 @@ class InventoryController extends Controller
                 ->with('error', 'Failed to return equipment. Error: ' . $e->getMessage());
         }
     }
-
 }
-

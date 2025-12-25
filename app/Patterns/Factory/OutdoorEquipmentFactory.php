@@ -26,6 +26,7 @@ class OutdoorEquipmentFactory extends AbstractEquipmentFactory
     {
         return Equipment::create($data);
     }
+<<<<<<< HEAD
 
     protected function postCreation(Equipment $equipment, array $data): void
     {
@@ -49,5 +50,4 @@ class OutdoorEquipmentFactory extends AbstractEquipmentFactory
         $imageDecorator = new \App\Patterns\Decorator\ImageDecorator($equipment);
         $imageDecorator->uploadImages($images, $altTexts);
     }
-}
 

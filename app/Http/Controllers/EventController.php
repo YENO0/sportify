@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Facility;
+use App\Models\Booking;
+use App\Models\FacilityMaintenance;
 use App\Services\EventService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -116,7 +119,10 @@ protected $eventService;
             return response()->json(['message' => 'Create event form']);
         }
 
-        return view('events.create');
+        // Get all active facilities for the dropdown
+        $facilities = Facility::where('status', 'Active')->orderBy('name')->get();
+
+        return view('events.create', compact('facilities'));
     }
 
     /**
@@ -127,7 +133,8 @@ protected $eventService;
         $data = $this->validateData($request);
 
         // Handle event type: if single event, set end_date = start_date
-        if ($request->input('event_type') === 'single' || !$request->has('event_type')) {
+        $eventType = $request->input('event_type', 'single');
+        if ($eventType === 'single' || !$request->has('event_type')) {
             $data['event_end_date'] = $data['event_start_date'];
         }
 
@@ -145,8 +152,74 @@ protected $eventService;
                 ->store('event-posters', 'public');
         }
 
-        // Facility not ready yet; fallback to default facility id 1 to avoid null constraint issues
-        $data['facility_id'] = $data['facility_id'] ?? 1;
+        // Handle facility booking if facility is selected
+        $facilityId = $request->input('book_facility_id');
+        if ($facilityId) {
+            // Validate facility exists and is active
+            $facility = Facility::where('id', $facilityId)
+                ->where('status', 'Active')
+                ->first();
+
+            if (!$facility) {
+                return $this->errorResponse($request, 'Selected facility is not available.', 422);
+            }
+
+            // Calculate booking start and end datetime based on event type
+            $bookingStart = Carbon::parse($data['event_start_date'] . ' ' . $data['event_start_time']);
+            
+            if ($eventType === 'single') {
+                // Single event: same date, use event times
+                $bookingEnd = Carbon::parse($data['event_start_date'] . ' ' . $data['event_end_time']);
+            } else {
+                // Recurring event: use event end date and time
+                $bookingEnd = Carbon::parse($data['event_end_date'] . ' ' . $data['event_end_time']);
+            }
+
+            // Check for conflicting bookings
+            $conflictingBooking = Booking::where('facility_id', $facilityId)
+                ->where('status', 'approved')
+                ->where(function ($query) use ($bookingStart, $bookingEnd) {
+                    $query->where(function ($q) use ($bookingStart, $bookingEnd) {
+                        $q->where('start_time', '<=', $bookingStart)
+                          ->where('end_time', '>', $bookingStart);
+                    })->orWhere(function ($q) use ($bookingStart, $bookingEnd) {
+                        $q->where('start_time', '<', $bookingEnd)
+                          ->where('end_time', '>=', $bookingEnd);
+                    })->orWhere(function ($q) use ($bookingStart, $bookingEnd) {
+                        $q->where('start_time', '>=', $bookingStart)
+                          ->where('end_time', '<=', $bookingEnd);
+                    });
+                })->exists();
+
+            if ($conflictingBooking) {
+                return $this->errorResponse($request, 'This facility is already booked for the selected time slot.', 422);
+            }
+
+            // Check for facility maintenance overlap
+            $conflictingMaintenance = FacilityMaintenance::where('facility_id', $facilityId)
+                ->where(function ($query) use ($bookingStart, $bookingEnd) {
+                    $query->where(function ($q) use ($bookingStart, $bookingEnd) {
+                        $q->where('start_date', '<=', $bookingStart)
+                          ->where('end_date', '>', $bookingStart);
+                    })->orWhere(function ($q) use ($bookingStart, $bookingEnd) {
+                        $q->where('start_date', '<', $bookingEnd)
+                          ->where('end_date', '>=', $bookingEnd);
+                    })->orWhere(function ($q) use ($bookingStart, $bookingEnd) {
+                        $q->where('start_date', '>=', $bookingStart)
+                          ->where('end_date', '<=', $bookingEnd);
+                    });
+                })->exists();
+
+            if ($conflictingMaintenance) {
+                return $this->errorResponse($request, 'This facility is under maintenance during the selected time slot.', 422);
+            }
+
+            // Set facility_id in event data
+            $data['facility_id'] = $facilityId;
+        } else {
+            // No facility selected, set to null
+            $data['facility_id'] = null;
+        }
         
         // Determine status: 'draft' if save_as_draft, otherwise 'pending'
         $data['status'] = $request->has('save_as_draft') ? 'draft' : 'pending';
@@ -157,21 +230,54 @@ protected $eventService;
         // Remove event_type from data as it's not a database field
         unset($data['event_type']);
 
-        $event = Event::create($data);
-        EventStatusService::sync($event);
+        DB::beginTransaction();
+        try {
+            $event = Event::create($data);
+            EventStatusService::sync($event);
 
-        $message = $data['status'] === 'draft' 
-            ? 'Event saved as draft successfully.' 
-            : 'Event applied successfully.';
+            // Create facility booking if facility was selected
+            if ($facilityId) {
+                $bookingStart = Carbon::parse($data['event_start_date'] . ' ' . $data['event_start_time']);
+                
+                if ($eventType === 'single') {
+                    $bookingEnd = Carbon::parse($data['event_start_date'] . ' ' . $data['event_end_time']);
+                } else {
+                    $bookingEnd = Carbon::parse($data['event_end_date'] . ' ' . $data['event_end_time']);
+                }
 
-        if ($request->wantsJson()) {
-            return response()->json([
-                'message' => $message,
-                'data' => $event,
-            ], 201);
+                Booking::create([
+                    'facility_id' => $facilityId,
+                    'user_id' => auth()->id() ?? $data['committee_id'],
+                    'start_time' => $bookingStart,
+                    'end_time' => $bookingEnd,
+                    'status' => 'approved', // Auto-approve bookings for events
+                ]);
+            }
+
+            DB::commit();
+
+            $message = $data['status'] === 'draft' 
+                ? 'Event saved as draft successfully.' 
+                : 'Event applied successfully.';
+
+            if ($facilityId) {
+                $message .= ' Facility booking created successfully.';
+            }
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => $message,
+                    'data' => $event,
+                ], 201);
+            }
+
+            return redirect()->route('committee.events.index')->with('success', $message);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to create event: ' . $e->getMessage());
+            
+            return $this->errorResponse($request, 'Failed to create event. Please try again.', 500);
         }
-
-        return redirect()->route('committee.events.index')->with('success', $message);
     }
 
     /**
@@ -458,6 +564,7 @@ protected $eventService;
             'max_capacity' => array_merge($requiredRules, ['integer', 'min:1']),
             'price' => array_merge($requiredRules, ['numeric', 'min:0']),
             'facility_id' => ['nullable', 'integer'],
+            'book_facility_id' => ['nullable', 'integer', 'exists:facilities,id'],
             'committee_id' => array_merge($requiredRules, ['integer']),
             'event_type' => ['nullable', 'in:single,recurring'],
         ], [

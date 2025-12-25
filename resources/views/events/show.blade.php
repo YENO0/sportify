@@ -1185,7 +1185,7 @@
                 @elseif($event->status === 'approved')
                     <span class="registration-pill {{ $registrationClass }}">{{ $registrationText }}</span>
                     @if(!$registrationDisabled && $remaining > 0 && !$isRegistered && in_array($event->event_status, ['Upcoming', 'Ongoing']))
-                        <button type="button" class="event-register-btn" onclick="openRegisterModal()">Register Now</button>
+                        <a href="{{ route('payments.show', $event->eventID) }}" class="event-register-btn" style="text-decoration: none; display: block; text-align: center;">Register Now</a>
                     @elseif($isRegistered)
                         <button class="event-register-btn" disabled style="background: #10b981;">Registered</button>
                     @else

@@ -729,11 +729,32 @@
                     <div class="subsection-description" style="margin-top: 8px;">Maximum number of attendees for this event</div>
                 </div>
             </div>
+
+            <!-- Facility Booking -->
+            <div class="subsection">
+                <div class="form-group">
+                    <label for="book_facility_id" class="form-label">Book Facility (Optional)</label>
+                    <select id="book_facility_id" name="book_facility_id" class="form-input">
+                        <option value="">-- Select a facility (optional) --</option>
+                        @foreach($facilities as $facility)
+                            <option value="{{ $facility->id }}" {{ old('book_facility_id') == $facility->id ? 'selected' : '' }}>
+                                {{ $facility->name }} ({{ $facility->type }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <div class="subsection-description" style="margin-top: 8px;">
+                        Select a facility to book for this event. The booking will use the event's date and time.
+                        <br>
+                        <strong>Single Event:</strong> Booking will be on the event date, from start time to end time.
+                        <br>
+                        <strong>Recurring Event:</strong> Booking will be from event start date/time to event end date/time.
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Hidden fields for form submission -->
         <input type="hidden" name="committee_id" value="1">
-        <input type="hidden" name="facility_id" value="1">
 
         <div class="form-actions">
             <a href="{{ route('committee.events.index') }}" class="btn-secondary">Cancel</a>

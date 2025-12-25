@@ -42,6 +42,7 @@
                 </div>
 
                 <div>
+<<<<<<< HEAD
                     <label for="sport_type_id" class="block text-sm font-medium text-gray-700">Sport Type *</label>
                     <select name="sport_type_id" id="sport_type_id" required
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
@@ -55,6 +56,8 @@
                 </div>
 
                 <div>
+=======
+>>>>>>> origin/eewen
                     <label for="brand_id" class="block text-sm font-medium text-gray-700">Brand</label>
                     <select name="brand_id" id="brand_id"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">

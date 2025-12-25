@@ -70,4 +70,20 @@ class User extends Authenticatable
     {
         return $this->role === self::ROLE_ADMIN;
     }
+
+    /**
+     * Get the equipment transactions for the user.
+     */
+    public function equipmentTransactions()
+    {
+        return $this->hasMany(\App\Models\EquipmentTransaction::class);
+    }
+
+    /**
+     * Get the bookings for the user.
+     */
+    public function bookings()
+    {
+        return $this->hasMany(\App\Models\Booking::class);
+    }
 }

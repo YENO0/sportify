@@ -14,6 +14,9 @@ class Kernel extends ConsoleKernel
     {
         // Refresh event lifecycle/registration statuses hourly
         $schedule->command('events:refresh-statuses')->hourly();
+        
+        // Update facility status every minute
+        $schedule->command('facilities:update-status')->everyMinute();
     }
 
     /**
@@ -26,4 +29,3 @@ class Kernel extends ConsoleKernel
         require base_path('routes/console.php');
     }
 }
-

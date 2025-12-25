@@ -32,13 +32,19 @@ class EquipmentFactoryManager
      * Create equipment using the appropriate factory
      * Factory Method Pattern: Uses sport type to determine factory behavior
      *
-     * @param int|null $sportTypeId
+     * @param int|null|string $sportTypeIdOrType Sport type ID (int) or legacy type string ('sports', 'gym', 'outdoor')
      * @param array $data
      * @return \App\Models\Equipment
      */
-    public static function create(?int $sportTypeId, array $data): \App\Models\Equipment
+    public static function create($sportTypeIdOrType, array $data): \App\Models\Equipment
     {
-        $factory = self::getFactory($sportTypeId);
+        // Support legacy type-based approach for backward compatibility
+        if (is_string($sportTypeIdOrType)) {
+            return self::createLegacy($sportTypeIdOrType, $data);
+        }
+        
+        // Use sport type ID approach (preferred)
+        $factory = self::getFactory($sportTypeIdOrType);
         return $factory->createEquipment($data);
     }
 
@@ -56,4 +62,3 @@ class EquipmentFactoryManager
         };
     }
 }
-

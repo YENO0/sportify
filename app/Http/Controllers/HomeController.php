@@ -20,7 +20,7 @@ class HomeController extends Controller
             $adminCount = User::where('role', 'admin')->count();
             return view('homepage.admin', compact('totalUsers', 'adminCount'));
         } elseif ($user->isCommittee()) {
-            return view('homepage.committee');
+            return redirect()->route('committee.dashboard');
         } else {
             return view('homepage.student');
         }

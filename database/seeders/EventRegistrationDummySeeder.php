@@ -11,10 +11,10 @@ class EventRegistrationDummySeeder extends Seeder
 {
     public function run(): void
     {
-        $eventIds = Event::orderBy('id')->limit(3)->pluck('id');
+        $eventIds = Event::orderBy('eventID')->limit(3)->pluck('eventID');
 
         if ($eventIds->isEmpty()) {
-            $eventIds = Event::factory()->count(3)->create()->pluck('id');
+            $eventIds = Event::factory()->count(3)->create()->pluck('eventID');
         }
 
         foreach ($eventIds as $eventId) {

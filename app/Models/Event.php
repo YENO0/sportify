@@ -25,6 +25,7 @@ use InvalidArgumentException;
 use App\Models\EventJoined;
 use App\Models\Payment;
 use App\Models\EquipmentBorrowing;
+use App\Models\Facility;
 
 class Event extends Model
 {
@@ -93,14 +94,9 @@ class Event extends Model
     }
 
     // Venue of the event
-    public function facility(): ?BelongsTo
+    public function facility(): BelongsTo
     {
-        // Avoid errors until a Facility model/table exists
-        if (!class_exists('App\\Models\\Facility')) {
-            return null;
-        }
-
-        return $this->belongsTo('App\\Models\\Facility', 'facility_id');
+        return $this->belongsTo(Facility::class, 'facility_id');
     }
 
     // Students registered for the event

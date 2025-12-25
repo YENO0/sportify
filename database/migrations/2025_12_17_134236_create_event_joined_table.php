@@ -17,11 +17,10 @@ return new class extends Migration
             // References
             $table->unsignedBigInteger('eventID');
             $table->unsignedBigInteger('studentID');
-            $table->unsignedBigInteger('paymentID');
+            $table->unsignedBigInteger('paymentID')->nullable();
 
-            // Registration status
-            $table->enum('status', ['registered', 'cancelled'])
-                  ->default('registered');
+            // Registration status (using string for SQLite compatibility and to allow waitlisted)
+            $table->string('status', 20)->default('registered'); // registered, cancelled, waitlisted
 
             // When student joined the event
             $table->timestamp('joinedDate')->useCurrent();

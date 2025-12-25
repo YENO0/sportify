@@ -1349,9 +1349,9 @@
         // Modal controls
         closeModal.addEventListener('click', () => {
             successModal.classList.remove('active');
-            // Redirect to homepage after closing modal
+            // Redirect to transactions page after closing modal
             setTimeout(() => {
-                window.location.href = '/'; // Change '/' to your homepage URL if different
+                window.location.href = '{{ route("payments.transaction-history") }}';
             }, 300); // Small delay for smooth transition
         });
 
@@ -1381,9 +1381,9 @@
         successModal.addEventListener('click', (e) => {
             if (e.target === successModal) {
                 successModal.classList.remove('active');
-                // Redirect to homepage after closing modal
+                // Redirect to transactions page after closing modal
                 setTimeout(() => {
-                    window.location.href = '/'; // Change '/' to your homepage URL if different
+                    window.location.href = '{{ route("payments.transaction-history") }}';
                 }, 300); // Small delay for smooth transition
             }
         });
@@ -1407,9 +1407,9 @@
             if (e.key === 'Escape') {
                 if (successModal.classList.contains('active')) {
                     successModal.classList.remove('active');
-                    // Redirect to homepage after closing modal
+                    // Redirect to transactions page after closing modal
                     setTimeout(() => {
-                        window.location.href = '/'; // Change '/' to your homepage URL if different
+                        window.location.href = '{{ route("payments.transaction-history") }}';
                     }, 300); // Small delay for smooth transition
                 }
                 if (timeoutModal.classList.contains('active')) {

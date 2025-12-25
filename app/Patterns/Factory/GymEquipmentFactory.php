@@ -38,6 +38,7 @@ class GymEquipmentFactory extends AbstractEquipmentFactory
         if (isset($data['initial_maintenance']) && $data['initial_maintenance']) {
             $equipment->update(['last_maintenance_date' => now()]);
         }
+<<<<<<< HEAD
 
         // Factory Method: Handle image uploads for gym equipment
         // Gym equipment images are stored in equipment-specific folders

@@ -108,6 +108,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Search and Filter Bar -->
     <div class="bg-white shadow overflow-hidden sm:rounded-md mb-8">
         <div class="px-4 py-4 border-b border-gray-200 bg-gray-50">
@@ -156,6 +157,8 @@
         </div>
     </div>
 
+=======
+>>>>>>> origin/eewen
     <!-- Overdue Maintenances -->
     @if($overdueMaintenances->count() > 0)
         <div class="bg-white shadow overflow-hidden sm:rounded-md mb-8">
@@ -172,12 +175,17 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+<<<<<<< HEAD
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'start_date', 'label' => 'Start Date'])
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'end_date', 'label' => 'End Date'])
                             </th>
+=======
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Start Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">End Date</th>
+>>>>>>> origin/eewen
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Days Overdue</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned To</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -223,7 +231,11 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+<<<<<<< HEAD
                                     {{ $maintenance->assignedUser->name ?? 'Unassigned' }}
+=======
+                                    {{ $maintenance->assignedUser?->name ?? 'Unassigned' }}
+>>>>>>> origin/eewen
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button onclick="updateStatus({{ $maintenance->id }}, 'in_progress')" class="text-blue-600 hover:text-blue-900 mr-3">Start</button>
@@ -252,12 +264,17 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+<<<<<<< HEAD
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'start_date', 'label' => 'Start Date'])
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'end_date', 'label' => 'End Date'])
                             </th>
+=======
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Start Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">End Date</th>
+>>>>>>> origin/eewen
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned To</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                         </tr>
@@ -290,7 +307,11 @@
                                     {{ $maintenance->end_date ? $maintenance->end_date->format('M d, Y') : 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+<<<<<<< HEAD
                                     {{ $maintenance->assignedUser->name ?? 'Unassigned' }}
+=======
+                                    {{ $maintenance->assignedUser?->name ?? 'Unassigned' }}
+>>>>>>> origin/eewen
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button onclick="updateStatus({{ $maintenance->id }}, 'completed')" class="text-green-600 hover:text-green-900">Complete</button>
@@ -318,12 +339,17 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+<<<<<<< HEAD
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'start_date', 'label' => 'Start Date'])
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'end_date', 'label' => 'End Date'])
                             </th>
+=======
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Start Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">End Date</th>
+>>>>>>> origin/eewen
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Days Until</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned To</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -350,7 +376,11 @@
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900">{{ $maintenance->title }}</div>
                                 @if($maintenance->description)
+<<<<<<< HEAD
                                     <div class="text-sm text-gray-500">{{ Str::limit($maintenance->description, 50) }}</div>
+=======
+                                    <div class="text-sm text-gray-500">{{ \Illuminate\Support\Str::limit($maintenance->description, 50) }}</div>
+>>>>>>> origin/eewen
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -373,7 +403,11 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+<<<<<<< HEAD
                                 {{ $maintenance->assignedUser->name ?? 'Unassigned' }}
+=======
+                                {{ $maintenance->assignedUser?->name ?? 'Unassigned' }}
+>>>>>>> origin/eewen
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button onclick="updateStatus({{ $maintenance->id }}, 'in_progress')" class="text-blue-600 hover:text-blue-900 mr-3">Start</button>
@@ -381,6 +415,7 @@
                         </tr>
                     @empty
                         <tr>
+<<<<<<< HEAD
                             <td colspan="9" class="px-6 py-4 text-center">
                                 @if(request('search') || request('status') || request('equipment_id'))
                                     <div class="text-sm text-gray-500">
@@ -392,6 +427,10 @@
                                         No upcoming maintenances scheduled.
                                     </div>
                                 @endif
+=======
+                            <td colspan="9" class="px-6 py-4 text-center text-sm text-gray-500">
+                                No upcoming maintenances scheduled.
+>>>>>>> origin/eewen
                             </td>
                         </tr>
                     @endforelse

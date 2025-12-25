@@ -19,6 +19,7 @@
             <h3 class="text-lg leading-6 font-medium text-gray-900">Registered Brands</h3>
             <p class="mt-1 max-w-2xl text-sm text-gray-500">All brands available for equipment registration</p>
         </div>
+<<<<<<< HEAD
 
         <!-- Search Bar -->
         <div class="px-4 py-4 border-b border-gray-200 bg-gray-50">
@@ -44,17 +45,29 @@
         </div>
         
         <div class="overflow-x-auto" id="brands-table-container">
+=======
+        
+        <div class="overflow-x-auto">
+>>>>>>> origin/eewen
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+<<<<<<< HEAD
                             @include('partials.sortable-header', ['route' => 'brands.index', 'column' => 'name', 'label' => 'Brand Name'])
+=======
+                            Brand Name
+>>>>>>> origin/eewen
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Description
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+<<<<<<< HEAD
                             @include('partials.sortable-header', ['route' => 'brands.index', 'column' => 'equipment_count', 'label' => 'Equipment Count'])
+=======
+                            Equipment Count
+>>>>>>> origin/eewen
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Website
@@ -99,6 +112,7 @@
                         </tr>
                     @empty
                         <tr>
+<<<<<<< HEAD
                             <td colspan="5" class="px-6 py-4 text-center">
                                 @if(request('search'))
                                     <div class="text-sm text-gray-500">
@@ -110,6 +124,10 @@
                                         No brands registered yet. <a href="{{ route('brands.create') }}" class="text-blue-600 hover:text-blue-900">Register your first brand</a>
                                     </div>
                                 @endif
+=======
+                            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                                No brands registered yet. <a href="{{ route('brands.create') }}" class="text-blue-600 hover:text-blue-900">Register your first brand</a>
+>>>>>>> origin/eewen
                             </td>
                         </tr>
                     @endforelse

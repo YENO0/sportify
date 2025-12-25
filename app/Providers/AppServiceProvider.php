@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Facility;
+use App\Models\FacilityMaintenance;
+use App\Observers\FacilityObserver;
+use App\Observers\FacilityMaintenanceObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register Facility module observers
+        Facility::observe(FacilityObserver::class);
+        FacilityMaintenance::observe(FacilityMaintenanceObserver::class);
     }
 }

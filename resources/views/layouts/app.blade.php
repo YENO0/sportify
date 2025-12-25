@@ -35,6 +35,24 @@
             color: #1f2937;
             text-decoration: none;
         }
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .navbar .nav-links a {
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .navbar .nav-links a:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
         .navbar .user-info {
             display: flex;
             align-items: center;
@@ -59,6 +77,20 @@
         }
         .navbar .logout-btn:hover {
             background: #d1d5db;
+        }
+        .navbar .notification-link {
+            position: relative;
+        }
+        .navbar .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: block;
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            border: 2px solid white;
         }
 
         /* Button Styles from kuanyik */
@@ -345,18 +377,71 @@
 <body class="bg-gray-50">
     <nav class="navbar">
         <a href="{{ route('homepage') }}" class="brand">Sportify</a>
-        <div class="user-info">
-            @auth
-                <span>Welcome, {{ auth()->user()->name }}</span>
-                <a href="{{ route('profile.show') }}" class="logout-btn">Profile</a>
-                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="logout-btn">Log Out</button>
-                </form>
-            @else
-                <a href="{{ route('login') }}" class="logout-btn">Login</a>
-                <a href="{{ route('register') }}" class="logout-btn" style="background-color: #10b981; color: white;">Register</a>
-            @endauth
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <div class="nav-links">
+                @auth
+                    @php
+                        $user = auth()->user();
+                    @endphp
+                    
+                    {{-- Events - Students can see --}}
+                    @if($user->isStudent() && Route::has('events.approved'))
+                        <a href="{{ route('events.approved') }}">Events</a>
+                    @endif
+                    
+                    {{-- Committee: Dashboard only --}}
+                    @if($user->isCommittee())
+                        @if(Route::has('committee.dashboard'))
+                            <a href="{{ route('committee.dashboard') }}">Dashboard</a>
+                        @endif
+                    @endif
+                    
+                    {{-- Admin: Events, Facilities, Users --}}
+                    @if($user->isAdmin())
+                        @if(Route::has('admin.events.index'))
+                            <a href="{{ route('admin.events.index') }}">Events</a>
+                        @endif
+                        @if(Route::has('facilities.index'))
+                            <a href="{{ route('facilities.index') }}">Facilities</a>
+                        @endif
+                        @if(Route::has('admin.users.index'))
+                            <a href="{{ route('admin.users.index') }}">Users</a>
+                        @endif
+                    @endif
+                    
+                    {{-- Notifications - All authenticated users --}}
+                    @if(Route::has('notifications.index'))
+                        <a href="{{ route('notifications.index') }}" class="notification-link">
+                            Notifications
+                            @php
+                                $unreadCount = $user->unreadNotifications->count();
+                            @endphp
+                            @if($unreadCount > 0)
+                                <span class="notification-badge"></span>
+                            @endif
+                        </a>
+                    @endif
+                @endauth
+            </div>
+            <div class="user-info">
+                @auth
+                    <span>Welcome, {{ auth()->user()->name }}</span>
+                    @if(Route::has('profile.show'))
+                        <a href="{{ route('profile.show') }}" class="logout-btn">Profile</a>
+                    @endif
+                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="logout-btn">Log Out</button>
+                    </form>
+                @else
+                    @if(Route::has('login'))
+                        <a href="{{ route('login') }}" class="logout-btn">Login</a>
+                    @endif
+                    @if(Route::has('register'))
+                        <a href="{{ route('register') }}" class="logout-btn" style="background-color: #10b981; color: white;">Register</a>
+                    @endif
+                @endauth
+            </div>
         </div>
     </nav>
 
