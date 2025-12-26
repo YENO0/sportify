@@ -96,6 +96,8 @@ Route::prefix('events')->name('events.')->group(function () {
 Route::prefix('events/{event}/borrowings')->name('equipment-borrowings.')->group(function () {
     Route::get('/create', [EquipmentBorrowingController::class, 'create'])->name('create');
     Route::post('/', [EquipmentBorrowingController::class, 'store'])->name('store');
+    Route::get('/{borrowing}/edit', [EquipmentBorrowingController::class, 'edit'])->name('edit');
+    Route::put('/{borrowing}', [EquipmentBorrowingController::class, 'update'])->name('update');
     Route::delete('/{borrowing}', [EquipmentBorrowingController::class, 'destroy'])->name('destroy');
 });
 Route::get('/about', function () {
