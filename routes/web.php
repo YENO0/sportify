@@ -241,9 +241,20 @@ Route::middleware(['auth', 'role:admin'])->prefix('facilities/maintenance')->nam
 });
 
 // Facility Management Routes
-Route::resource('facilities', FacilityController::class);
+// All authenticated users can view facilities
+Route::get('facilities', [FacilityController::class, 'index'])->name('facilities.index');
+Route::get('facilities/{facility}', [FacilityController::class, 'show'])->name('facilities.show');
 Route::get('facility-photos/{filename}', [FacilityController::class, 'getFacilityPhoto'])->name('facilities.photo');
 Route::get('facility-timetable', [FacilityTimetableController::class, 'index'])->name('facilities.timetable');
+
+// Admin-only routes for facility management
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('facilities/create', [FacilityController::class, 'create'])->name('facilities.create');
+    Route::post('facilities', [FacilityController::class, 'store'])->name('facilities.store');
+    Route::get('facilities/{facility}/edit', [FacilityController::class, 'edit'])->name('facilities.edit');
+    Route::put('facilities/{facility}', [FacilityController::class, 'update'])->name('facilities.update');
+    Route::delete('facilities/{facility}', [FacilityController::class, 'destroy'])->name('facilities.destroy');
+});
 
 // Notification Routes (authenticated)
 Route::middleware(['auth'])->group(function () {

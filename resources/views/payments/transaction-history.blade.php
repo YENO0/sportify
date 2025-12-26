@@ -7,50 +7,15 @@
 @endsection
 
 @push('styles')
-<<<<<<< HEAD
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-    /* Override layout background and container */
-=======
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
     /* Override layout background (avoid changing global layout containers) */
->>>>>>> origin/main
     body {
         background: linear-gradient(135deg, #f4f6f8 0%, #e5e7eb 100%) !important;
         padding: 0 !important;
     }
 
-<<<<<<< HEAD
-    .container {
-        max-width: 100% !important;
-        margin: 0 !important;
-        background: transparent !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        padding: 30px 20px !important;
-    }
-
-    .header {
-        display: none !important;
-    }
-
-        :root {
-            --primary-color: #6366f1;
-            --primary-light: #818cf8;
-            --secondary-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-            --dark-color: #1f2937;
-            --gray-color: #6b7280;
-            --light-gray: #f3f4f6;
-            --white: #ffffff;
-            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            --hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-        }
-=======
     :root {
         --primary-color: #6366f1;
         --primary-light: #818cf8;
@@ -64,14 +29,11 @@
         --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         --hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
     }
->>>>>>> origin/main
 
     .transactions-page {
         max-width: 1200px;
         margin: 0 auto;
         font-family: 'Poppins', sans-serif;
-<<<<<<< HEAD
-=======
         padding: 0;
     }
 
@@ -82,8 +44,10 @@
 
     /* Hide scrollbar for IE, Edge and Firefox */
     .table-container {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
+        -ms-overflow-style: none;
+        /* IE and Edge */
+        scrollbar-width: none;
+        /* Firefox */
     }
 
     /* Header Styles */
@@ -148,7 +112,7 @@
 
     .transactions-page .page-tab:hover {
         transform: translateY(-1px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
         background: rgba(99, 102, 241, 0.12);
     }
 
@@ -227,10 +191,21 @@
         color: var(--white);
     }
 
-    .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
-    .stat-icon.amount { background: linear-gradient(135deg, #10b981, #34d399); }
-    .stat-icon.events { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
-    .stat-icon.users { background: linear-gradient(135deg, #ec4899, #f472b6); }
+    .stat-icon.total {
+        background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+    }
+
+    .stat-icon.amount {
+        background: linear-gradient(135deg, #10b981, #34d399);
+    }
+
+    .stat-icon.events {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    }
+
+    .stat-icon.users {
+        background: linear-gradient(135deg, #ec4899, #f472b6);
+    }
 
     .stat-content h3 {
         font-size: 0.9rem;
@@ -324,22 +299,25 @@
         margin-right: 6px;
     }
 
-    .status.registered { 
+    .status.registered {
         background: rgba(16, 185, 129, 0.1);
         color: #10b981;
         border: 1px solid rgba(16, 185, 129, 0.3);
     }
-    .status.pending { 
+
+    .status.pending {
         background: rgba(245, 158, 11, 0.1);
         color: #f59e0b;
         border: 1px solid rgba(245, 158, 11, 0.3);
     }
-    .status.cancelled { 
+
+    .status.cancelled {
         background: rgba(239, 68, 68, 0.1);
         color: #ef4444;
         border: 1px solid rgba(239, 68, 68, 0.3);
     }
-    .status.completed { 
+
+    .status.completed {
         background: rgba(99, 102, 241, 0.1);
         color: #6366f1;
         border: 1px solid rgba(99, 102, 241, 0.3);
@@ -483,7 +461,6 @@
     @media (max-width: 768px) {
         .page-header h1 {
             font-size: 2rem;
->>>>>>> origin/main
         }
 
         /* Hide scrollbar for Chrome, Safari and Opera */
@@ -493,8 +470,10 @@
 
         /* Hide scrollbar for IE, Edge and Firefox */
         .table-container {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
         /* Header Styles */
@@ -602,10 +581,21 @@
             color: var(--white);
         }
 
-        .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
-        .stat-icon.amount { background: linear-gradient(135deg, #10b981, #34d399); }
-        .stat-icon.events { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
-        .stat-icon.users { background: linear-gradient(135deg, #ec4899, #f472b6); }
+        .stat-icon.total {
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+        }
+
+        .stat-icon.amount {
+            background: linear-gradient(135deg, #10b981, #34d399);
+        }
+
+        .stat-icon.events {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        }
+
+        .stat-icon.users {
+            background: linear-gradient(135deg, #ec4899, #f472b6);
+        }
 
         .stat-content h3 {
             font-size: 0.9rem;
@@ -699,22 +689,25 @@
             margin-right: 6px;
         }
 
-        .status.registered { 
+        .status.registered {
             background: rgba(16, 185, 129, 0.1);
             color: #10b981;
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
-        .status.pending { 
+
+        .status.pending {
             background: rgba(245, 158, 11, 0.1);
             color: #f59e0b;
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
-        .status.cancelled { 
+
+        .status.cancelled {
             background: rgba(239, 68, 68, 0.1);
             color: #ef4444;
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
-        .status.completed { 
+
+        .status.completed {
             background: rgba(99, 102, 241, 0.1);
             color: #6366f1;
             border: 1px solid rgba(99, 102, 241, 0.3);
@@ -859,19 +852,20 @@
             .page-header h1 {
                 font-size: 2rem;
             }
-            
+
             .stats-container {
                 grid-template-columns: 1fr;
             }
-            
+
             .stat-card {
                 padding: 20px;
             }
-            
-            th, td {
+
+            th,
+            td {
                 padding: 15px 10px;
             }
-            
+
             .table-container {
                 border-radius: 12px;
             }
@@ -886,20 +880,23 @@
 
         /* Print Styles */
         @media print {
-            .page-header, .stats-container, .page-footer {
+
+            .page-header,
+            .stats-container,
+            .page-footer {
                 display: none;
             }
-            
+
             .table-container {
                 box-shadow: none;
                 border: 1px solid #ddd;
             }
-            
+
             table {
                 min-width: auto;
             }
         }
-    </style>
+</style>
 @endpush
 
 @section('content')
@@ -909,18 +906,18 @@
         <h1><i class="fas fa-history"></i> Transaction History</h1>
         <p>View all payment transactions and event registrations</p>
         @if(($user->isStudent() ?? false))
-            <div class="page-tabs">
-                <a class="page-tab" href="{{ route('payments.my-events') }}">
-                    <i class="fas fa-calendar-check"></i>
-                    My Events
-                </a>
-                <a class="page-tab active" href="{{ route('payments.transaction-history') }}">
-                    <i class="fas fa-history"></i>
-                    Transaction History
-                </a>
-            </div>
+        <div class="page-tabs">
+            <a class="page-tab" href="{{ route('payments.my-events') }}">
+                <i class="fas fa-calendar-check"></i>
+                My Events
+            </a>
+            <a class="page-tab active" href="{{ route('payments.transaction-history') }}">
+                <i class="fas fa-history"></i>
+                Transaction History
+            </a>
+        </div>
         @endif
-        
+
         <div class="user-info">
             <div class="user-avatar">
                 {{ strtoupper(substr($user->name ?? 'User', 0, 1)) }}
@@ -944,7 +941,7 @@
                 <div class="stat-value">{{ $transactions->count() }}</div>
             </div>
         </div>
-        
+
         <div class="stat-card">
             <div class="stat-icon amount">
                 <i class="fas fa-money-bill-wave"></i>
@@ -954,7 +951,7 @@
                 <div class="stat-value">RM {{ number_format($transactions->sum('paymentAmount'), 2) }}</div>
             </div>
         </div>
-        
+
         <div class="stat-card">
             <div class="stat-icon events">
                 <i class="fas fa-calendar-check"></i>
@@ -962,9 +959,9 @@
             <div class="stat-content">
                 <h3>Events Attended</h3>
                 @php
-                    $uniqueEvents = $transactions->map(function($transaction) {
-                        return $transaction->eventJoined->event->eventID ?? null;
-                    })->filter()->unique()->count();
+                $uniqueEvents = $transactions->map(function($transaction) {
+                return $transaction->eventJoined->event->eventID ?? null;
+                })->filter()->unique()->count();
                 @endphp
                 <div class="stat-value">{{ $uniqueEvents }}</div>
             </div>
@@ -978,9 +975,9 @@
             <div class="stat-content">
                 <h3>Unique Users</h3>
                 @php
-                    $uniqueUsers = $transactions->map(function($transaction) {
-                        return $transaction->eventJoined->studentID ?? null;
-                    })->filter()->unique()->count();
+                $uniqueUsers = $transactions->map(function($transaction) {
+                return $transaction->eventJoined->studentID ?? null;
+                })->filter()->unique()->count();
                 @endphp
                 <div class="stat-value">{{ $uniqueUsers }}</div>
             </div>
@@ -992,105 +989,105 @@
     <!-- Transactions Table -->
     <div class="table-container">
         @if($transactions->isEmpty())
-            <div class="no-data">
-                <div class="no-data-icon">
-                    <i class="fas fa-inbox"></i>
-                </div>
-                <h3>No Transactions Found</h3>
-                <p>You haven't made any payments yet. Register for events to see your transaction history here.</p>
+        <div class="no-data">
+            <div class="no-data-icon">
+                <i class="fas fa-inbox"></i>
             </div>
+            <h3>No Transactions Found</h3>
+            <p>You haven't made any payments yet. Register for events to see your transaction history here.</p>
+        </div>
         @else
-            <table>
-                <thead>
-                    <tr>
-                        <th><i class="fas fa-calendar-check"></i> Event</th>
-                        <th><i class="fas fa-info-circle"></i> Description</th>
-                        @if($user->role === 'committee')
-                        <th class="user-column"><i class="fas fa-user"></i> User</th>
+        <table>
+            <thead>
+                <tr>
+                    <th><i class="fas fa-calendar-check"></i> Event</th>
+                    <th><i class="fas fa-info-circle"></i> Description</th>
+                    @if($user->role === 'committee')
+                    <th class="user-column"><i class="fas fa-user"></i> User</th>
+                    @endif
+                    <th><i class="fas fa-money-bill-wave"></i> Amount</th>
+                    <th><i class="fas fa-tag"></i> Status</th>
+                    <th><i class="fas fa-calendar-alt"></i> Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($transactions as $transaction)
+                @php
+                $joined = $transaction->eventJoined;
+                $event = $joined->event ?? null;
+                $invoice = $joined->invoice ?? null;
+
+                // Get user details for committee view
+                $transactionUser = $joined->user ?? null;
+                @endphp
+                <tr>
+                    <td>
+                        <div class="event-info">
+                            <div class="event-name">{{ $event->event_name ?? 'N/A' }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="event-description">
+                            {{ Str::limit($event->event_description ?? 'No description available', 80) }}
+                        </div>
+                    </td>
+
+                    @if($user->role === 'committee')
+                    <td class="user-column">
+                        @if($transactionUser)
+                        <div class="user-info-cell">
+                            <div>
+                                <div class="user-name">{{ $transactionUser->name ?? 'Unknown User' }}</div>
+                                <div class="user-email">
+                                    <i class="fas fa-envelope"></i>
+                                    {{ $transactionUser->email ?? 'No email' }}
+                                </div>
+                            </div>
+                        </div>
+                        @else
+                        <div class="user-info-cell">
+                            <div class="user-avatar-small">
+                                ?
+                            </div>
+                            <div>
+                                <div class="user-name">User Not Found</div>
+                                <div class="user-email">
+                                    <i class="fas fa-envelope"></i>
+                                    N/A
+                                </div>
+                            </div>
+                        </div>
                         @endif
-                        <th><i class="fas fa-money-bill-wave"></i> Amount</th>
-                        <th><i class="fas fa-tag"></i> Status</th>
-                        <th><i class="fas fa-calendar-alt"></i> Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($transactions as $transaction)
+                    </td>
+                    @endif
+
+                    <td>
+                        <div class="amount">RM {{ number_format($transaction->paymentAmount, 2) }}</div>
+                    </td>
+                    <td>
                         @php
-                            $joined = $transaction->eventJoined;
-                            $event = $joined->event ?? null;
-                            $invoice = $joined->invoice ?? null;
-                            
-                            // Get user details for committee view
-                            $transactionUser = $joined->user ?? null;
+                        $statusClass = match($joined->status ?? '') {
+                        'registered' => 'registered',
+                        'cancelled' => 'cancelled',
+                        'pending' => 'pending',
+                        default => 'completed'
+                        };
                         @endphp
-                        <tr>
-                            <td>
-                                <div class="event-info">
-                                    <div class="event-name">{{ $event->event_name ?? 'N/A' }}</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="event-description">
-                                    {{ Str::limit($event->event_description ?? 'No description available', 80) }}
-                                </div>
-                            </td>
-                            
-                            @if($user->role === 'committee')
-                            <td class="user-column">
-                                @if($transactionUser)
-                                <div class="user-info-cell">
-                                    <div>
-                                        <div class="user-name">{{ $transactionUser->name ?? 'Unknown User' }}</div>
-                                        <div class="user-email">
-                                            <i class="fas fa-envelope"></i>
-                                            {{ $transactionUser->email ?? 'No email' }}
-                                        </div>
-                                    </div>
-                                </div>
-                                @else
-                                <div class="user-info-cell">
-                                    <div class="user-avatar-small">
-                                        ?
-                                    </div>
-                                    <div>
-                                        <div class="user-name">User Not Found</div>
-                                        <div class="user-email">
-                                            <i class="fas fa-envelope"></i>
-                                            N/A
-                                        </div>
-                                    </div>
-                                </div>
-                                @endif
-                            </td>
-                            @endif
-                            
-                            <td>
-                                <div class="amount">RM {{ number_format($transaction->paymentAmount, 2) }}</div>
-                            </td>
-                            <td>
-                                @php
-                                    $statusClass = match($joined->status ?? '') {
-                                        'registered' => 'registered',
-                                        'cancelled' => 'cancelled',
-                                        'pending' => 'pending',
-                                        default => 'completed'
-                                    };
-                                @endphp
-                                <span class="status {{ $statusClass }}">
-                                    <i class="fas fa-{{ $statusClass === 'registered' ? 'check-circle' : ($statusClass === 'cancelled' ? 'times-circle' : 'clock') }}"></i>
-                                    {{ ucfirst($joined->status ?? 'Completed') }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="date">
-                                    <i class="fas fa-calendar"></i>
-                                    {{ \Carbon\Carbon::parse($joined->joinedDate ?? $transaction->paymentDate)->format('M d, Y') }}
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                        <span class="status {{ $statusClass }}">
+                            <i class="fas fa-{{ $statusClass === 'registered' ? 'check-circle' : ($statusClass === 'cancelled' ? 'times-circle' : 'clock') }}"></i>
+                            {{ ucfirst($joined->status ?? 'Completed') }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="date">
+                            <i class="fas fa-calendar"></i>
+                            {{ \Carbon\Carbon::parse($joined->joinedDate ?? $transaction->paymentDate)->format('M d, Y') }}
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
         @endif
     </div>
 
@@ -1112,7 +1109,7 @@
                 this.style.transform = 'scale(1.01)';
                 this.style.transition = 'transform 0.2s ease';
             });
-            
+
             row.addEventListener('mouseleave', function() {
                 this.style.transform = 'scale(1)';
             });

@@ -336,6 +336,11 @@
         color: #4b5563;
     }
 
+    .status-badge.cancelled {
+        background: rgba(220, 38, 38, 0.1);
+        color: #dc2626;
+    }
+
     .dropdown-menu {
         position: relative;
     }
@@ -511,7 +516,12 @@
                         <td>RM {{ number_format($event->price * $registered, 2) }}</td>
                         <td>
                             @php
-                                $eventStatus = $event->status ?? 'draft';
+                                // Prioritize event_status (lifecycle) over status (approval)
+                                if ($event->event_status === 'Cancelled') {
+                                    $eventStatus = 'cancelled';
+                                } else {
+                                    $eventStatus = $event->status ?? 'draft';
+                                }
                             @endphp
                             <span class="status-badge {{ $eventStatus }}">{{ ucfirst($eventStatus) }}</span>
                         </td>

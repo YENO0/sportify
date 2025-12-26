@@ -317,6 +317,11 @@
         color: #4b5563;
     }
 
+    .status-badge.cancelled {
+        background: rgba(220, 38, 38, 0.1);
+        color: #dc2626;
+    }
+
     .action-buttons {
         display: flex;
         gap: 8px;
@@ -464,7 +469,15 @@
                         </td>
                         <td>{{ $registered }}/{{ $event->max_capacity }}</td>
                         <td>
-                            <span class="status-badge {{ $event->status }}">{{ ucfirst($event->status) }}</span>
+                            @php
+                                // Prioritize event_status (lifecycle) over status (approval)
+                                if ($event->event_status === 'Cancelled') {
+                                    $displayStatus = 'cancelled';
+                                } else {
+                                    $displayStatus = $event->status ?? 'draft';
+                                }
+                            @endphp
+                            <span class="status-badge {{ $displayStatus }}">{{ ucfirst($displayStatus) }}</span>
                         </td>
                     </tr>
                 @empty

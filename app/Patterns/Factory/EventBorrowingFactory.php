@@ -39,7 +39,7 @@ class EventBorrowingFactory extends AbstractBorrowingFactory
             'user_id' => auth()->id(),
             'quantity' => $borrowing->quantity,
             'transaction_date' => Carbon::now(),
-            'notes' => "Borrowed for event: {$event->name}",
+            'notes' => "Borrowed for event: {$event->event_name}",
         ]);
     }
 }

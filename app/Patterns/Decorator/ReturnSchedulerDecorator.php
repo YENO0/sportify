@@ -71,12 +71,12 @@ class ReturnSchedulerDecorator
                 'user_id' => $this->borrowing->user_id,
                 'quantity' => $quantity,
                 'transaction_date' => Carbon::now(),
-                'notes' => "Automatically returned after event: {$this->borrowing->event->name} ended",
+                'notes' => "Automatically returned after event: {$this->borrowing->event->event_name} ended",
             ]);
             
             DB::commit();
             
-            Log::info("Automatically returned equipment {$equipment->name} (quantity: {$quantity}) after event {$this->borrowing->event->name} ended");
+            Log::info("Automatically returned equipment {$equipment->name} (quantity: {$quantity}) after event {$this->borrowing->event->event_name} ended");
             
             return true;
         } catch (\Exception $e) {

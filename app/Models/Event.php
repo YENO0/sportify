@@ -194,4 +194,35 @@ class Event extends Model
     {
         return $this->registrations()->where('status', 'registered')->count();
     }
+
+    /**
+     * Check if the event has ended based on end date and time
+     */
+    public function hasEnded(): bool
+    {
+        // If no end date is set, use start date + start time as fallback
+        if (!$this->event_end_date) {
+            if (!$this->event_start_date) {
+                return false; // Can't determine if event has ended without dates
+            }
+            
+            // If no end date, check if start date/time has passed
+            $startDateTime = $this->event_start_date;
+            if ($this->event_start_time) {
+                $startDateTime = $this->event_start_date->copy()->setTimeFromTimeString($this->event_start_time);
+            }
+            
+            // Default to 3 hours duration if no end time specified
+            $endDateTime = $startDateTime->copy()->addHours(3);
+            return $endDateTime->isPast();
+        }
+
+        // Combine end date with end time if available
+        $endDateTime = $this->event_end_date;
+        if ($this->event_end_time) {
+            $endDateTime = $this->event_end_date->copy()->setTimeFromTimeString($this->event_end_time);
+        }
+
+        return $endDateTime->isPast();
+    }
 }

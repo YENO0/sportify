@@ -26,7 +26,7 @@
                             <div class="px-4 py-4 sm:px-6">
                                 <div class="flex items-center justify-between">
                                     <p class="text-sm font-medium {{ $notification->read_at ? 'text-gray-600' : 'text-blue-800 font-bold' }}">
-                                        {{ $notification->data['title'] ?? 'Rebook your facility' }}
+                                        {{ $notification->data['title'] ?? 'Reapply your event' }}
                                     </p>
                                     <div class="ml-2 flex-shrink-0 flex">
                                         <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
