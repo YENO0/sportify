@@ -1,12 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Registered Events | Sportify Events</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+@extends('layouts.app')
+
+@section('title', 'My Events')
+@section('page-title', '')
+
+@section('nav-links')
+@endsection
+
+@push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
         :root {
             --primary-color: #6366f1;
             --primary-light: #818cf8;
@@ -22,46 +25,28 @@
             --hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
         }
 
-        /* Hide scrollbars */
-        body::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .table-container::-webkit-scrollbar {
-            display: none;
-        }
-        
+        /* Keep navbar layout stable; style only this page */
         body {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+            background: linear-gradient(135deg, #f4f6f8 0%, #e5e7eb 100%) !important;
+            padding: 0 !important;
         }
 
-        .table-container {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        * {
-            margin: 0;
+        .my-events-page {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f4f6f8 0%, #e5e7eb 100%);
-            min-height: 100vh;
-            padding: 30px;
             color: var(--dark-color);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        /* Hide scrollbars */
+        .my-events-page::-webkit-scrollbar { display: none; }
+        .my-events-page { -ms-overflow-style: none; scrollbar-width: none; }
+        .my-events-page .table-container::-webkit-scrollbar { display: none; }
+        .my-events-page .table-container { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* Header Styles */
-        .page-header {
+        .my-events-page .page-header {
             text-align: center;
             margin-bottom: 40px;
             padding: 30px;
@@ -72,7 +57,7 @@
             overflow: hidden;
         }
 
-        .page-header::before {
+        .my-events-page .page-header::before {
             content: '';
             position: absolute;
             top: 0;
@@ -82,7 +67,7 @@
             background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
         }
 
-        .page-header h1 {
+        .my-events-page .page-header h1 {
             font-size: 2.5rem;
             color: var(--dark-color);
             margin-bottom: 10px;
@@ -93,11 +78,47 @@
             gap: 15px;
         }
 
-        .page-header p {
+        .my-events-page .page-header p {
             color: var(--gray-color);
             font-size: 1.1rem;
             max-width: 600px;
             margin: 0 auto;
+        }
+
+        /* Tabs (My Events / Transaction History) */
+        .my-events-page .page-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .my-events-page .page-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.08);
+            color: var(--dark-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .my-events-page .page-tab:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            background: rgba(99, 102, 241, 0.12);
+        }
+
+        .my-events-page .page-tab.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: var(--white);
+            border-color: transparent;
         }
 
         /* Stats Cards */
@@ -164,17 +185,17 @@
             overflow-x: auto;
         }
 
-        table {
+        .my-events-page table {
             width: 100%;
             border-collapse: collapse;
             min-width: 800px;
         }
 
-        thead {
+        .my-events-page thead {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
         }
 
-        th {
+        .my-events-page th {
             padding: 20px;
             text-align: left;
             color: var(--white);
@@ -185,7 +206,7 @@
             position: relative;
         }
 
-        th:not(:last-child)::after {
+        .my-events-page th:not(:last-child)::after {
             content: '';
             position: absolute;
             right: 0;
@@ -195,25 +216,25 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        th i {
+        .my-events-page th i {
             margin-right: 10px;
         }
 
-        tbody tr {
+        .my-events-page tbody tr {
             border-bottom: 1px solid var(--light-gray);
             transition: background-color 0.2s ease, transform 0.2s ease;
         }
 
-        tbody tr:hover {
+        .my-events-page tbody tr:hover {
             background-color: rgba(99, 102, 241, 0.05);
             transform: translateX(5px);
         }
 
-        tbody tr:last-child {
+        .my-events-page tbody tr:last-child {
             border-bottom: none;
         }
 
-        td {
+        .my-events-page td {
             padding: 20px;
             color: var(--dark-color);
             vertical-align: top;
@@ -414,39 +435,19 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-            
-            .page-header h1 {
+            .my-events-page { padding: 18px 12px; }
+
+            .my-events-page .page-header h1 {
                 font-size: 2rem;
                 flex-direction: column;
                 gap: 10px;
             }
-            
-            .page-header p {
-                font-size: 1rem;
-            }
-            
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .stat-card {
-                padding: 20px;
-            }
-            
-            th, td {
-                padding: 15px 10px;
-            }
-            
-            .table-container {
-                border-radius: 12px;
-            }
-            
-            .event-description {
-                max-width: 200px;
-            }
+
+            .my-events-page .page-header p { font-size: 1rem; }
+            .stats-container { grid-template-columns: repeat(2, 1fr); }
+            th, td { padding: 15px 10px; }
+            .table-container { border-radius: 12px; }
+            .event-description { max-width: 200px; }
         }
 
         @media (max-width: 480px) {
@@ -466,32 +467,32 @@
 
         /* Print Styles */
         @media print {
-            body {
-                background: none;
-                padding: 0;
-            }
-            
-            .page-header, .stats-container, .page-footer {
-                display: none;
-            }
-            
-            .table-container {
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-            
-            table {
-                min-width: auto;
-            }
+            .my-events-page { padding: 0; }
+            .my-events-page .page-header, .stats-container, .page-footer { display: none; }
+            .table-container { box-shadow: none; border: 1px solid #ddd; }
+            table { min-width: auto; }
         }
-    </style>
-</head>
-<body>
-<div class="container">
+</style>
+@endpush
+
+@section('content')
+<div class="my-events-page">
     <!-- Page Header -->
     <div class="page-header">
         <h1><i class="fas fa-calendar-check"></i> My Registered Events</h1>
         <p>Manage and view all the events you've registered for</p>
+        @if(auth()->user()?->isStudent())
+            <div class="page-tabs">
+                <a class="page-tab active" href="{{ route('payments.my-events') }}">
+                    <i class="fas fa-calendar-check"></i>
+                    My Events
+                </a>
+                <a class="page-tab" href="{{ route('payments.transaction-history') }}">
+                    <i class="fas fa-history"></i>
+                    Transaction History
+                </a>
+            </div>
+        @endif
     </div>
 
     @if($eventJoined->isEmpty())
@@ -502,7 +503,7 @@
             </div>
             <h3>No Registered Events Yet</h3>
             <p>You haven't registered for any events. Explore our events and join exciting activities!</p>
-            <a href="{{ route('events.index') }}" class="primary-btn">
+            <a href="{{ route('events.approved') }}" class="primary-btn">
                 <i class="fas fa-calendar-plus"></i> Browse All Events
             </a>
         </div>
@@ -640,5 +641,4 @@
         <p>Need assistance with your events? <a href="mailto:support@sportify.com">Contact our support team</a></p>
     </div>
 </div>
-</body>
-</html>
+@endsection

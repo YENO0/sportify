@@ -728,8 +728,8 @@ protected $eventService;
      */
     public function approved(Request $request)
     {
-        // Hardcoded student ID - replace with authenticated student when auth is implemented
-        $studentId = 1;
+        // Use authenticated student id when available
+        $studentId = auth()->id() ?? 1;
 
         // Keep lifecycle/registration statuses current before listing
         EventStatusService::syncAll();
@@ -781,7 +781,7 @@ protected $eventService;
     {
         $event = EventStatusService::sync($event);
         // Hardcoded IDs - replace with authenticated user when auth is implemented
-        $studentId = 1;
+        $studentId = auth()->id() ?? 1;
         $committeeId = 1;
         $isAdmin = $request->routeIs('admin.*') || $request->has('admin'); // Check if admin route or query param
 
@@ -818,6 +818,10 @@ protected $eventService;
         if (\Illuminate\Support\Facades\Schema::hasTable('user')) {
             $event->load('committee');
         }
+        // Load facility name for display (Event -> facility_id)
+        if (\Illuminate\Support\Facades\Schema::hasTable('facilities')) {
+            $event->load('facility');
+        }
 
         // Check if student is already registered (only for approved events)
         $isRegistered = false;
@@ -849,8 +853,9 @@ protected $eventService;
         if ($isCommitteeView) {
             // Committee-specific view (no reserve slot UI)
             $registrations = $event->registrations()
+                ->with(['user:id,name,email,contact'])
                 ->orderBy('joinedDate')
-                ->get(['studentID', 'status', 'joinedDate']);
+                ->get(['eventJoinedID', 'eventID', 'studentID', 'status', 'joinedDate']);
 
             if ($request->wantsJson()) {
                 return response()->json([
@@ -881,6 +886,9 @@ protected $eventService;
     public function committeeShow(Request $request, Event $event)
     {
         $event = EventStatusService::sync($event);
+        if (\Illuminate\Support\Facades\Schema::hasTable('facilities')) {
+            $event->load('facility');
+        }
         $event->loadCount([
             'registrations as registrations_count' => function ($q) {
                 $q->where('status', 'registered');
@@ -888,8 +896,9 @@ protected $eventService;
         ]);
 
         $registrations = $event->registrations()
+            ->with(['user:id,name,email,contact'])
             ->orderBy('joinedDate')
-            ->get(['studentID', 'status', 'joinedDate']);
+            ->get(['eventJoinedID', 'eventID', 'studentID', 'status', 'joinedDate']);
 
         $registered = $event->registrations_count ?? 0;
         $remaining = max(0, $event->max_capacity - $registered);

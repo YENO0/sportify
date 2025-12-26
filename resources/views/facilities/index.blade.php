@@ -1,11 +1,40 @@
 @extends('layouts.app')
 
 @section('title', 'Facility Dashboard')
+@section('mainClass', 'max-w-none mx-0 py-0 px-0')
+
+@push('styles')
+<style>
+    body { display: block; background: #f8fafc; }
+    .card {
+        max-width: none;
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        padding: 0;
+        background: #f8fafc;
+        border: none;
+        box-shadow: none;
+    }
+    .page-header {
+        background: #ffffff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 2rem 2.5rem;
+    }
+    .page-header h1 { font-size: 1.8rem; font-weight: 700; color: #1f2937; margin: 0; }
+    .page-header p { font-size: 1rem; color: #4b5563; margin-top: 0.25rem; }
+    .content-area { padding: 2.5rem; max-width: 1400px; margin: 0 auto; }
+</style>
+@endpush
 
 @section('content')
-<div class="container mx-auto px-4">
-    <h1 class="text-2xl font-bold mb-4">Facility Dashboard</h1>
+<div class="card">
+    <header class="page-header">
+        <h1>Facility Dashboard</h1>
+        <p>Manage facilities, schedules, and maintenance.</p>
+    </header>
 
+    <div class="content-area">
     <div class="flex justify-end mb-4 gap-2">
         <a href="{{ route('facilities.timetable') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700" style="background-color: #4f46e5; color: white;">Timetable</a>
         @auth
@@ -77,6 +106,7 @@
                 </div>
             </div>
         @endforeach
+    </div>
     </div>
 </div>
 @endsection

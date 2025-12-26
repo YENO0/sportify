@@ -1,20 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Event Payment | {{ $event->event_name }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- Stripe.js library -->
-    <script src="https://js.stripe.com/v3/"></script>
-    
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+@extends('layouts.app')
 
-    <style>
+@section('title', 'Event Payment | ' . ($event->event_name ?? ''))
+@section('page-title', '')
+
+@section('nav-links')
+@endsection
+
+@push('styles')
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<!-- Stripe.js library -->
+<script src="https://js.stripe.com/v3/"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
         /* Previous styles remain the same, add these new styles */
 
         .timer-container {
@@ -143,15 +142,18 @@
             font-family: 'Poppins', sans-serif;
         }
 
+        /* Keep global navbar layout stable */
         body {
-            background: #f4f6f8;
-            padding: 30px;
+            background: #f4f6f8 !important;
+            padding: 0 !important;
             margin: 0;
         }
 
-        .container {
+        /* Let layouts.app control page padding; this wrapper only limits width */
+        .payment-page {
             max-width: 1200px;
-            margin: auto;
+            margin: 0 auto;
+            padding: 0;
         }
 
         .card {
@@ -675,7 +677,7 @@
         }
 
         @media (max-width: 1000px) {
-            .container {
+            .payment-page {
                 max-width: 95%;
             }
             
@@ -832,10 +834,16 @@
             margin-right: 10px;
         }
     </style>
-</head>
-<body>
+@endpush
 
-<div class="container">
+@section('content')
+<div class="payment-page">
+    <div style="margin-bottom: 14px;">
+        <a href="{{ route('events.show', $event->eventID) }}" style="color:#6366f1;text-decoration:none;font-weight:600;">
+            ← Cancel payment
+        </a>
+    </div>
+
     <div class="card" id="payment-card">
         <div class="header">
             <h2>{{ $event->event_name }}</h2>
@@ -925,6 +933,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </div>
 
@@ -1134,6 +1143,7 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // DOM Elements
@@ -1975,5 +1985,5 @@
         
     });
 </script>
-</body>
-</html>
+@endpush
+@endsection

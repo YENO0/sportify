@@ -7,15 +7,19 @@
     <a href="{{ route('committee.events.index') }}" class="btn btn-secondary">← Back to Events</a>
 @endsection
 
+@push('styles')
+<style>
+    /* Only affect the participants table on this page */
+    table.participants-table thead th {
+        color: #111827; /* black like the rest of the page */
+    }
+</style>
+@endpush
+
 @section('content')
     @php
         $registered = $event->registrations_count ?? 0;
         $remaining = max(0, $event->max_capacity - $registered);
-        $facilityNames = [
-            1 => 'Main Hall',
-            2 => 'Conference Room',
-            3 => 'Outdoor Field',
-        ];
     @endphp
 
     <div class="card">
@@ -61,7 +65,7 @@
             </div>
             <div class="info-item">
                 <div class="info-label">Facility</div>
-                <div class="info-value">{{ $facilityNames[$event->facility_id] ?? 'N/A' }}</div>
+                <div class="info-value">{{ $event->facility->name ?? 'N/A' }}</div>
             </div>
         </div>
 
@@ -83,10 +87,12 @@
     <div class="card">
         <h2 class="card-title">Participants ({{ $registrations->count() }})</h2>
         @if($registrations->count() > 0)
-            <table>
+            <table class="participants-table">
                 <thead>
                     <tr>
-                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Contact</th>
                         <th>Status</th>
                         <th>Joined Date</th>
                     </tr>
@@ -94,7 +100,9 @@
                 <tbody>
                     @foreach($registrations as $reg)
                         <tr>
-                            <td><strong>#{{ $reg->studentID }}</strong></td>
+                            <td><strong>{{ $reg->user->name ?? ('#' . $reg->studentID) }}</strong></td>
+                            <td>{{ $reg->user->email ?? 'N/A' }}</td>
+                            <td>{{ $reg->user->contact ?? 'N/A' }}</td>
                             <td>
                                 <span class="badge badge-{{ $reg->status }}">
                                     {{ ucfirst($reg->status) }}

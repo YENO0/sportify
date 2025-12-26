@@ -8,6 +8,7 @@ use App\Models\EventJoined;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Services\EventStatusService;
+use Illuminate\Support\Facades\Auth;
 
 class EventJoinedController extends Controller
 {
@@ -16,6 +17,15 @@ class EventJoinedController extends Controller
      */
     public function store(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->withErrors(['error' => 'Please login to register for an event.']);
+        }
+
+        // Only students can register for events
+        if (!Auth::user()?->isStudent()) {
+            return $this->errorResponse($request, 'Only students can register for events.', 403);
+        }
+
         $data = $request->validate([
             'event_id' => ['required', 'integer', 'exists:events,eventID'],
         ]);
@@ -30,8 +40,7 @@ class EventJoinedController extends Controller
             return $this->errorResponse($request, 'Event is not open for registration.', 422);
         }
 
-        // Hardcoded: replace with authenticated student id when available
-        $studentId = 1;
+        $studentId = Auth::id();
 
         $exists = EventJoined::where('eventID', $event->eventID)
             ->where('studentID', $studentId)

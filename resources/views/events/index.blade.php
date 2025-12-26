@@ -2,6 +2,7 @@
 
 @section('title', 'Events')
 @section('page-title', '')
+@section('mainClass', 'max-w-none mx-0 py-0 px-0')
 
 @section('nav-links')
 @endsection
@@ -10,9 +11,30 @@
 <style>
     /* Override layout background and container */
     body {
-        background: #ffffff !important;
+        background: #f8fafc !important;
         padding: 0 !important;
     }
+
+    .card {
+        max-width: none;
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        padding: 0;
+        background: #f8fafc;
+        border: none;
+        box-shadow: none;
+    }
+
+    /* Match User Management header layout */
+    .page-header {
+        background: #ffffff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 2rem 2.5rem;
+    }
+    .page-header h1 { font-size: 1.8rem; font-weight: 700; color: #1f2937; margin: 0; }
+    .page-header p { font-size: 1rem; color: #4b5563; margin-top: 0.25rem; }
+    .content-area { padding: 2.5rem; max-width: 1400px; margin: 0 auto; }
 
     .container {
         max-width: 100% !important;
@@ -28,9 +50,9 @@
     }
 
     .events-page {
-        max-width: 1100px;
+        max-width: 1400px;
         margin: 0 auto;
-        padding: 30px 20px;
+        padding: 0;
         overflow: visible;
     }
 
@@ -400,11 +422,16 @@
 @endpush
 
 @section('content')
-<div class="events-page">
-    <div class="events-header">
-        <h1 class="events-title">Events</h1>
-        
-        <div class="events-tabs">
+<div class="card">
+    <header class="page-header">
+        <h1>Events</h1>
+        <p>Manage your event applications and track their statuses.</p>
+    </header>
+
+    <div class="content-area">
+        <div class="events-page">
+            <div class="events-header">
+                <div class="events-tabs">
             <button class="events-tab active">Events</button>
             <button class="events-tab">Collections</button>
         </div>
@@ -443,7 +470,7 @@
         </form>
     </div>
 
-    <div class="events-table">
+            <div class="events-table">
         <table>
             <thead>
                 <tr>
@@ -527,7 +554,7 @@
                 @endforelse
             </tbody>
         </table>
-    </div>
+            </div>
 
     <a href="#" class="csv-export">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -535,6 +562,8 @@
         </svg>
         CSV Export
     </a>
+        </div>
+    </div>
 </div>
 
 @push('scripts')

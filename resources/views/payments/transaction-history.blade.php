@@ -10,23 +10,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    /* Override layout background and container */
+    /* Override layout background (avoid changing global layout containers) */
     body {
         background: linear-gradient(135deg, #f4f6f8 0%, #e5e7eb 100%) !important;
         padding: 0 !important;
-    }
-
-    .container {
-        max-width: 100% !important;
-        margin: 0 !important;
-        background: transparent !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        padding: 30px 20px !important;
-    }
-
-    .header {
-        display: none !important;
     }
 
     :root {
@@ -44,9 +31,10 @@
     }
 
     .transactions-page {
-        max-width: 1400px;
+        max-width: 1200px;
         margin: 0 auto;
         font-family: 'Poppins', sans-serif;
+        padding: 0;
     }
 
     /* Hide scrollbar for Chrome, Safari and Opera */
@@ -96,7 +84,43 @@
         margin: 0 auto;
     }
 
-    .user-info {
+    /* Tabs (My Events / Transaction History) */
+    .transactions-page .page-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 18px;
+        flex-wrap: wrap;
+    }
+
+    .transactions-page .page-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: rgba(99, 102, 241, 0.08);
+        color: var(--dark-color);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: 1px solid rgba(99, 102, 241, 0.15);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .transactions-page .page-tab:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        background: rgba(99, 102, 241, 0.12);
+    }
+
+    .transactions-page .page-tab.active {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        color: var(--white);
+        border-color: transparent;
+    }
+
+    .transactions-page .user-info {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -106,7 +130,7 @@
         border-top: 1px solid var(--light-gray);
     }
 
-    .user-avatar {
+    .transactions-page .user-avatar {
         width: 50px;
         height: 50px;
         background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
@@ -119,12 +143,12 @@
         font-weight: 600;
     }
 
-    .user-details h3 {
+    .transactions-page .user-details h3 {
         font-size: 1.2rem;
         margin-bottom: 5px;
     }
 
-    .user-details p {
+    .transactions-page .user-details p {
         color: var(--gray-color);
         font-size: 0.9rem;
         margin: 0;
@@ -471,6 +495,18 @@
     <div class="page-header">
         <h1><i class="fas fa-history"></i> Transaction History</h1>
         <p>View all payment transactions and event registrations</p>
+        @if(($user->isStudent() ?? false))
+            <div class="page-tabs">
+                <a class="page-tab" href="{{ route('payments.my-events') }}">
+                    <i class="fas fa-calendar-check"></i>
+                    My Events
+                </a>
+                <a class="page-tab active" href="{{ route('payments.transaction-history') }}">
+                    <i class="fas fa-history"></i>
+                    Transaction History
+                </a>
+            </div>
+        @endif
         
         <div class="user-info">
             <div class="user-avatar">
