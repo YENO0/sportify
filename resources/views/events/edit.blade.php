@@ -741,11 +741,40 @@
                     <div class="subsection-description" style="margin-top: 8px;">Maximum number of attendees for this event</div>
                 </div>
             </div>
+
+            <!-- Facility Booking -->
+            <div class="subsection">
+                <div class="form-group">
+                    <label for="book_facility_id" class="form-label">Book Facility (optional)</label>
+                    <select id="book_facility_id" name="book_facility_id" class="form-input">
+                        <option value="">-- Select a facility --</option>
+                        @foreach(($facilities ?? []) as $facility)
+                            <option
+                                value="{{ $facility->id }}"
+                                {{ (string)old('book_facility_id', $event->facility_id) === (string)$facility->id ? 'selected' : '' }}
+                            >
+                                {{ $facility->name }} ({{ $facility->status }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <div class="subsection-description" style="margin-top: 8px;">
+                        The system will check facility booking conflicts and maintenance before saving.
+                        @if(isset($event->event_start_date))
+                            <a
+                                href="{{ route('facilities.timetable', ['facility_id' => old('book_facility_id', $event->facility_id), 'start_date' => old('event_start_date', $event->event_start_date)]) }}"
+                                class="more-options-link"
+                                style="margin: 0 0 0 8px;"
+                            >
+                                View timetable
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Hidden fields for form submission -->
         <input type="hidden" name="committee_id" value="{{ $event->committee_id }}">
-        <input type="hidden" name="facility_id" value="{{ $event->facility_id ?? 1 }}">
         <div class="form-actions">
             <a href="{{ route('committee.events.index') }}" class="btn-secondary">Cancel</a>
             @if($event->status === 'draft')

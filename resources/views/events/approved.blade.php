@@ -522,7 +522,5 @@
         </div>
     @endif
 
-    <div class="note-box">
-        <strong>Note:</strong> Using hardcoded student_id = {{ $studentId }}. Replace with authenticated student when auth is implemented.
-    </div>
+
 @endsection

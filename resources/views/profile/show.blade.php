@@ -98,12 +98,6 @@
         display: inline-block; padding: 0.35rem 0.75rem; border-radius: 0.5rem;
         font-size: 0.85rem; font-weight: 600; text-transform: capitalize;
     }
-    .alert-success {
-        background: rgba(220, 252, 231, 1); /* Light green background */
-        border: 1px solid rgba(134, 239, 172, 1); /* Green border */
-        color: #065f46; /* Dark green text */
-        padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem;
-    }
 </style>
 
 <header class="profile-header">
@@ -111,12 +105,6 @@
 </header>
 
 <main class="content-area">
-    @if (session('success'))
-        <div class="alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div class="profile-container">
         <aside class="profile-sidebar">
             @if ($user->profile_picture)
