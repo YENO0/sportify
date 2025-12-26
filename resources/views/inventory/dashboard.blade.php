@@ -146,48 +146,78 @@
         </div>
 
         <!-- Search and Filter Bar -->
-        <div class="px-4 py-4 border-b border-gray-200 bg-gray-50">
-            <form method="GET" action="{{ route('inventory.index') }}" id="inventory-search-form" class="flex flex-wrap gap-4 items-end">
-                <!-- Search Input -->
-                <div class="flex-1 min-w-[200px]">
-                    <label for="inventory-search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
-                    <input type="text" name="search" id="inventory-search" value="{{ request('search') }}" 
-                        placeholder="Search by name, model, brand, or sport type..."
-                        class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        <div class="px-6 py-4 border-b border-gray-200 bg-white">
+            <form method="GET" action="{{ route('inventory.index') }}" id="inventory-search-form" class="space-y-3">
+                <!-- Main Search Row -->
+                <div class="flex items-center gap-3">
+                    <!-- Search Input with Icon -->
+                    <div class="flex-1 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input type="text" name="search" id="inventory-search" value="{{ request('search') }}" 
+                            placeholder="Search equipment by name, model, brand, or sport type..."
+                            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all">
+                    </div>
+
+                    <!-- Search Button -->
+                    <button type="submit" class="inline-flex items-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
+                        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Search
+                    </button>
+
+                    <!-- Clear Button -->
+                    @if(request('search') || request('status') || request('sport_type_id') || request('low_stock'))
+                        <a href="{{ route('inventory.index') }}" class="inline-flex items-center px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
+                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Clear
+                        </a>
+                    @endif
                 </div>
 
-                <!-- Status Filter -->
-                <div class="min-w-[150px]">
-                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select name="status" id="status" 
-                        class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">All Statuses</option>
-                        <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
-                        <option value="maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                        <option value="damaged" {{ request('status') == 'damaged' ? 'selected' : '' }}>Damaged</option>
-                        <option value="retired" {{ request('status') == 'retired' ? 'selected' : '' }}>Retired</option>
-                    </select>
-                </div>
+                <!-- Filters Row -->
+                <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100">
+                    <!-- Status Filter -->
+                    <div class="flex items-center gap-2">
+                        <label for="status" class="text-xs font-medium text-gray-600 whitespace-nowrap">Status:</label>
+                        <select name="status" id="status" 
+                            class="block w-36 px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="">All Statuses</option>
+                            <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
+                            <option value="maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
+                            <option value="damaged" {{ request('status') == 'damaged' ? 'selected' : '' }}>Damaged</option>
+                            <option value="retired" {{ request('status') == 'retired' ? 'selected' : '' }}>Retired</option>
+                        </select>
+                    </div>
 
-                <!-- Sport Type Filter -->
-                <div class="min-w-[150px]">
-                    <label for="sport_type_id" class="block text-sm font-medium text-gray-700 mb-1">Sport Type</label>
-                    <select name="sport_type_id" id="sport_type_id" 
-                        class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">All Sport Types</option>
-                        @foreach($sportTypes as $sportType)
-                            <option value="{{ $sportType->id }}" {{ request('sport_type_id') == $sportType->id ? 'selected' : '' }}>
-                                {{ $sportType->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                    <!-- Sport Type Filter -->
+                    <div class="flex items-center gap-2">
+                        <label for="sport_type_id" class="text-xs font-medium text-gray-600 whitespace-nowrap">Sport Type:</label>
+                        <select name="sport_type_id" id="sport_type_id" 
+                            class="block w-40 px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="">All Sport Types</option>
+                            @foreach($sportTypes as $sportType)
+                                <option value="{{ $sportType->id }}" {{ request('sport_type_id') == $sportType->id ? 'selected' : '' }}>
+                                    {{ $sportType->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <!-- Low Stock Filter -->
-                <div class="flex items-center">
-                    <input type="checkbox" name="low_stock" id="low_stock" value="1" {{ request('low_stock') == '1' ? 'checked' : '' }}
-                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <label for="low_stock" class="ml-2 block text-sm text-gray-700">Low Stock Only</label>
+                    <!-- Low Stock Filter -->
+                    <div class="flex items-center gap-2 ml-auto">
+                        <label for="low_stock" class="flex items-center cursor-pointer group">
+                            <input type="checkbox" name="low_stock" id="low_stock" value="1" {{ request('low_stock') == '1' ? 'checked' : '' }}
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-all">
+                            <span class="ml-2 text-sm text-gray-700 group-hover:text-gray-900">Low Stock Only</span>
+                        </label>
+                    </div>
                 </div>
 
                 <!-- Preserve sort parameters -->
@@ -197,13 +227,6 @@
                 @if(request('direction'))
                     <input type="hidden" name="direction" value="{{ request('direction') }}">
                 @endif
-
-                <!-- Clear Button -->
-                <div class="flex gap-2">
-                    <a href="{{ route('inventory.index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300">
-                        Clear All
-                    </a>
-                </div>
             </form>
         </div>
         
@@ -344,5 +367,46 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('inventory-search-form');
+        const statusSelect = document.getElementById('status');
+        const sportTypeSelect = document.getElementById('sport_type_id');
+        const lowStockCheckbox = document.getElementById('low_stock');
+        
+        // Auto-submit on filter change
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function() {
+                form.submit();
+            });
+        }
+        
+        if (sportTypeSelect) {
+            sportTypeSelect.addEventListener('change', function() {
+                form.submit();
+            });
+        }
+        
+        if (lowStockCheckbox) {
+            lowStockCheckbox.addEventListener('change', function() {
+                form.submit();
+            });
+        }
+        
+        // Search input: submit on Enter key
+        const searchInput = document.getElementById('inventory-search');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    form.submit();
+                }
+            });
+        }
+    });
+</script>
+@endpush
 @endsection
 
