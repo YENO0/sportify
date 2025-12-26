@@ -837,6 +837,15 @@ protected $eventService;
         $registered = $event->registrations_count ?? 0;
         $remaining = max(0, $event->max_capacity - $registered);
         
+        // Load equipment borrowings for committees and admins
+        $equipmentBorrowings = null;
+        if ($isCommitteeView || $isAdminView) {
+            $equipmentBorrowings = $event->equipmentBorrowings()
+                ->with(['equipment:id,name,brand_id', 'equipment.brand:id,name'])
+                ->where('status', 'borrowed')
+                ->get();
+        }
+        
         // Load student details if viewing as student
         $student = null;
         if ($event->status === 'approved' && !$isCommitteeView && !$isAdminView) {
@@ -879,7 +888,7 @@ protected $eventService;
             ]);
         }
 
-        return view('events.show', compact('event', 'remaining', 'isRegistered', 'studentId', 'isCommitteeView', 'isAdminView', 'student', 'daysLeft'));
+        return view('events.show', compact('event', 'remaining', 'isRegistered', 'studentId', 'isCommitteeView', 'isAdminView', 'student', 'daysLeft', 'equipmentBorrowings'));
     }
 
     /**

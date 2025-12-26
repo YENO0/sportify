@@ -1229,22 +1229,55 @@
                 @endif
             </div>
 
-            @if($isCommitteeView ?? false)
+            @if(($isCommitteeView ?? false) || ($isAdminView ?? false))
                 <div class="event-price-box" style="margin-top: 16px;">
                     <h3 style="font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 16px;">Equipment Borrowing</h3>
-                    <a href="{{ route('equipment-borrowings.create', $event) }}" class="event-register-btn" style="display: block; text-align: center; text-decoration: none; margin-bottom: 16px;">
-                        Borrow Equipment
-                    </a>
+                    @if($isCommitteeView ?? false)
+                        <a href="{{ route('equipment-borrowings.create', $event) }}" class="event-register-btn" style="display: block; text-align: center; text-decoration: none; margin-bottom: 16px;">
+                            Borrow Equipment
+                        </a>
+                    @endif
                     
                     @if(isset($equipmentBorrowings) && $equipmentBorrowings->count() > 0)
                         <div style="margin-top: 16px;">
                             <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px;">Borrowed Equipment:</div>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
                                 @foreach($equipmentBorrowings as $borrowing)
-                                    <div style="padding: 12px; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <span style="font-weight: 500; color: #111827;">{{ $borrowing->equipment->name ?? 'Unknown Equipment' }}</span>
-                                            <span style="color: #6b7280; font-size: 14px;">Qty: {{ $borrowing->quantity }}</span>
+                                    <div style="padding: 14px; background: #ffffff; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                                        <div style="display: grid; grid-template-columns: 1fr auto {{ ($isAdminView ?? false) ? '0' : '80px' }}; gap: 16px; align-items: center;">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 500; color: #111827; font-size: 14px; margin-bottom: 2px;">{{ $borrowing->equipment->name ?? 'Unknown Equipment' }}</div>
+                                                @if($borrowing->equipment->brand)
+                                                    <div style="font-size: 12px; color: #6b7280;">{{ $borrowing->equipment->brand->name }}</div>
+                                                @endif
+                                            </div>
+                                            <div style="text-align: center; padding: 0 16px; border-left: 1px solid #e5e7eb; {{ ($isAdminView ?? false) ? '' : 'border-right: 1px solid #e5e7eb;' }}">
+                                                <div style="font-size: 18px; font-weight: 700; color: #111827;">{{ $borrowing->quantity }}</div>
+                                                <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Qty</div>
+                                            </div>
+                                            @if($isCommitteeView ?? false)
+                                                <div style="display: flex; flex-direction: column; gap: 6px; align-items: stretch;">
+                                                    <a href="{{ route('equipment-borrowings.edit', [$event, $borrowing]) }}" 
+                                                       style="padding: 6px 12px; background: #3b82f6; color: white; border-radius: 5px; text-decoration: none; font-size: 12px; font-weight: 500; text-align: center; transition: all 0.2s; display: block;"
+                                                       onmouseover="this.style.background='#2563eb'; this.style.transform='translateY(-1px)'" 
+                                                       onmouseout="this.style.background='#3b82f6'; this.style.transform='translateY(0)'">
+                                                        Edit
+                                                    </a>
+                                                    <form action="{{ route('equipment-borrowings.destroy', [$event, $borrowing]) }}" 
+                                                          method="POST" 
+                                                          style="margin: 0;"
+                                                          onsubmit="return confirm('Are you sure you want to return this equipment?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" 
+                                                                style="width: 100%; padding: 6px 12px; background: #ef4444; color: white; border: none; border-radius: 5px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;"
+                                                                onmouseover="this.style.background='#dc2626'; this.style.transform='translateY(-1px)'" 
+                                                                onmouseout="this.style.background='#ef4444'; this.style.transform='translateY(0)'">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach
