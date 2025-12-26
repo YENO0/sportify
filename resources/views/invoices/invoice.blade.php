@@ -345,22 +345,6 @@
     </div>
 
     <!-- Invoice Information -->
-    <div class="invoice-info">
-        <div class="info-section">
-            <h3>BILLED TO</h3>
-            <div class="info-item">
-                <span class="info-label">Name:</span>
-                <span class="info-value">{{ $student->name ?? 'Customer' }}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Email:</span>
-                <span class="info-value">{{ $student->email ?? 'customer@example.com' }}</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Student ID:</span>
-                <span class="info-value">{{ $student->id ?? 'N/A' }}</span>
-            </div>
-        </div>
         <div class="info-section">
             <h3>INVOICE DETAILS</h3>
             <div class="info-item">
