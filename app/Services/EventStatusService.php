@@ -85,6 +85,16 @@ class EventStatusService
         if ($today->gt($end)) {
             if ($event->event_status !== 'Completed') {
                 $event->eventLifecycleState()->complete();
+                // Unbook the facility when event is completed
+                $event->unbookFacility();
+                
+                // Update facility status if no upcoming/ongoing events remain
+                if ($event->facility_id) {
+                    $facility = \App\Models\Facility::find($event->facility_id);
+                    if ($facility) {
+                        $facility->updateStatusBasedOnEvents();
+                    }
+                }
             }
             return;
         }

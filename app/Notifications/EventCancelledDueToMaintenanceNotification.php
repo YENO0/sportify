@@ -17,6 +17,15 @@ class EventCancelledDueToMaintenanceNotification extends Notification implements
     public $event;
     public $facility;
     public $maintenance;
+    
+    // Store essential data as properties to ensure they're available after serialization
+    protected $eventName;
+    protected $facilityName;
+    protected $eventDate;
+    protected $maintenanceStart;
+    protected $maintenanceEnd;
+    protected $maintenanceTitle;
+    public $notificationTitle; // Explicitly store the title
 
     /**
      * Create a new notification instance.
@@ -26,6 +35,17 @@ class EventCancelledDueToMaintenanceNotification extends Notification implements
         $this->event = $event;
         $this->facility = $facility;
         $this->maintenance = $maintenance;
+        
+        // Store essential data immediately to ensure it's available after serialization
+        $this->eventName = $event->event_name ?? 'Unknown Event';
+        $this->facilityName = $facility->name ?? 'Unknown Facility';
+        $this->eventDate = $event->event_start_date ? $event->event_start_date->format('M d, Y') : 'TBA';
+        $this->maintenanceStart = $maintenance->start_date ? $maintenance->start_date->format('M d, Y') : 'TBA';
+        $this->maintenanceEnd = $maintenance->end_date ? $maintenance->end_date->format('M d, Y') : 'TBA';
+        $this->maintenanceTitle = $maintenance->title ?? 'Scheduled Maintenance';
+        
+        // Explicitly declare and store the title variable
+        $this->notificationTitle = "Event Registration Cancelled: {$this->eventName}";
     }
 
     /**
@@ -53,17 +73,21 @@ class EventCancelledDueToMaintenanceNotification extends Notification implements
 
         return (new MailMessage)
                     ->from(config('mail.from.address'), 'Sportify Events')
-                    ->subject("Event Cancelled: {$eventName}")
+                    ->subject("Event Registration Cancelled: {$eventName}")
                     ->greeting("Hello {$notifiable->name}!")
-                    ->line("We regret to inform you that the event **{$eventName}** scheduled for **{$eventDate} at {$eventTime}** has been cancelled.")
-                    ->line("**Reason for Cancellation:**")
-                    ->line("The facility **{$facilityName}** is unavailable due to scheduled maintenance.")
-                    ->line("**Maintenance Details:**")
-                    ->line("- Maintenance Type: {$maintenanceTitle}")
-                    ->line("- Maintenance Period: {$maintenanceStart} to {$maintenanceEnd}")
-                    ->line("We apologize for any inconvenience this may cause. If you have made a payment for this event, please contact our support team for a refund.")
-                    ->action('View Other Events', route('events.approved'))
-                    ->line('Thank you for your understanding.');
+                    ->line("**Your event registration has been cancelled.**")
+                    ->line("We regret to inform you that the event **{$eventName}** that you registered for, scheduled for **{$eventDate} at {$eventTime}**, has been cancelled.")
+                    ->line("**Cancellation Reason:**")
+                    ->line("The facility **{$facilityName}** where this event was to be held is unavailable due to scheduled maintenance.")
+                    ->line("**Maintenance Information:**")
+                    ->line("- Type: {$maintenanceTitle}")
+                    ->line("- Period: {$maintenanceStart} to {$maintenanceEnd}")
+                    ->line("**What This Means For You:**")
+                    ->line("Your registration for this event has been automatically cancelled. If you have made a payment for this event, you will receive a full refund. Please allow 5-7 business days for the refund to be processed.")
+                    ->line("We encourage you to explore other upcoming events that may interest you.")
+                    ->action('Browse Other Events', route('events.approved'))
+                    ->line('We apologize for any inconvenience and thank you for your understanding.')
+                    ->line('**Note:** The event organizer (committee) will handle rescheduling if they choose to do so. You do not need to take any action regarding this event.');
     }
 
     /**
@@ -73,23 +97,31 @@ class EventCancelledDueToMaintenanceNotification extends Notification implements
      */
     public function toArray(object $notifiable): array
     {
-        $eventName = $this->event->event_name;
-        $facilityName = $this->facility->name;
-        $eventDate = $this->event->event_start_date->format('M d, Y');
-        $maintenanceStart = $this->maintenance->start_date->format('M d, Y');
-        $maintenanceEnd = $this->maintenance->end_date->format('M d, Y');
+        // Use stored properties first (available after serialization), fallback to model properties
+        $eventName = $this->eventName ?? ($this->event->event_name ?? 'Unknown Event');
+        $facilityName = $this->facilityName ?? ($this->facility->name ?? 'Unknown Facility');
+        $eventDate = $this->eventDate ?? ($this->event->event_start_date ? $this->event->event_start_date->format('M d, Y') : 'TBA');
+        $maintenanceStart = $this->maintenanceStart ?? ($this->maintenance->start_date ? $this->maintenance->start_date->format('M d, Y') : 'TBA');
+        $maintenanceEnd = $this->maintenanceEnd ?? ($this->maintenance->end_date ? $this->maintenance->end_date->format('M d, Y') : 'TBA');
+        $maintenanceTitle = $this->maintenanceTitle ?? ($this->maintenance->title ?? 'Scheduled Maintenance');
+
+        // Use the explicitly stored title variable, or generate it if not available
+        $title = $this->notificationTitle ?? "Event Registration Cancelled: {$eventName}";
 
         return [
-            'event_id' => $this->event->eventID,
+            'title' => $title, // Explicitly use the stored title variable
+            'sender' => 'System',
+            'event_id' => $this->event->eventID ?? null,
             'event_name' => $eventName,
-            'facility_id' => $this->facility->id,
+            'facility_id' => $this->facility->id ?? null,
             'facility_name' => $facilityName,
-            'maintenance_id' => $this->maintenance->id,
-            'maintenance_title' => $this->maintenance->title ?? 'Scheduled Maintenance',
+            'maintenance_id' => $this->maintenance->id ?? null,
+            'maintenance_title' => $maintenanceTitle,
             'event_date' => $eventDate,
             'maintenance_period' => "{$maintenanceStart} to {$maintenanceEnd}",
-            'message' => "The event \"{$eventName}\" scheduled for {$eventDate} has been cancelled because the facility \"{$facilityName}\" is unavailable due to maintenance from {$maintenanceStart} to {$maintenanceEnd}.",
+            'message' => "Your registration for the event \"{$eventName}\" scheduled for {$eventDate} has been cancelled. The facility \"{$facilityName}\" is unavailable due to maintenance from {$maintenanceStart} to {$maintenanceEnd}. If you made a payment, you will receive a refund.",
             'action_url' => route('events.approved'),
+            'notification_type' => 'event_cancelled_student', // Identifier to distinguish from committee notifications
             'read_at' => null,
         ];
     }

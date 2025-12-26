@@ -215,6 +215,17 @@ class FacilityMaintenanceObserver
                     $event->save();
                 }
 
+                // Unbook the facility when event is cancelled due to maintenance
+                $event->unbookFacility();
+
+                // Update facility status if no upcoming/ongoing events remain
+                if ($event->facility_id) {
+                    $facility = \App\Models\Facility::find($event->facility_id);
+                    if ($facility) {
+                        $facility->updateStatusBasedOnEvents();
+                    }
+                }
+
                 // Notify the committee member who created the event
                 if ($event->committee) {
                     Notification::send(

@@ -44,7 +44,7 @@ class FacilityClosureNotification extends Notification
     {
         $facilityName = $this->facility->name;
         $status = $this->closureReason;
-        $rebookLink = route('/events/create'); // Changed to bookings.index
+        $rebookLink = route('events.create'); // Fixed: use route name instead of path
 
         return (new MailMessage)
                     ->from(config('mail.from.address'), 'System')
@@ -64,7 +64,7 @@ class FacilityClosureNotification extends Notification
     {
         $facilityName = $this->facility->name;
         $status = $this->closureReason;
-        $rebookLink = route('bookings.index'); // Changed to bookings.index
+        $rebookLink = route('events.create'); // Fixed: use route name for consistency
         $bookingStart = $this->booking->start_time->format('M d, Y H:i');
         $bookingEnd = $this->booking->end_time->format('M d, Y H:i');
 

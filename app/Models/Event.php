@@ -26,6 +26,7 @@ use App\Models\EventJoined;
 use App\Models\Payment;
 use App\Models\EquipmentBorrowing;
 use App\Models\Facility;
+use App\Models\Booking;
 
 class Event extends Model
 {
@@ -224,5 +225,60 @@ class Event extends Model
         }
 
         return $endDateTime->isPast();
+    }
+
+    /**
+     * Unbook the facility associated with this event.
+     * Finds and deletes bookings that match this event's facility, committee, and time slot.
+     * 
+     * @return int Number of bookings deleted
+     */
+    public function unbookFacility(): int
+    {
+        // Only unbook if event has a facility and committee
+        if (!$this->facility_id || !$this->committee_id) {
+            return 0;
+        }
+
+        // Calculate booking start and end datetime (matching how bookings are created in EventController)
+        if (!$this->event_start_date) {
+            return 0; // Can't determine booking time without start date
+        }
+
+        // Build start datetime (same logic as EventController::store)
+        $bookingStart = \Carbon\Carbon::parse($this->event_start_date->format('Y-m-d') . ' ' . ($this->event_start_time ?? '00:00:00'));
+
+        // Build end datetime (same logic as EventController::store)
+        if ($this->event_end_date) {
+            $bookingEnd = \Carbon\Carbon::parse($this->event_end_date->format('Y-m-d') . ' ' . ($this->event_end_time ?? '23:59:59'));
+        } else {
+            // Single event: use start date with end time
+            $bookingEnd = \Carbon\Carbon::parse($this->event_start_date->format('Y-m-d') . ' ' . ($this->event_end_time ?? '23:59:59'));
+        }
+
+        // Find bookings that match:
+        // - Same facility
+        // - Same committee (user_id)
+        // - Same or overlapping time slot (with small tolerance for exact matches)
+        // Use overlapping query to handle any minor time differences
+        $bookings = Booking::where('facility_id', $this->facility_id)
+            ->where('user_id', $this->committee_id)
+            ->where(function ($query) use ($bookingStart, $bookingEnd) {
+                // Match bookings that overlap with the event time slot
+                // This ensures we catch the booking even if there are minor time differences
+                $query->where(function ($q) use ($bookingStart, $bookingEnd) {
+                    $q->where('start_time', '<=', $bookingEnd)
+                      ->where('end_time', '>=', $bookingStart);
+                });
+            })
+            ->get();
+
+        $deletedCount = 0;
+        foreach ($bookings as $booking) {
+            $booking->delete();
+            $deletedCount++;
+        }
+
+        return $deletedCount;
     }
 }

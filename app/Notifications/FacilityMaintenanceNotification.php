@@ -40,16 +40,28 @@ class FacilityMaintenanceNotification extends Notification implements ShouldQueu
     public function toArray(object $notifiable): array
     {
         $facility = $this->facilityMaintenance->facility;
-        $startDate = $this->facilityMaintenance->start_date->format('d/m/Y H:i');
-        $endDate = $this->facilityMaintenance->end_date->format('d/m/Y H:i');
+        $startDate = $this->facilityMaintenance->start_date->format('M d, Y H:i');
+        $endDate = $this->facilityMaintenance->end_date->format('M d, Y H:i');
+        $maintenanceTitle = $this->facilityMaintenance->title ?? 'Scheduled Maintenance';
+
+        // Role-specific message
+        $roleMessage = "The facility '{$facility->name}' has been scheduled for maintenance from {$startDate} to {$endDate}. It will be unavailable during this period.";
+        
+        if ($notifiable->isAdmin()) {
+            $roleMessage = "Facility '{$facility->name}' maintenance scheduled from {$startDate} to {$endDate}. Any approved events or bookings during this period will be automatically cancelled. Please review the facility status in the admin panel.";
+        } elseif ($notifiable->isCommittee()) {
+            $roleMessage = "Facility '{$facility->name}' will be under maintenance from {$startDate} to {$endDate}. If you have events scheduled at this facility during this period, they will be automatically cancelled. Please check your events and consider rescheduling after the maintenance period.";
+        }
 
         return [
             'title' => "Maintenance Scheduled: {$facility->name}",
             'sender' => 'System',
-            'message' => "The facility '{$facility->name}' has been scheduled for maintenance from {$startDate} to {$endDate}. It will be unavailable during this period.",
+            'message' => $roleMessage,
             'facility_id' => $facility->id,
             'facility_name' => $facility->name,
-            'closure_date' => $startDate,
+            'maintenance_title' => $maintenanceTitle,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
             'status_type' => 'Maintenance',
         ];
     }

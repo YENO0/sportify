@@ -29,8 +29,24 @@ protected $eventService;
      */
     public function index(Request $request)
     {
-        // Hardcoded committee ID - replace with authenticated committee when auth is implemented
-        $committeeId = 1;
+        // Ensure user is authenticated and is a committee member
+        if (!Auth::check()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'You must be logged in to view events.'], 401);
+            }
+            return redirect()->route('login')->with('error', 'You must be logged in to view events.');
+        }
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user->isCommittee()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Only committee members can access this page.'], 403);
+            }
+            return redirect()->route('homepage')->with('error', 'Only committee members can access this page.');
+        }
+
+        $committeeId = Auth::id();
 
         // Committees can see their own events including drafts
         $query = Event::where('committee_id', $committeeId)
@@ -132,7 +148,21 @@ protected $eventService;
      */
     public function store(Request $request)
     {
+        // Ensure user is authenticated and is a committee member
+        if (!Auth::check()) {
+            return $this->errorResponse($request, 'You must be logged in to create an event.', 401);
+        }
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user || !$user->isCommittee()) {
+            return $this->errorResponse($request, 'Only committee members can create events.', 403);
+        }
+
         $data = $this->validateData($request);
+
+        // Set committee_id from authenticated user (override any form input)
+        $data['committee_id'] = Auth::id();
 
         // Handle event type: if single event, set end_date = start_date
         $eventType = $request->input('event_type', 'single');
@@ -287,8 +317,24 @@ protected $eventService;
      */
     public function edit(Request $request, Event $event)
     {
-        // Hardcoded committee ID - replace with authenticated committee when auth is implemented
-        $committeeId = 1;
+        // Ensure user is authenticated and is a committee member
+        if (!Auth::check()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'You must be logged in to edit events.'], 401);
+            }
+            return redirect()->route('login')->with('error', 'You must be logged in to edit events.');
+        }
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user->isCommittee()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Only committee members can edit events.'], 403);
+            }
+            return redirect()->route('homepage')->with('error', 'Only committee members can edit events.');
+        }
+
+        $committeeId = Auth::id();
         
         // Prevent editing approved events
         if ($event->status === 'approved') {
@@ -301,9 +347,9 @@ protected $eventService;
         // Only allow committee to edit their own events
         if ($event->committee_id != $committeeId) {
             if ($request->wantsJson()) {
-                return response()->json(['message' => 'Unauthorized.'], 403);
+                return response()->json(['message' => 'Unauthorized. You can only edit your own events.'], 403);
             }
-            return redirect()->route('committee.events.index')->with('error', 'Unauthorized.');
+            return redirect()->route('committee.events.index')->with('error', 'Unauthorized. You can only edit your own events.');
         }
 
         if ($request->wantsJson()) {
@@ -321,8 +367,24 @@ protected $eventService;
      */
     public function update(Request $request, Event $event)
     {
-        // Hardcoded committee ID - replace with authenticated committee when auth is implemented
-        $committeeId = 1;
+        // Ensure user is authenticated and is a committee member
+        if (!Auth::check()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'You must be logged in to update events.'], 401);
+            }
+            return redirect()->route('login')->with('error', 'You must be logged in to update events.');
+        }
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user->isCommittee()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Only committee members can update events.'], 403);
+            }
+            return redirect()->route('homepage')->with('error', 'Only committee members can update events.');
+        }
+
+        $committeeId = Auth::id();
         
         // Prevent editing approved events
         if ($event->status === 'approved') {
@@ -335,9 +397,9 @@ protected $eventService;
         // Only allow committee to edit their own events
         if ($event->committee_id != $committeeId) {
             if ($request->wantsJson()) {
-                return response()->json(['message' => 'Unauthorized.'], 403);
+                return response()->json(['message' => 'Unauthorized. You can only update your own events.'], 403);
             }
-            return redirect()->route('committee.events.index')->with('error', 'Unauthorized.');
+            return redirect()->route('committee.events.index')->with('error', 'Unauthorized. You can only update your own events.');
         }
         
         $data = $this->validateData($request, isUpdate: true);
@@ -564,7 +626,46 @@ protected $eventService;
      */
     public function destroy(Request $request, Event $event)
     {
+        // Ensure user is authenticated and is a committee member
+        if (!Auth::check()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'You must be logged in to delete events.'], 401);
+            }
+            return redirect()->route('login')->with('error', 'You must be logged in to delete events.');
+        }
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user->isCommittee()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Only committee members can delete events.'], 403);
+            }
+            return redirect()->route('homepage')->with('error', 'Only committee members can delete events.');
+        }
+
+        // Only allow committee to delete their own events
+        if ($event->committee_id != Auth::id()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Unauthorized. You can only delete your own events.'], 403);
+            }
+            return redirect()->route('committee.events.index')->with('error', 'Unauthorized. You can only delete your own events.');
+        }
+
+        // Store facility_id before deletion (needed for status update)
+        $facilityId = $event->facility_id;
+
+        // Unbook the facility before deleting the event
+        $event->unbookFacility();
+
         $event->delete();
+
+        // Update facility status if no upcoming/ongoing events remain
+        if ($facilityId) {
+            $facility = \App\Models\Facility::find($facilityId);
+            if ($facility) {
+                $facility->updateStatusBasedOnEvents();
+            }
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -588,7 +689,18 @@ protected $eventService;
             return $this->errorResponse($request, $e->getMessage(), 422);
         }
 
+        // Unbook the facility when event is cancelled
+        $event->unbookFacility();
+
         EventStatusService::sync($event);
+
+        // Update facility status if no upcoming/ongoing events remain
+        if ($event->facility_id) {
+            $facility = \App\Models\Facility::find($event->facility_id);
+            if ($facility) {
+                $facility->updateStatusBasedOnEvents();
+            }
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -643,7 +755,18 @@ protected $eventService;
             return $this->errorResponse($request, $e->getMessage(), 422);
         }
 
+        // Unbook the facility when event is rejected
+        $event->unbookFacility();
+
         EventStatusService::sync($event);
+
+        // Update facility status if no upcoming/ongoing events remain
+        if ($event->facility_id) {
+            $facility = \App\Models\Facility::find($event->facility_id);
+            if ($facility) {
+                $facility->updateStatusBasedOnEvents();
+            }
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -699,7 +822,7 @@ protected $eventService;
             'price' => array_merge($requiredRules, ['numeric', 'min:0']),
             'facility_id' => ['nullable', 'integer', 'exists:facilities,id'],
             'book_facility_id' => ['nullable', 'integer', 'exists:facilities,id'],
-            'committee_id' => array_merge($requiredRules, ['integer']),
+            // committee_id is set from authenticated user, not from form input
             'event_type' => ['nullable', 'in:single,recurring'],
         ], [
             'event_start_date.after_or_equal' => 'The event start date must be at least 1 week from today.',
@@ -784,10 +907,17 @@ protected $eventService;
     public function show(Request $request, Event $event)
     {
         $event = EventStatusService::sync($event);
-        // Hardcoded IDs - replace with authenticated user when auth is implemented
-        $studentId = Auth::id() ?? 1;
-        $committeeId = 1;
+        
+        // Get authenticated user info
+        $studentId = Auth::id();
+        $committeeId = Auth::id();
         $isAdmin = $request->routeIs('admin.*') || $request->has('admin'); // Check if admin route or query param
+        
+        // Check if user is admin
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        $isUserAdmin = $user && $user->isAdmin();
+        $isUserCommittee = $user && $user->isCommittee();
 
         // Check access permissions
         $canView = false;
@@ -795,14 +925,14 @@ protected $eventService;
         $isAdminView = false;
         
         // Check if admin first
-        if ($isAdmin) {
+        if ($isAdmin || $isUserAdmin) {
             // Admins can view all events
             $canView = true;
             $isAdminView = true;
         } elseif ($event->status === 'approved') {
             // Approved events are visible to everyone (students and committees)
             $canView = true;
-        } elseif ($event->committee_id == $committeeId) {
+        } elseif ($isUserCommittee && $event->committee_id == $committeeId) {
             // Committees can view their own events (draft, pending, rejected)
             $canView = true;
             $isCommitteeView = true;
@@ -898,6 +1028,31 @@ protected $eventService;
      */
     public function committeeShow(Request $request, Event $event)
     {
+        // Ensure user is authenticated and is a committee member
+        if (!Auth::check()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'You must be logged in to view event details.'], 401);
+            }
+            return redirect()->route('login')->with('error', 'You must be logged in to view event details.');
+        }
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user->isCommittee()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Only committee members can access this page.'], 403);
+            }
+            return redirect()->route('homepage')->with('error', 'Only committee members can access this page.');
+        }
+
+        // Only allow committee to view their own events
+        if ($event->committee_id != Auth::id()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Unauthorized. You can only view your own events.'], 403);
+            }
+            return redirect()->route('committee.events.index')->with('error', 'Unauthorized. You can only view your own events.');
+        }
+
         $event = EventStatusService::sync($event);
         if (\Illuminate\Support\Facades\Schema::hasTable('facilities')) {
             $event->load('facility');

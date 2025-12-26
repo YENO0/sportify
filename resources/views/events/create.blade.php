@@ -753,8 +753,7 @@
             </div>
         </div>
 
-        <!-- Hidden fields for form submission -->
-        <input type="hidden" name="committee_id" value="1">
+        <!-- committee_id will be set automatically from authenticated user -->
 
         <div class="form-actions">
             <a href="{{ route('committee.events.index') }}" class="btn-secondary">Cancel</a>
