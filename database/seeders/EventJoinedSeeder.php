@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Event;
+use App\Models\EventJoined;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class EventJoinedSeeder extends Seeder
@@ -53,7 +53,7 @@ class EventJoinedSeeder extends Seeder
 
         // Insert all event joined records
         foreach ($eventJoinedRecords as $record) {
-            DB::table('eventJoined')->updateOrCreate(
+            \App\Models\EventJoined::updateOrCreate(
                 [
                     'eventID' => $record['eventID'],
                     'studentID' => $record['studentID'],

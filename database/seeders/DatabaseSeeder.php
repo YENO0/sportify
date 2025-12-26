@@ -15,34 +15,47 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create test users
-        User::updateOrCreate(
-            ['email' => 'test@example.com'],
-            [
-            'name' => 'Test User',
-                'password' => bcrypt('password'),
-            ]
-        );
+        // Step 1: Create sample users first (admin, committee, student)
+        // These are needed by EventSeeder and other seeders
+        $this->call([
+            \Database\Seeders\SampleUsersSeeder::class,
+        ]);
 
-        // Create an admin user
-        User::updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-            'name' => 'Admin User',
-            'role' => User::ROLE_ADMIN,
-                'password' => bcrypt('password'),
-            ]
-        );
-        
-        // Seed modules (order matters - seed dependencies first)
+        // Step 2: Seed independent data (no dependencies)
         $this->call([
             \Database\Seeders\SportTypeSeeder::class,
             \Database\Seeders\BrandSeeder::class,
-            \Database\Seeders\EquipmentSeeder::class,
-            \Database\Seeders\EventSeeder::class,
-            \Database\Seeders\EventRegistrationDummySeeder::class,
-            \Database\Seeders\DummyUserSeeder::class,
             \Database\Seeders\FacilitySeeder::class,
         ]);
+
+        // Step 3: Seed data that depends on Step 2
+        $this->call([
+            \Database\Seeders\EquipmentSeeder::class, // Depends on SportType and Brand
+        ]);
+
+        // Step 4: Seed events (depends on Users and Facilities)
+        $this->call([
+            \Database\Seeders\EventSeeder::class, // Depends on Users (admin, committee) and Facilities
+        ]);
+
+        // Step 5: Seed event registrations (depends on Events and Users/Students)
+        $this->call([
+            \Database\Seeders\EventJoinedSeeder::class, // Depends on Events and Users
+            // Note: EventRegistrationDummySeeder also seeds eventJoined, 
+            // but it depends on Student model which may not exist
+        ]);
+
+        // Step 6: Seed payments (depends on eventJoined records)
+        $this->call([
+            \Database\Seeders\PaymentSeeder::class, // Depends on eventJoined
+        ]);
+
+        // Step 7: Seed invoices (depends on payments)
+        $this->call([
+            \Database\Seeders\InvoiceSeeder::class, // Depends on Payments and eventJoined with paymentID
+        ]);
+
+        // Note: DummyUserSeeder is redundant (creates test@example.com which is already in DatabaseSeeder above)
+        // Keeping it commented out to avoid confusion, but can be removed if not needed
     }
 }

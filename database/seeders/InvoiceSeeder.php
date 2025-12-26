@@ -33,8 +33,6 @@ class InvoiceSeeder extends Seeder
                 DB::table('invoices')->insert([
                     'eventJoinedID' => $eventJoined->eventJoinedID,
                     'dateTimeGenerated' => $invoiceDate,
-                    'created_at' => $invoiceDate,
-                    'updated_at' => $invoiceDate,
                 ]);
             }
         }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Equipment;
+use App\Models\EquipmentBorrowing;
 use App\Services\EquipmentBorrowingService;
 use App\Patterns\Factory\BorrowingFactoryManager;
 use Illuminate\Http\Request;
@@ -65,12 +66,82 @@ class EquipmentBorrowingController extends Controller
     }
 
     /**
-     * Remove the specified borrowing (manual return).
+     * Show the form for editing a borrowing.
      */
-    public function destroy(Event $event, $borrowingId)
+    public function edit(Event $event, EquipmentBorrowing $borrowing)
     {
         try {
-            $this->borrowingService->returnBorrowing($event->eventID, $borrowingId);
+            // Verify the borrowing belongs to this event
+            if ($borrowing->event_id != $event->eventID) {
+                return redirect()->route('committee.events.show', $event->eventID)
+                    ->with('error', 'Borrowing not found for this event.');
+            }
+            
+            if ($borrowing->isReturned()) {
+                return redirect()->route('committee.events.show', $event->eventID)
+                    ->with('error', 'Cannot edit a returned equipment borrowing.');
+            }
+            
+            $equipment = $borrowing->equipment;
+            
+            return view('equipment-borrowings.edit', compact('event', 'borrowing', 'equipment'));
+        } catch (\Exception $e) {
+            Log::error('Error loading edit form: ' . $e->getMessage());
+            return redirect()->route('committee.events.show', $event->eventID)
+                ->with('error', 'Failed to load edit form.');
+        }
+    }
+
+    /**
+     * Update the specified borrowing.
+     */
+    public function update(Request $request, Event $event, EquipmentBorrowing $borrowing)
+    {
+        try {
+            // Verify the borrowing belongs to this event
+            if ($borrowing->event_id != $event->eventID) {
+                return redirect()->route('committee.events.show', $event->eventID)
+                    ->with('error', 'Borrowing not found for this event.');
+            }
+            
+            if ($borrowing->isReturned()) {
+                return redirect()->route('committee.events.show', $event->eventID)
+                    ->with('error', 'Cannot update a returned equipment borrowing.');
+            }
+            
+            $validated = $request->validate([
+                'quantity' => 'required|integer|min:1',
+            ]);
+            
+            $this->borrowingService->updateBorrowing($event->eventID, $borrowing->id, $validated['quantity']);
+            
+            return redirect()->route('committee.events.show', $event->eventID)
+                ->with('success', 'Equipment borrowing updated successfully.');
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Error updating borrowing: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to update equipment borrowing. ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified borrowing (manual return).
+     */
+    public function destroy(Event $event, EquipmentBorrowing $borrowing)
+    {
+        try {
+            // Verify the borrowing belongs to this event
+            if ($borrowing->event_id != $event->eventID) {
+                return redirect()->route('committee.events.show', $event->eventID)
+                    ->with('error', 'Borrowing not found for this event.');
+            }
+            
+            $this->borrowingService->returnBorrowing($event->eventID, $borrowing->id);
             
             return redirect()->route('committee.events.show', $event->eventID)
                 ->with('success', 'Equipment returned successfully.');

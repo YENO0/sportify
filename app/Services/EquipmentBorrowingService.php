@@ -133,6 +133,81 @@ class EquipmentBorrowingService
     }
 
     /**
+     * Update a borrowing quantity
+     */
+    public function updateBorrowing(int $eventId, int $borrowingId, int $newQuantity): bool
+    {
+        DB::beginTransaction();
+        try {
+            $event = Event::findOrFail($eventId);
+            $borrowing = $event->equipmentBorrowings()->findOrFail($borrowingId);
+            
+            if ($borrowing->isReturned()) {
+                throw new \InvalidArgumentException('Cannot update a returned equipment borrowing.');
+            }
+            
+            if ($newQuantity <= 0) {
+                throw new \InvalidArgumentException('Quantity must be greater than 0.');
+            }
+            
+            $equipment = $borrowing->equipment;
+            $oldQuantity = $borrowing->quantity;
+            $quantityDifference = $newQuantity - $oldQuantity;
+            
+            // Check if we need more equipment
+            if ($quantityDifference > 0) {
+                // Need to borrow more
+                if ($equipment->available_quantity < $quantityDifference) {
+                    throw new \InvalidArgumentException(
+                        "Insufficient quantity available. Available: {$equipment->available_quantity}, Additional needed: {$quantityDifference}"
+                    );
+                }
+                $equipment->available_quantity -= $quantityDifference;
+            } else {
+                // Returning some equipment
+                $equipment->available_quantity += abs($quantityDifference);
+            }
+            
+            $equipment->save();
+            
+            // Update borrowing quantity
+            $borrowing->quantity = $newQuantity;
+            $borrowing->save();
+            
+            // Log the update transaction
+            $equipment->transactions()->create([
+                'transaction_type' => 'event_borrowing_update',
+                'user_id' => auth()->id(),
+                'quantity' => abs($quantityDifference),
+                'transaction_date' => now(),
+                'notes' => "Updated borrowing quantity from {$oldQuantity} to {$newQuantity} for event: {$event->event_name}",
+            ]);
+            
+            DB::commit();
+            Log::info('Equipment borrowing updated successfully', [
+                'borrowing_id' => $borrowingId,
+                'event_id' => $eventId,
+                'old_quantity' => $oldQuantity,
+                'new_quantity' => $newQuantity
+            ]);
+            
+            return true;
+        } catch (\InvalidArgumentException $e) {
+            DB::rollBack();
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('EquipmentBorrowingService::updateBorrowing - Error: ' . $e->getMessage(), [
+                'borrowing_id' => $borrowingId,
+                'event_id' => $eventId,
+                'new_quantity' => $newQuantity,
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new \RuntimeException('Failed to update equipment borrowing: ' . $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
      * Delete/Return a borrowing (manual return)
      */
     public function returnBorrowing(int $eventId, int $borrowingId): bool
