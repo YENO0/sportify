@@ -109,7 +109,7 @@ class SportTypeController extends Controller
 
             DB::commit();
 
-            return redirect()->route('sport-types.index')
+            return redirect()->route('inventory.index', ['tab' => 'sport-types'])
                 ->with('success', 'Sport type created successfully!');
 
         } catch (\Exception $e) {
@@ -201,7 +201,7 @@ class SportTypeController extends Controller
 
             DB::commit();
 
-            return redirect()->route('sport-types.index')
+            return redirect()->route('inventory.index', ['tab' => 'sport-types'])
                 ->with('success', 'Sport type updated successfully!');
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

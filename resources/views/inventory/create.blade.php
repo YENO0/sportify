@@ -6,23 +6,26 @@
 <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-5xl mx-auto">
         <!-- Page Header -->
-        <div class="mb-8">
+    <div class="mb-8">
+            <a href="{{ route('inventory.index') }}" class="text-blue-600 hover:text-blue-900 mb-4 inline-block">
+                ← Back to Dashboard
+            </a>
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Add New Equipment</h1>
             <p class="text-sm text-gray-600">Create equipment using Factory Method pattern</p>
-        </div>
+    </div>
 
         <!-- Form Container -->
         <div class="bg-white shadow-lg rounded-xl overflow-hidden">
             <form action="{{ route('inventory.store') }}" method="POST" class="space-y-0" enctype="multipart/form-data">
-                @csrf
+            @csrf
 
-                <!-- Section 1: Basic Information -->
+            <!-- Section 1: Basic Information -->
                 <div class="border-b border-gray-200 px-6 sm:px-8 py-8">
                     <div class="mb-6">
                         <h2 class="text-xl font-semibold text-gray-900 mb-2">Basic Information</h2>
                         <p class="text-sm text-gray-500">Provide the essential details about the equipment</p>
                     </div>
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Equipment Name *</label>
                         <input type="text" name="name" id="name" value="{{ old('name') }}" required
@@ -51,8 +54,8 @@
                         <textarea name="description" id="description" rows="4"
                             class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out resize-none">{{ old('description') }}</textarea>
                     </div>
-                    </div>
                 </div>
+            </div>
 
             <!-- Section 2: Brand Information -->
             <div class="border-b border-gray-200 px-6 sm:px-8 py-8 bg-gray-50">
@@ -98,7 +101,7 @@
                 <div class="space-y-6">
                     <div>
                         <label for="images" class="block text-sm font-medium text-gray-700 mb-3">Images * (Multiple allowed)</label>
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div class="flex flex-col sm:flex-row sm:items-start gap-4">
                             <label for="images" class="cursor-pointer inline-flex items-center justify-center px-6 py-3 bg-blue-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -178,7 +181,7 @@
                             <input type="checkbox" name="add_insurance" id="add_insurance" value="1" {{ old('add_insurance') ? 'checked' : '' }}
                                 class="focus:ring-blue-500 h-5 w-5 text-blue-600 border-gray-300 rounded">
                         </div>
-                        <div class="ml-4 flex-1">
+                        <div class="ml-6 flex-1">
                             <label for="add_insurance" class="block font-semibold text-gray-900 cursor-pointer">Add Insurance Coverage</label>
                             <p class="text-sm text-gray-500 mt-1">Decorator pattern: InsuranceDecorator</p>
                             <div class="mt-4 space-y-3" id="insurance-details" style="display: none;">
@@ -212,7 +215,7 @@
                             <input type="checkbox" name="add_maintenance_tracking" id="add_maintenance_tracking" value="1" {{ old('add_maintenance_tracking') ? 'checked' : '' }}
                                 class="focus:ring-blue-500 h-5 w-5 text-blue-600 border-gray-300 rounded">
                         </div>
-                        <div class="ml-4 flex-1">
+                        <div class="ml-6 flex-1">
                             <label for="add_maintenance_tracking" class="block font-semibold text-gray-900 cursor-pointer">Add Maintenance Tracking</label>
                             <p class="text-sm text-gray-500 mt-1">Decorator pattern: MaintenanceTrackingDecorator</p>
                             <div class="mt-4" id="maintenance-details" style="display: none;">
@@ -225,22 +228,20 @@
             </div>
 
             <!-- Form Actions -->
-            <div class="px-6 sm:px-8 py-6 bg-gray-50 border-t border-gray-200">
-                <div class="flex flex-col sm:flex-row justify-end gap-3">
-                    <a href="{{ route('inventory.index') }}" class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-                        Cancel
-                    </a>
-                    <button type="submit" class="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                        </svg>
-                        Create Equipment
-                    </button>
-                </div>
+            <div class="px-6 sm:px-8 py-6 bg-white flex justify-end space-x-3">
+                <a href="{{ route('inventory.index') }}" class="inline-flex items-center justify-center px-6 py-3 border border-red-300 rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+                    Cancel
+                </a>
+                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Create Equipment
+                </button>
             </div>
         </form>
     </div>
-</div>
+    </div>
 </div>
 
 <script>

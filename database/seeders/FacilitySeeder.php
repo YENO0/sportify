@@ -15,14 +15,14 @@ class FacilitySeeder extends Seeder
         $facilities = [
             [
                 'name' => 'Main Sports Hall',
-                'type' => 'Indoor',
-                'status' => 'Active',
+            'type' => 'Indoor',
+            'status' => 'Active',
                 'description' => 'Large multi-purpose indoor hall suitable for badminton, basketball, volleyball, and events. Capacity: 500 people.',
             ],
             [
-                'name' => 'Tennis Court A',
-                'type' => 'Outdoor',
-                'status' => 'Active',
+            'name' => 'Tennis Court A',
+            'type' => 'Outdoor',
+            'status' => 'Active',
                 'description' => 'Standard outdoor tennis court with lighting. Available for booking.',
             ],
             [
@@ -32,7 +32,7 @@ class FacilitySeeder extends Seeder
                 'description' => 'Standard outdoor tennis court with lighting. Available for booking.',
             ],
             [
-                'name' => 'Swimming Pool',
+            'name' => 'Swimming Pool',
                 'type' => 'Indoor',
                 'status' => 'Active',
                 'description' => 'Olympic-sized swimming pool with 8 lanes. Includes diving board.',
@@ -57,8 +57,8 @@ class FacilitySeeder extends Seeder
             ],
             [
                 'name' => 'Gymnasium',
-                'type' => 'Indoor',
-                'status' => 'Maintenance',
+            'type' => 'Indoor',
+            'status' => 'Maintenance',
                 'description' => 'Fully equipped gym with weights and cardio equipment. Currently under maintenance.',
             ],
         ];

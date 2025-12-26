@@ -1,11 +1,33 @@
 @php
-    $currentSort = request('sort');
-    $currentDirection = request('direction');
+    $paramPrefix = $param_prefix ?? '';
+    $sortParam = $paramPrefix ? $paramPrefix . 'sort' : 'sort';
+    $directionParam = $paramPrefix ? $paramPrefix . 'direction' : 'direction';
+    
+    $currentSort = request($sortParam);
+    $currentDirection = request($directionParam);
     $isActive = $currentSort === $column;
     $newDirection = $isActive && $currentDirection === 'asc' ? 'desc' : 'asc';
-    $url = route($route, array_merge(request()->except(['sort', 'direction']), ['sort' => $column, 'direction' => $newDirection]));
+    
+    // Preserve tab parameter and other relevant params
+    $params = request()->except([$sortParam, $directionParam]);
+    $params[$sortParam] = $column;
+    $params[$directionParam] = $newDirection;
+    
+    // Always preserve tab parameter - determine from param_prefix or existing request
+    if ($paramPrefix === 'brand_') {
+        $params['tab'] = 'brands';
+    } elseif ($paramPrefix === 'sport_type_') {
+        $params['tab'] = 'sport-types';
+    } elseif (request('tab')) {
+        $params['tab'] = request('tab');
+    } else {
+        // Default to equipment tab if no tab specified
+        $params['tab'] = 'equipment';
+    }
+    
+    $url = route($route, $params);
 @endphp
-<a href="{{ $url }}" class="group inline-flex items-center hover:text-gray-700">
+<a href="{{ $url }}" class="group inline-flex items-center text-black hover:text-gray-900">
     {{ $label }}
     @if($isActive)
         @if($currentDirection == 'asc')

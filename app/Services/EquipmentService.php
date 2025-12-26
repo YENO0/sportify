@@ -26,15 +26,16 @@ class EquipmentService
             // Search functionality
             if (!empty($filters['search'])) {
                 $search = $filters['search'];
-                $query->where(function($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%")
-                      ->orWhere('model', 'like', "%{$search}%")
-                      ->orWhereHas('brand', function($q) use ($search) {
-                          $q->where('name', 'like', "%{$search}%");
+                $searchLower = strtolower($search);
+                $query->where(function($q) use ($search, $searchLower) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ['%' . $searchLower . '%'])
+                      ->orWhereRaw('LOWER(description) LIKE ?', ['%' . $searchLower . '%'])
+                      ->orWhereRaw('LOWER(model) LIKE ?', ['%' . $searchLower . '%'])
+                      ->orWhereHas('brand', function($q) use ($searchLower) {
+                          $q->whereRaw('LOWER(name) LIKE ?', ['%' . $searchLower . '%']);
                       })
-                      ->orWhereHas('sportType', function($q) use ($search) {
-                          $q->where('name', 'like', "%{$search}%");
+                      ->orWhereHas('sportType', function($q) use ($searchLower) {
+                          $q->whereRaw('LOWER(name) LIKE ?', ['%' . $searchLower . '%']);
                       });
                 });
             }

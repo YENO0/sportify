@@ -98,7 +98,7 @@ class BrandController extends Controller
 
             DB::commit();
 
-            return redirect()->route('brands.index')
+            return redirect()->route('inventory.index', ['tab' => 'brands'])
                 ->with('success', 'Brand "' . $brand->name . '" registered successfully!');
 
         } catch (\Illuminate\Database\QueryException $e) {
@@ -186,7 +186,7 @@ class BrandController extends Controller
 
             $brand->update($request->all());
 
-            return redirect()->route('brands.show', $id)
+            return redirect()->route('inventory.index', ['tab' => 'brands'])
                 ->with('success', 'Brand updated successfully!');
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
