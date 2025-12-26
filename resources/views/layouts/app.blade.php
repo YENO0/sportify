@@ -35,10 +35,20 @@
             color: #1f2937;
             text-decoration: none;
         }
+        .navbar .nav-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 1.25rem;
+            flex: 1;
+            min-width: 0;
+        }
         .navbar .nav-links {
             display: flex;
             align-items: center;
             gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
         .navbar .nav-links a {
             color: #4b5563;
@@ -374,28 +384,37 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-gray-50">
+<body class="@yield('bodyClass', 'bg-gray-50')">
     <nav class="navbar">
         <a href="{{ route('homepage') }}" class="brand">Sportify</a>
-        <div style="display: flex; align-items: center; gap: 1.5rem;">
+
+        <div class="nav-right">
             <div class="nav-links">
                 @auth
                     @php
                         $user = auth()->user();
                     @endphp
-                    
+
                     {{-- Events - Students can see --}}
                     @if($user->isStudent() && Route::has('events.approved'))
                         <a href="{{ route('events.approved') }}">Events</a>
                     @endif
-                    
-                    {{-- Committee: Dashboard only --}}
+
+                    {{-- Students: My Events --}}
+                    @if($user->isStudent() && Route::has('payments.my-events'))
+                        <a href="{{ route('payments.my-events') }}">My Events</a>
+                    @endif
+
+                    {{-- Committee: Dashboard + Transactions --}}
                     @if($user->isCommittee())
                         @if(Route::has('committee.dashboard'))
                             <a href="{{ route('committee.dashboard') }}">Dashboard</a>
                         @endif
+                        @if(Route::has('payments.transaction-history'))
+                            <a href="{{ route('payments.transaction-history') }}">Transactions</a>
+                        @endif
                     @endif
-                    
+
                     {{-- Admin: Events, Facilities, Users --}}
                     @if($user->isAdmin())
                         @if(Route::has('admin.events.index'))
@@ -408,7 +427,7 @@
                             <a href="{{ route('admin.users.index') }}">Users</a>
                         @endif
                     @endif
-                    
+
                     {{-- Notifications - All authenticated users --}}
                     @if(Route::has('notifications.index'))
                         <a href="{{ route('notifications.index') }}" class="notification-link">
@@ -423,6 +442,7 @@
                     @endif
                 @endauth
             </div>
+
             <div class="user-info">
                 @auth
                     <span>Welcome, {{ auth()->user()->name }}</span>
@@ -445,7 +465,7 @@
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <main class="@yield('mainClass', 'max-w-7xl mx-auto py-6 sm:px-6 lg:px-8')">
         @if(session('success'))
             <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                 <span class="block sm:inline">{{ session('success') }}</span>

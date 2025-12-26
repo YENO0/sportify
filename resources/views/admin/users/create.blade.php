@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('mainClass', 'max-w-none mx-0 py-0 px-0')
+
 @section('content')
 <style>
     /* Full-width layout overrides and re-usable styles (copy-pasted for self-contained file) */

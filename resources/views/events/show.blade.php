@@ -30,7 +30,7 @@
     .event-detail-page {
         max-width: 1100px;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0;
     }
 
     .back-link {
@@ -368,6 +368,14 @@
         padding: 12px 14px;
         text-align: left;
         font-size: 14px;
+    }
+
+    .participants-table th {
+        color: #111827; /* match page's black text */
+    }
+
+    .participants-table td {
+        color: #374151;
     }
 
     .participants-table thead {
@@ -734,8 +742,14 @@
         border-radius: 6px;
         font-size: 16px;
         font-weight: 600;
-        cursor: not-allowed;
-        opacity: 0.6;
+        cursor: pointer;
+        opacity: 1;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .register-modal-btn:hover {
+        opacity: 0.95;
+        transform: translateY(-1px);
     }
 
     .register-modal-image {
@@ -1039,6 +1053,12 @@
                     </svg>
                     <span>Capacity: {{ $event->max_capacity }}</span>
                 </div>
+                <div class="meta-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A2 2 0 013 15.382V6.618a2 2 0 011.553-1.894L9 2m0 18l6-3m-6 3V2m6 15l5.447-2.724A2 2 0 0021 12.382V3.618a2 2 0 00-1.553-1.894L15 2m0 15V2m0 0L9 5"></path>
+                    </svg>
+                    <span>Facility: {{ $event->facility->name ?? 'N/A' }}</span>
+                </div>
             </div>
 
             <div class="content-section">
@@ -1048,10 +1068,6 @@
                 @else
                     <p class="content-section-text" style="color: #9ca3af;">No description available.</p>
                 @endif
-                <div style="margin-top: 16px;">
-                    <span style="font-size: 14px; color: #6b7280;">Category: </span>
-                    <span style="font-size: 14px; color: #374151;">Events</span>
-                </div>
             </div>
 
             @if($isAdminView ?? false)
@@ -1131,7 +1147,9 @@
                         <table class="participants-table">
                             <thead>
                                 <tr>
-                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Contact</th>
                                     <th>Status</th>
                                     <th>Joined Date</th>
                                 </tr>
@@ -1139,7 +1157,9 @@
                             <tbody>
                                 @foreach($registrations as $reg)
                                     <tr>
-                                        <td>#{{ $reg->studentID }}</td>
+                                        <td>{{ $reg->user->name ?? ('#' . $reg->studentID) }}</td>
+                                        <td>{{ $reg->user->email ?? 'N/A' }}</td>
+                                        <td>{{ $reg->user->contact ?? 'N/A' }}</td>
                                         <td>
                                             <span class="badge badge-{{ $reg->status }}">{{ ucfirst($reg->status) }}</span>
                                         </td>
@@ -1185,7 +1205,9 @@
                 @elseif($event->status === 'approved')
                     <span class="registration-pill {{ $registrationClass }}">{{ $registrationText }}</span>
                     @if(!$registrationDisabled && $remaining > 0 && !$isRegistered && in_array($event->event_status, ['Upcoming', 'Ongoing']))
-                        <a href="{{ route('payments.show', $event->eventID) }}" class="event-register-btn" style="text-decoration: none; display: block; text-align: center;">Register Now</a>
+                        <button type="button" class="event-register-btn" onclick="openRegisterModal()">
+                            Register Now
+                        </button>
                     @elseif($isRegistered)
                         <button class="event-register-btn" disabled style="background: #10b981;">Registered</button>
                     @else
@@ -1250,7 +1272,7 @@
 
             <div class="register-modal-footer">
                 <div style="font-size: 12px; color: #6b7280;">Powered by Sportify</div>
-                <button type="button" class="register-modal-btn" disabled>Register</button>
+                <button type="button" class="register-modal-btn" onclick="proceedToPayment()">Register</button>
             </div>
         </div>
 
@@ -1279,6 +1301,8 @@
 
 @push('scripts')
 <script>
+    const paymentUrl = @json(route('payments.show', $event->eventID));
+
     function openRegisterModal() {
         document.getElementById('registerModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -1287,6 +1311,12 @@
     function closeRegisterModal() {
         document.getElementById('registerModal').style.display = 'none';
         document.body.style.overflow = 'auto';
+    }
+
+    function proceedToPayment() {
+        // Close modal first for nicer UX, then navigate
+        closeRegisterModal();
+        window.location.href = paymentUrl;
     }
 
     // Close modal on ESC key

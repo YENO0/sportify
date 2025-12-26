@@ -2,6 +2,7 @@
 
 @section('title', 'Approved Events')
 @section('page-title', '')
+@section('mainClass', 'max-w-none mx-0 py-0 px-0')
 
 @section('nav-links')
 @endsection
@@ -10,9 +11,30 @@
 <style>
     /* Override layout background and container */
     body {
-        background: #ffffff !important;
+        background: #f8fafc !important;
         padding: 0 !important;
     }
+
+    .card {
+        max-width: none;
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        padding: 0;
+        background: #f8fafc;
+        border: none;
+        box-shadow: none;
+    }
+
+    /* Match User Management header layout */
+    .page-header {
+        background: #ffffff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 2rem 2.5rem;
+    }
+    .page-header h1 { font-size: 1.8rem; font-weight: 700; color: #1f2937; margin: 0; }
+    .page-header p { font-size: 1rem; color: #4b5563; margin-top: 0.25rem; }
+    .content-area { padding: 2.5rem; max-width: 1400px; margin: 0 auto; }
 
     .container {
         max-width: 100% !important;
@@ -28,10 +50,10 @@
     }
 
     .events-header {
-        max-width: 1100px;
+        max-width: 1400px;
         margin-left: auto;
         margin-right: auto;
-        padding: 0 20px;
+        padding: 0;
         margin-bottom: 30px;
     }
 
@@ -78,10 +100,10 @@
         grid-template-columns: repeat(4, 1fr);
         gap: 40px;
         margin-top: 20px;
-        max-width: 1100px;
+        max-width: 1400px;
         margin-left: auto;
         margin-right: auto;
-        padding: 0 20px;
+        padding: 0;
     }
 
     @media (max-width: 1100px) {
@@ -193,6 +215,7 @@
         margin-bottom: 8px;
         line-height: 1.4;
         display: -webkit-box;
+        line-clamp: 2;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
@@ -205,6 +228,7 @@
         margin-bottom: 12px;
         flex: 1;
         display: -webkit-box;
+        line-clamp: 2;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
@@ -398,22 +422,28 @@
 @endpush
 
 @section('content')
-    <div class="events-header">
-        <h2 class="events-header-title">Events</h2>
-        <div class="events-tabs">
-            <a href="{{ route('events.approved', ['filter' => 'all']) }}" class="events-tab {{ ($filter ?? 'all') === 'all' ? 'active' : '' }}">
-                All
-            </a>
-            <a href="{{ route('events.approved', ['filter' => 'this_week']) }}" class="events-tab {{ ($filter ?? 'all') === 'this_week' ? 'active' : '' }}">
-                This week
-            </a>
-            <a href="{{ route('events.approved', ['filter' => 'this_month']) }}" class="events-tab {{ ($filter ?? 'all') === 'this_month' ? 'active' : '' }}">
-                This month
-            </a>
-        </div>
-    </div>
+<div class="card">
+    <header class="page-header">
+        <h1>Events</h1>
+        <p>Browse events and register to participate.</p>
+    </header>
 
-    @if($events->count() > 0)
+    <div class="content-area">
+        <div class="events-header">
+            <div class="events-tabs">
+                <a href="{{ route('events.approved', ['filter' => 'all']) }}" class="events-tab {{ ($filter ?? 'all') === 'all' ? 'active' : '' }}">
+                    All
+                </a>
+                <a href="{{ route('events.approved', ['filter' => 'this_week']) }}" class="events-tab {{ ($filter ?? 'all') === 'this_week' ? 'active' : '' }}">
+                    This week
+                </a>
+                <a href="{{ route('events.approved', ['filter' => 'this_month']) }}" class="events-tab {{ ($filter ?? 'all') === 'this_month' ? 'active' : '' }}">
+                    This month
+                </a>
+            </div>
+        </div>
+
+        @if($events->count() > 0)
         <div class="events-grid">
             @foreach($events as $event)
                 @php
@@ -514,13 +544,14 @@
                 </a>
             @endforeach
         </div>
-    @else
+        @else
         <div class="empty-state">
             <h3>No events available</h3>
             <p>No approved events available at the moment.</p>
             <p style="margin-top: 10px; font-size: 14px;">Check back later for new events!</p>
         </div>
-    @endif
-
+        @endif
+    </div>
+</div>
 
 @endsection
