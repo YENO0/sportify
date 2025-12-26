@@ -100,10 +100,9 @@ class EquipmentBorrowingService
                 ]);
                 
                 // Use Decorator to schedule return
-                $decoratorManager = new BorrowingDecoratorManager($borrowing);
-                $returnScheduler = $decoratorManager->withReturnScheduler();
-                $returnScheduler->scheduleReturn();
-                $returnScheduler->processReturn(); // Process if already past
+                $returnScheduler = BorrowingDecoratorManager::withReturnScheduler($borrowing);
+                // Process automatic return if event has already ended
+                $returnScheduler->processAutomaticReturn();
                 
                 $createdBorrowings[] = $borrowing;
                 $successMessages[] = "{$quantity} {$equipment->name}(s)";
@@ -163,7 +162,7 @@ class EquipmentBorrowingService
                 'user_id' => auth()->id(),
                 'quantity' => $borrowing->quantity,
                 'transaction_date' => now(),
-                'notes' => "Manually returned from event: {$event->name}",
+                'notes' => "Manually returned from event: {$event->event_name}",
             ]);
             
             DB::commit();

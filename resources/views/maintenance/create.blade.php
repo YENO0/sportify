@@ -12,18 +12,18 @@
         <p class="mt-2 text-sm text-gray-600">Create maintenance record using Factory Method pattern</p>
     </div>
 
-    <div class="bg-white shadow sm:rounded-lg">
-        <form action="{{ route('maintenance.store') }}" method="POST" class="space-y-6 p-6">
+    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+        <form action="{{ route('maintenance.store') }}" method="POST" class="divide-y divide-gray-200">
             @csrf
 
             <!-- Section 1: Equipment Selection -->
-            <div class="border-b border-gray-200 pb-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Equipment Selection</h2>
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div class="px-6 sm:px-8 py-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">Equipment Selection</h2>
+                <div class="grid grid-cols-1 gap-y-8 sm:grid-cols-2" style="gap: 2rem 2.5rem;">
                     <div>
-                        <label for="equipment_id" class="block text-sm font-medium text-gray-700">Equipment *</label>
+                        <label for="equipment_id" class="block text-sm font-medium text-gray-700 mb-3">Equipment *</label>
                         <select name="equipment_id" id="equipment_id" required
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white"
                             onchange="updateEquipmentInfo()">
                             <option value="">Select Equipment</option>
                             @foreach($equipment as $item)
@@ -41,85 +41,85 @@
                                 </option>
                             @endforeach
                         </select>
-                        <p id="equipment-info" class="mt-1 text-xs text-gray-500"></p>
+                        <p id="equipment-info" class="mt-2 text-xs text-gray-500"></p>
                     </div>
 
                     <div>
-                        <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity *</label>
+                        <label for="quantity" class="block text-sm font-medium text-gray-700 mb-3">Quantity *</label>
                         <input type="number" name="quantity" id="quantity" value="{{ old('quantity', 1) }}" min="1" required
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
                             onchange="validateQuantity()">
-                        <p id="quantity-error" class="mt-1 text-xs text-red-600" style="display: none;"></p>
-                        <p class="mt-1 text-xs text-gray-500">Quantity to be sent for maintenance</p>
+                        <p id="quantity-error" class="mt-2 text-xs text-red-600" style="display: none;"></p>
+                        <p class="mt-2 text-xs text-gray-500">Quantity to be sent for maintenance</p>
                     </div>
                 </div>
             </div>
 
             <!-- Section 2: Maintenance Details -->
-            <div class="border-b border-gray-200 pb-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Maintenance Details</h2>
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div class="px-6 sm:px-8 py-8 bg-gray-50">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">Maintenance Details</h2>
+                <div class="grid grid-cols-1 gap-y-8 sm:grid-cols-2" style="gap: 2rem 2.5rem;">
                     <div>
-                        <label for="maintenance_type" class="block text-sm font-medium text-gray-700">Maintenance Type *</label>
+                        <label for="maintenance_type" class="block text-sm font-medium text-gray-700 mb-3">Maintenance Type *</label>
                         <select name="maintenance_type" id="maintenance_type" required
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white">
                             <option value="">Select Type</option>
                             <option value="scheduled" {{ old('maintenance_type') == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
                             <option value="emergency" {{ old('maintenance_type') == 'emergency' ? 'selected' : '' }}>Emergency</option>
                             <option value="preventive" {{ old('maintenance_type') == 'preventive' ? 'selected' : '' }}>Preventive</option>
                             <option value="repair" {{ old('maintenance_type') == 'repair' ? 'selected' : '' }}>Repair</option>
                         </select>
-                        <p class="mt-1 text-xs text-gray-500">Factory Method pattern will create maintenance based on type</p>
+                        <p class="mt-2 text-xs text-gray-500">Factory Method pattern will create maintenance based on type</p>
                     </div>
 
                     <div>
-                        <label for="scheduled_date" class="block text-sm font-medium text-gray-700">Scheduled Date *</label>
+                        <label for="scheduled_date" class="block text-sm font-medium text-gray-700 mb-3">Scheduled Date *</label>
                         <input type="date" name="scheduled_date" id="scheduled_date" value="{{ old('scheduled_date', date('Y-m-d')) }}" required
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
                             onchange="updateDateValidation()">
-                        <p class="mt-1 text-xs text-gray-500">When maintenance is scheduled</p>
+                        <p class="mt-2 text-xs text-gray-500">When maintenance is scheduled</p>
                     </div>
 
                     <div>
-                        <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date *</label>
+                        <label for="start_date" class="block text-sm font-medium text-gray-700 mb-3">Start Date *</label>
                         <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}" required
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
                             onchange="updateDateValidation()">
-                        <p class="mt-1 text-xs text-gray-500">When maintenance actually starts (quantity will be deducted)</p>
+                        <p class="mt-2 text-xs text-gray-500">When maintenance actually starts (quantity will be deducted)</p>
                     </div>
 
                     <div>
-                        <label for="end_date" class="block text-sm font-medium text-gray-700">End Date *</label>
+                        <label for="end_date" class="block text-sm font-medium text-gray-700 mb-3">End Date *</label>
                         <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" required
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
                             onchange="updateDateValidation()">
-                        <p class="mt-1 text-xs text-gray-500">When maintenance ends (quantity will be returned)</p>
+                        <p class="mt-2 text-xs text-gray-500">When maintenance ends (quantity will be returned)</p>
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-3">Title *</label>
                         <input type="text" name="title" id="title" value="{{ old('title') }}" required
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
                             placeholder="e.g., Regular Service, Oil Change, Inspection">
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea name="description" id="description" rows="3"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-3">Description</label>
+                        <textarea name="description" id="description" rows="4"
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
                             placeholder="Detailed description of the maintenance work">{{ old('description') }}</textarea>
                     </div>
                 </div>
             </div>
 
             <!-- Section 3: Assignment & Cost -->
-            <div class="border-b border-gray-200 pb-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Assignment & Cost</h2>
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div class="px-6 sm:px-8 py-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">Assignment & Cost</h2>
+                <div class="grid grid-cols-1 gap-y-8 sm:grid-cols-2" style="gap: 2rem 2.5rem;">
                     <div>
-                        <label for="assigned_to" class="block text-sm font-medium text-gray-700">Assign To</label>
+                        <label for="assigned_to" class="block text-sm font-medium text-gray-700 mb-3">Assign To</label>
                         <select name="assigned_to" id="assigned_to"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white">
                             <option value="">Unassigned</option>
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}" {{ old('assigned_to') == $user->id ? 'selected' : '' }}>
@@ -130,27 +130,33 @@
                     </div>
 
                     <div>
-                        <label for="cost" class="block text-sm font-medium text-gray-700">Estimated Cost</label>
+                        <label for="cost" class="block text-sm font-medium text-gray-700 mb-3">Estimated Cost</label>
                         <input type="number" name="cost" id="cost" value="{{ old('cost') }}" step="0.01" min="0"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
                             placeholder="0.00">
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-                        <textarea name="notes" id="notes" rows="3"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-3">Notes</label>
+                        <textarea name="notes" id="notes" rows="4"
+                            class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
                             placeholder="Additional notes or special instructions">{{ old('notes') }}</textarea>
                     </div>
                 </div>
             </div>
 
             <!-- Form Actions -->
-            <div class="flex justify-end space-x-3 pt-6">
-                <a href="{{ route('maintenance.index') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <div class="px-6 sm:px-8 py-6 bg-white flex justify-end space-x-3">
+                <a href="{{ route('maintenance.index') }}" class="inline-flex items-center justify-center px-6 py-3 border border-red-300 rounded-lg shadow-sm text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition ease-in-out duration-150">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                     Cancel
                 </a>
-                <button type="submit" class="bg-blue-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700">
+                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
                     Schedule Maintenance
                 </button>
             </div>

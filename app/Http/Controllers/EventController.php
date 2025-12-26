@@ -91,8 +91,9 @@ protected $eventService;
         $applySearch($pendingQuery);
         $pendingEvents = $pendingQuery->latest()->get();
 
-        // Approved
-        $approvedQuery = (clone $baseQuery)->where('status', 'approved');
+        // Approved (exclude cancelled events)
+        $approvedQuery = (clone $baseQuery)->where('status', 'approved')
+            ->where('event_status', '!=', 'Cancelled');
         $applySearch($approvedQuery);
         $approvedEvents = $approvedQuery->latest()->get();
 
@@ -735,8 +736,9 @@ protected $eventService;
         // Keep lifecycle/registration statuses current before listing
         EventStatusService::syncAll();
 
-        // Students only see approved events that are upcoming or ongoing
+        // Students only see approved events that are upcoming or ongoing (exclude cancelled)
         $query = Event::where('status', 'approved')
+            ->where('event_status', '!=', 'Cancelled')
             ->whereIn('event_status', ['Upcoming', 'Ongoing'])
             ->withCount([
                 'registrations as registrations_count' => function ($q) {
@@ -902,6 +904,12 @@ protected $eventService;
             ->orderBy('joinedDate')
             ->get(['eventJoinedID', 'eventID', 'studentID', 'status', 'joinedDate']);
 
+        // Load equipment borrowings with equipment details
+        $equipmentBorrowings = $event->equipmentBorrowings()
+            ->with(['equipment:id,name'])
+            ->where('status', 'borrowed')
+            ->get();
+
         $registered = $event->registrations_count ?? 0;
         $remaining = max(0, $event->max_capacity - $registered);
         $isRegistered = false; // committees don't register for their own events
@@ -932,7 +940,8 @@ protected $eventService;
             'isCommitteeView',
             'isAdminView',
             'student',
-            'daysLeft'
+            'daysLeft',
+            'equipmentBorrowings'
         ));
     }
 }

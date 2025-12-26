@@ -1114,6 +1114,15 @@
                             </form>
                         </div>
 
+                    {{-- Cancelled (check this first, even if status is approved) --}}
+                    @elseif($event->event_status === 'Cancelled')
+                        <div class="admin-status-box" style="background: #fee2e2; border-left: 4px solid #dc2626;">
+                            <div class="admin-status-header" style="color: #991b1b; font-weight: 700;">Event Cancelled</div>
+                            <div class="admin-status-content" style="color: #7f1d1d;">
+                                This event has been cancelled. All registered participants have been notified.
+                            </div>
+                        </div>
+
                     {{-- Approved --}}
                     @elseif($event->status === 'approved')
                         <div class="admin-status-box admin-status-approved">
@@ -1194,15 +1203,15 @@
                     <div style="padding: 12px; background: #eef2ff; border-radius: 8px; text-align: center; color: #4338ca; font-weight: 600;">
                         Remaining: {{ $remaining ?? 0 }} / {{ $event->max_capacity }}
                     </div>
-                @elseif($event->event_status === 'completed')
-                    <div style="padding: 16px; background: #f3f4f6; border-radius: 8px; text-align: center; color: #374151; font-weight: 600;">
-                        Event Completed
-                    </div>
-                @elseif($event->event_status === 'cancelled')
+                @elseif($event->event_status === 'Cancelled')
                     <div style="padding: 16px; background: #fee2e2; border-radius: 8px; text-align: center; color: #b91c1c; font-weight: 700;">
                         Event Cancelled
                     </div>
-                @elseif($event->status === 'approved')
+                @elseif($event->event_status === 'Completed')
+                    <div style="padding: 16px; background: #f3f4f6; border-radius: 8px; text-align: center; color: #374151; font-weight: 600;">
+                        Event Completed
+                    </div>
+                @elseif($event->status === 'approved' && $event->event_status !== 'Cancelled')
                     <span class="registration-pill {{ $registrationClass }}">{{ $registrationText }}</span>
                     @if(!$registrationDisabled && $remaining > 0 && !$isRegistered && in_array($event->event_status, ['Upcoming', 'Ongoing']))
                         <button type="button" class="event-register-btn" onclick="openRegisterModal()">
@@ -1219,12 +1228,41 @@
                     </div>
                 @endif
             </div>
+
+            @if($isCommitteeView ?? false)
+                <div class="event-price-box" style="margin-top: 16px;">
+                    <h3 style="font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 16px;">Equipment Borrowing</h3>
+                    <a href="{{ route('equipment-borrowings.create', $event) }}" class="event-register-btn" style="display: block; text-align: center; text-decoration: none; margin-bottom: 16px;">
+                        Borrow Equipment
+                    </a>
+                    
+                    @if(isset($equipmentBorrowings) && $equipmentBorrowings->count() > 0)
+                        <div style="margin-top: 16px;">
+                            <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px;">Borrowed Equipment:</div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                @foreach($equipmentBorrowings as $borrowing)
+                                    <div style="padding: 12px; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-weight: 500; color: #111827;">{{ $borrowing->equipment->name ?? 'Unknown Equipment' }}</span>
+                                            <span style="color: #6b7280; font-size: 14px;">Qty: {{ $borrowing->quantity }}</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <div style="padding: 12px; background: #f9fafb; border-radius: 6px; text-align: center; color: #6b7280; font-size: 14px;">
+                            No equipment borrowed yet.
+                        </div>
+                    @endif
+                </div>
+            @endif
         </div>
     </div>
 </div>
 
 <!-- Registration Modal -->
-@if($event->status === 'approved' && $event->registration_status === 'Open' && in_array($event->event_status, ['Upcoming', 'Ongoing']) && $remaining > 0 && !$isRegistered && !$isCommitteeView && !$isAdminView)
+@if($event->status === 'approved' && $event->event_status !== 'Cancelled' && $event->registration_status === 'Open' && in_array($event->event_status, ['Upcoming', 'Ongoing']) && $remaining > 0 && !$isRegistered && !$isCommitteeView && !$isAdminView)
 <div id="registerModal" class="register-modal" style="display: none;">
     <div class="register-modal-overlay" onclick="closeRegisterModal()"></div>
     <div class="register-modal-content">

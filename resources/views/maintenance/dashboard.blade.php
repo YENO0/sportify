@@ -4,14 +4,22 @@
 
 @section('content')
 <div class="px-4 sm:px-6 lg:px-8">
-    <div class="mb-8 flex justify-between items-center">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">Maintenance Dashboard</h1>
-            <p class="mt-2 text-sm text-gray-600">Manage equipment maintenance schedules and track maintenance activities</p>
-        </div>
-        <a href="{{ route('maintenance.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
-            Schedule Maintenance
+    <div class="mb-8">
+        <a href="{{ route('inventory.index') }}" class="text-blue-600 hover:text-blue-900 mb-4 inline-block">
+            ← Back to Inventory Dashboard
         </a>
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Maintenance Dashboard</h1>
+                <p class="mt-2 text-sm text-gray-600">Manage equipment maintenance schedules and track maintenance activities</p>
+            </div>
+            <a href="{{ route('maintenance.create') }}" class="inline-flex items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Schedule Maintenance
+            </a>
+        </div>
     </div>
 
     <!-- Statistics Cards -->
@@ -108,57 +116,75 @@
         </div>
     </div>
 
-<<<<<<< HEAD
     <!-- Search and Filter Bar -->
     <div class="bg-white shadow overflow-hidden sm:rounded-md mb-8">
-        <div class="px-4 py-4 border-b border-gray-200 bg-gray-50">
-            <form method="GET" action="{{ route('maintenance.index') }}" id="maintenance-search-form" class="flex flex-wrap gap-4 items-end">
-                <div class="flex-1 min-w-[200px]">
-                    <label for="maintenance-search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
-                    <input type="text" name="search" id="maintenance-search" value="{{ request('search') }}" 
-                        placeholder="Search by equipment name, description, or notes..."
-                        class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        <div class="px-6 py-4 border-b border-gray-200 bg-white">
+            <form method="GET" action="{{ route('maintenance.index') }}" id="maintenance-search-form" class="space-y-3">
+                <!-- Main Search Row -->
+                <div class="flex items-center gap-3">
+                    <!-- Search Input with Icon -->
+                    <div class="flex-1 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input type="text" name="search" id="maintenance-search" value="{{ request('search') }}" 
+                            placeholder="Search by equipment name, description, or notes..."
+                            class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base transition-all bg-white">
+                    </div>
+
+                    <!-- Clear Button -->
+                    @if(request('search') || request('status') || request('equipment_id'))
+                        <a href="{{ route('maintenance.index') }}" class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
+                            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Clear
+                        </a>
+                    @endif
                 </div>
-                <div class="min-w-[150px]">
-                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select name="status" id="status" 
-                        class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">All Statuses</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                    </select>
+
+                <!-- Filters Row -->
+                <div class="flex flex-wrap items-center gap-4 pt-3">
+                    <!-- Status Filter -->
+                    <div class="flex items-center gap-2">
+                        <label for="status" class="text-xs font-medium text-gray-600 whitespace-nowrap leading-none flex items-center h-7">Status:</label>
+                        <select name="status" id="status" 
+                            class="block w-40 px-3 py-1 h-7 border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="">All Statuses</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        </select>
+                    </div>
+
+                    <!-- Equipment Filter -->
+                    <div class="flex items-center gap-2">
+                        <label for="equipment_id" class="text-xs font-medium text-gray-600 whitespace-nowrap leading-none flex items-center h-7">Equipment:</label>
+                        <select name="equipment_id" id="equipment_id" 
+                            class="block w-48 px-3 py-1 h-7 border border-gray-300 rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="">All Equipment</option>
+                            @foreach($equipmentList as $equipment)
+                                <option value="{{ $equipment->id }}" {{ request('equipment_id') == $equipment->id ? 'selected' : '' }}>
+                                    {{ $equipment->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-                <div class="min-w-[200px]">
-                    <label for="equipment_id" class="block text-sm font-medium text-gray-700 mb-1">Equipment</label>
-                    <select name="equipment_id" id="equipment_id" 
-                        class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">All Equipment</option>
-                        @foreach($equipmentList as $equipment)
-                            <option value="{{ $equipment->id }}" {{ request('equipment_id') == $equipment->id ? 'selected' : '' }}>
-                                {{ $equipment->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+
                 @if(request('sort'))
                     <input type="hidden" name="sort" value="{{ request('sort') }}">
                 @endif
                 @if(request('direction'))
                     <input type="hidden" name="direction" value="{{ request('direction') }}">
                 @endif
-                <div class="flex gap-2">
-                    <a href="{{ route('maintenance.index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300">
-                        Clear All
-                    </a>
-                </div>
             </form>
         </div>
     </div>
 
-=======
->>>>>>> origin/eewen
     <!-- Overdue Maintenances -->
     @if($overdueMaintenances->count() > 0)
         <div class="bg-white shadow overflow-hidden sm:rounded-md mb-8">
@@ -169,31 +195,26 @@
             
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gray-100">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Equipment</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
-<<<<<<< HEAD
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Equipment</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Type</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Title</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Quantity</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
                                 @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'start_date', 'label' => 'Start Date'])
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
                                 @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'end_date', 'label' => 'End Date'])
                             </th>
-=======
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Start Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">End Date</th>
->>>>>>> origin/eewen
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Days Overdue</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned To</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Days Overdue</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Assigned To</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-semibold text-black uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($overdueMaintenances as $maintenance)
-                            <tr class="bg-red-50">
+                            <tr class="bg-red-50 hover:bg-red-100">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">
                                         <a href="{{ route('inventory.show', $maintenance->equipment_id) }}" class="text-blue-600 hover:text-blue-900">
@@ -231,11 +252,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-<<<<<<< HEAD
-                                    {{ $maintenance->assignedUser->name ?? 'Unassigned' }}
-=======
                                     {{ $maintenance->assignedUser?->name ?? 'Unassigned' }}
->>>>>>> origin/eewen
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button onclick="updateStatus({{ $maintenance->id }}, 'in_progress')" class="text-blue-600 hover:text-blue-900 mr-3">Start</button>
@@ -258,30 +275,25 @@
             
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gray-100">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Equipment</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
-<<<<<<< HEAD
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Equipment</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Type</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Title</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Quantity</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
                                 @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'start_date', 'label' => 'Start Date'])
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
                                 @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'end_date', 'label' => 'End Date'])
                             </th>
-=======
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Start Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">End Date</th>
->>>>>>> origin/eewen
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned To</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Assigned To</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-semibold text-black uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($inProgressMaintenances as $maintenance)
-                            <tr>
+                            <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">
                                         <a href="{{ route('inventory.show', $maintenance->equipment_id) }}" class="text-blue-600 hover:text-blue-900">
@@ -307,11 +319,7 @@
                                     {{ $maintenance->end_date ? $maintenance->end_date->format('M d, Y') : 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-<<<<<<< HEAD
-                                    {{ $maintenance->assignedUser->name ?? 'Unassigned' }}
-=======
                                     {{ $maintenance->assignedUser?->name ?? 'Unassigned' }}
->>>>>>> origin/eewen
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button onclick="updateStatus({{ $maintenance->id }}, 'completed')" class="text-green-600 hover:text-green-900">Complete</button>
@@ -333,27 +341,22 @@
         
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Equipment</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
-<<<<<<< HEAD
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'start_date', 'label' => 'Start Date'])
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'end_date', 'label' => 'End Date'])
-                            </th>
-=======
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Start Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">End Date</th>
->>>>>>> origin/eewen
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Days Until</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned To</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-                        </tr>
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Equipment</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Type</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Title</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Quantity</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
+                            @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'start_date', 'label' => 'Start Date'])
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">
+                            @include('partials.sortable-header', ['route' => 'maintenance.index', 'column' => 'end_date', 'label' => 'End Date'])
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Days Until</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-black uppercase tracking-wider">Assigned To</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-semibold text-black uppercase tracking-wider">Actions</th>
+                    </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($upcomingMaintenances as $maintenance)
@@ -376,11 +379,7 @@
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900">{{ $maintenance->title }}</div>
                                 @if($maintenance->description)
-<<<<<<< HEAD
                                     <div class="text-sm text-gray-500">{{ Str::limit($maintenance->description, 50) }}</div>
-=======
-                                    <div class="text-sm text-gray-500">{{ \Illuminate\Support\Str::limit($maintenance->description, 50) }}</div>
->>>>>>> origin/eewen
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -403,11 +402,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-<<<<<<< HEAD
-                                {{ $maintenance->assignedUser->name ?? 'Unassigned' }}
-=======
                                 {{ $maintenance->assignedUser?->name ?? 'Unassigned' }}
->>>>>>> origin/eewen
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button onclick="updateStatus({{ $maintenance->id }}, 'in_progress')" class="text-blue-600 hover:text-blue-900 mr-3">Start</button>
@@ -415,7 +410,6 @@
                         </tr>
                     @empty
                         <tr>
-<<<<<<< HEAD
                             <td colspan="9" class="px-6 py-4 text-center">
                                 @if(request('search') || request('status') || request('equipment_id'))
                                     <div class="text-sm text-gray-500">
@@ -427,10 +421,6 @@
                                         No upcoming maintenances scheduled.
                                     </div>
                                 @endif
-=======
-                            <td colspan="9" class="px-6 py-4 text-center text-sm text-gray-500">
-                                No upcoming maintenances scheduled.
->>>>>>> origin/eewen
                             </td>
                         </tr>
                     @endforelse
@@ -491,4 +481,3 @@
     }
 </script>
 @endsection
-

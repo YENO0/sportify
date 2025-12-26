@@ -33,6 +33,9 @@ class InventoryController extends Controller
     public function index(Request $request)
     {
         try {
+            // Only fetch equipment data if on equipment tab or no tab specified
+            $activeTab = $request->get('tab', 'equipment');
+            
             $filters = $request->only(['search', 'status', 'sport_type_id', 'low_stock', 'sort', 'direction']);
             $equipment = $this->equipmentService->getAll($filters, 10);
             $equipment->appends($request->query());
@@ -41,7 +44,56 @@ class InventoryController extends Controller
             $lowStockEquipment = $this->equipmentService->getLowStockEquipment();
             $sportTypes = $this->sportTypeService->getActive();
 
-            return view('inventory.dashboard', compact('equipment', 'stats', 'lowStockEquipment', 'sportTypes'));
+            // Fetch brands for brands tab
+            $brandsQuery = \App\Models\Brand::withCount('equipment');
+            if ($request->filled('brand_search')) {
+                $brandSearch = $request->get('brand_search');
+                $brandsQuery->where(function($q) use ($brandSearch) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($brandSearch) . '%'])
+                      ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($brandSearch) . '%']);
+                });
+            }
+            $brandSortColumn = $request->get('brand_sort', 'name');
+            $brandSortDirection = $request->get('brand_direction', 'asc');
+            $allowedBrandSortColumns = ['name', 'created_at', 'equipment_count'];
+            if (!in_array($brandSortColumn, $allowedBrandSortColumns)) {
+                $brandSortColumn = 'name';
+            }
+            if ($brandSortColumn === 'equipment_count') {
+                $brandsQuery->orderBy('equipment_count', $brandSortDirection);
+            } else {
+                $brandsQuery->orderBy($brandSortColumn, $brandSortDirection);
+            }
+            $brands = $brandsQuery->paginate(15, ['*'], 'brands_page')->appends($request->query());
+
+            // Fetch sport types for sport types tab
+            $sportTypesQuery = \App\Models\SportType::withCount('equipment');
+            if ($request->filled('sport_type_search')) {
+                $sportTypeSearch = $request->get('sport_type_search');
+                $sportTypesQuery->where(function($q) use ($sportTypeSearch) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($sportTypeSearch) . '%'])
+                      ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($sportTypeSearch) . '%'])
+                      ->orWhereRaw('LOWER(slug) LIKE ?', ['%' . strtolower($sportTypeSearch) . '%']);
+                });
+            }
+            if ($request->has('sport_type_is_active') && $request->get('sport_type_is_active') !== '' && $request->get('sport_type_is_active') !== null) {
+                $isActive = $request->get('sport_type_is_active') == '1';
+                $sportTypesQuery->where('is_active', $isActive);
+            }
+            $sportTypeSortColumn = $request->get('sport_type_sort', 'name');
+            $sportTypeSortDirection = $request->get('sport_type_direction', 'asc');
+            $allowedSportTypeSortColumns = ['name', 'created_at', 'equipment_count'];
+            if (!in_array($sportTypeSortColumn, $allowedSportTypeSortColumns)) {
+                $sportTypeSortColumn = 'name';
+            }
+            if ($sportTypeSortColumn === 'equipment_count') {
+                $sportTypesQuery->orderBy('equipment_count', $sportTypeSortDirection);
+            } else {
+                $sportTypesQuery->orderBy($sportTypeSortColumn, $sportTypeSortDirection);
+            }
+            $sportTypesList = $sportTypesQuery->paginate(15, ['*'], 'sport_types_page')->appends($request->query());
+
+            return view('inventory.dashboard', compact('equipment', 'stats', 'lowStockEquipment', 'sportTypes', 'brands', 'sportTypesList'));
         } catch (\Exception $e) {
             Log::error('Error loading inventory dashboard: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()

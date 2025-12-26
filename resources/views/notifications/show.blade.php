@@ -15,7 +15,7 @@
 
     <div class="bg-white shadow overflow-hidden sm:rounded-b-lg p-6">
         <div class="mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">{{ $notification->data['title'] ?? 'Rebook your facility' }}</h2>
+            <h2 class="text-xl font-semibold text-gray-800">{{ $notification->data['title'] ?? 'Reapply your event' }}</h2>
             <p class="text-gray-600 text-sm">Sender: {{ $notification->data['sender'] ?? 'System' }}</p>
             <p class="text-gray-600 text-sm">Date: {{ \Carbon\Carbon::parse($notification->created_at)->format('d/m/Y H:i') }}</p>
         </div>
@@ -39,7 +39,7 @@
         @if(isset($notification->data['action_url']))
             <div class="mt-6 p-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700">
                 <a href="{{ $notification->data['action_url'] }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    👉 Click here to Rebook an Alternative Facility
+                    👉 Click here to Reapply an Alternative Event
                 </a>
             </div>
         @endif

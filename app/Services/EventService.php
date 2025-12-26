@@ -177,7 +177,7 @@ class EventService
             // Return all borrowed equipment associated with this event
             foreach ($event->equipmentBorrowings()->where('status', 'borrowed')->get() as $borrowing) {
                 $decorator = new ReturnSchedulerDecorator($borrowing);
-                $decorator->processReturn();
+                $decorator->processAutomaticReturn();
             }
             
             $event->delete();
@@ -216,7 +216,7 @@ class EventService
             
             foreach ($borrowings as $borrowing) {
                 $decorator = new ReturnSchedulerDecorator($borrowing);
-                if ($decorator->processReturn()) {
+                if ($decorator->processAutomaticReturn()) {
                     $returnedCount++;
                 }
             }
@@ -259,7 +259,7 @@ class EventService
             foreach ($events as $event) {
                 foreach ($event->equipmentBorrowings as $borrowing) {
                     $decorator = new ReturnSchedulerDecorator($borrowing);
-                    if ($decorator->processReturn()) {
+                    if ($decorator->processAutomaticReturn()) {
                         $totalReturned++;
                     }
                 }

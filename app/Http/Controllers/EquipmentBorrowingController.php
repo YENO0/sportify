@@ -25,7 +25,7 @@ class EquipmentBorrowingController extends Controller
     {
         try {
             $equipment = $this->borrowingService->getAvailableEquipment();
-            $borrowedEquipment = $this->borrowingService->getBorrowedEquipmentIds($event->id);
+            $borrowedEquipment = $this->borrowingService->getBorrowedEquipmentIds($event->eventID);
             
             return view('equipment-borrowings.create', compact('event', 'equipment', 'borrowedEquipment'));
         } catch (\Exception $e) {
@@ -48,9 +48,9 @@ class EquipmentBorrowingController extends Controller
                 'notes' => 'nullable|string',
             ]);
 
-            $result = $this->borrowingService->createBorrowings($event->id, $validated);
+            $result = $this->borrowingService->createBorrowings($event->eventID, $validated);
             
-            return redirect()->route('events.show', $event->id)
+            return redirect()->route('committee.events.show', $event->eventID)
                 ->with('success', $result['message']);
         } catch (\InvalidArgumentException $e) {
             return redirect()->back()
@@ -70,9 +70,9 @@ class EquipmentBorrowingController extends Controller
     public function destroy(Event $event, $borrowingId)
     {
         try {
-            $this->borrowingService->returnBorrowing($event->id, $borrowingId);
+            $this->borrowingService->returnBorrowing($event->eventID, $borrowingId);
             
-            return redirect()->route('events.show', $event->id)
+            return redirect()->route('committee.events.show', $event->eventID)
                 ->with('success', 'Equipment returned successfully.');
         } catch (\InvalidArgumentException $e) {
             return redirect()->back()->with('error', $e->getMessage());

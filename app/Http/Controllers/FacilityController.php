@@ -24,6 +24,11 @@ class FacilityController extends Controller
      */
     public function create()
     {
+        // Authorization check - only admins can create facilities
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Only administrators can create facilities.');
+        }
+        
         return view('facilities.create');
     }
 
@@ -32,6 +37,11 @@ class FacilityController extends Controller
      */
     public function store(Request $request)
     {
+        // Authorization check - only admins can store facilities
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Only administrators can create facilities.');
+        }
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string|in:Indoor,Outdoor',
@@ -66,6 +76,11 @@ class FacilityController extends Controller
      */
     public function edit(Facility $facility)
     {
+        // Authorization check - only admins can edit facilities
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Only administrators can edit facilities.');
+        }
+        
         return view('facilities.edit', compact('facility'));
     }
 
@@ -74,6 +89,11 @@ class FacilityController extends Controller
      */
     public function update(Request $request, Facility $facility)
     {
+        // Authorization check - only admins can update facilities
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Only administrators can update facilities.');
+        }
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string|in:Indoor,Outdoor',
@@ -111,6 +131,11 @@ class FacilityController extends Controller
      */
     public function destroy(Facility $facility)
     {
+        // Authorization check - only admins can delete facilities
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action. Only administrators can delete facilities.');
+        }
+        
         try {
             // The Facility model is already resolved by Route Model Binding.
             // If it wasn't found, a 404 would have been thrown before this point.

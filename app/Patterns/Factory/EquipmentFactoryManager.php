@@ -38,6 +38,12 @@ class EquipmentFactoryManager
      */
     public static function create($sportTypeIdOrType, array $data): \App\Models\Equipment
     {
+        // Check if it's a numeric string (sport_type_id from form) and convert to int
+        // Form inputs come as strings, so "3" should be treated as integer 3, not legacy type
+        if (is_string($sportTypeIdOrType) && is_numeric($sportTypeIdOrType)) {
+            $sportTypeIdOrType = (int) $sportTypeIdOrType;
+        }
+        
         // Support legacy type-based approach for backward compatibility
         if (is_string($sportTypeIdOrType)) {
             return self::createLegacy($sportTypeIdOrType, $data);

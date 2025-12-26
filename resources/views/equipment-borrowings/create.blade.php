@@ -5,11 +5,11 @@
 @section('content')
 <div class="px-4 sm:px-6 lg:px-8">
     <div class="mb-8">
-        <a href="{{ route('events.show', $event) }}" class="text-blue-600 hover:text-blue-900 mb-4 inline-block">
+        <a href="{{ route('committee.events.show', $event->eventID) }}" class="text-blue-600 hover:text-blue-900 mb-4 inline-block">
             ← Back to Event
         </a>
         <h1 class="text-3xl font-bold text-gray-900">Borrow Equipment for Event</h1>
-        <p class="mt-2 text-sm text-gray-600">Event: {{ $event->name }}</p>
+        <p class="mt-2 text-sm text-gray-600">Event: {{ $event->event_name }}</p>
     </div>
 
     <div class="bg-white shadow rounded-lg p-6">
@@ -50,7 +50,7 @@
             </div>
 
             <div class="mt-6 flex justify-end space-x-3">
-                <a href="{{ route('events.show', $event) }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <a href="{{ route('committee.events.show', $event->eventID) }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
                     Cancel
                 </a>
                 <button type="submit" class="bg-blue-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700">
@@ -70,15 +70,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedEquipmentIds = new Set();
     
     // Equipment data from server
-    const equipmentData = @json($equipment->map(function($eq) {
-        return [
-            'id' => $eq->id,
-            'name' => $eq->name,
-            'brand' => $eq->brand ? $eq->brand->name : null,
-            'model' => $eq->model,
-            'available' => $eq->available_quantity,
-        ];
-    })->values());
+    @php
+        $equipmentData = $equipment->map(function($eq) {
+            return [
+                'id' => $eq->id,
+                'name' => $eq->name,
+                'brand' => $eq->brand ? $eq->brand->name : null,
+                'model' => $eq->model,
+                'available' => $eq->available_quantity,
+            ];
+        })->values()->all();
+    @endphp
+    const equipmentData = @json($equipmentData);
     
     // Borrowed equipment IDs
     const borrowedEquipmentIds = @json($borrowedEquipment);
