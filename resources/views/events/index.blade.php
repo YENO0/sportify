@@ -429,9 +429,9 @@
     </header>
 
     <div class="content-area">
-        <div class="events-page">
-            <div class="events-header">
-                <div class="events-tabs">
+<div class="events-page">
+    <div class="events-header">
+        <div class="events-tabs">
             <button class="events-tab active">Events</button>
             <button class="events-tab">Collections</button>
         </div>
@@ -470,7 +470,7 @@
         </form>
     </div>
 
-            <div class="events-table">
+    <div class="events-table">
         <table>
             <thead>
                 <tr>
@@ -554,7 +554,7 @@
                 @endforelse
             </tbody>
         </table>
-            </div>
+    </div>
 
     <a href="#" class="csv-export">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -7,9 +7,9 @@
 @endsection
 
 @push('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
         :root {
             --primary-color: #6366f1;
             --primary-light: #818cf8;
@@ -436,13 +436,13 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             .my-events-page { padding: 18px 12px; }
-
+            
             .my-events-page .page-header h1 {
                 font-size: 2rem;
                 flex-direction: column;
                 gap: 10px;
             }
-
+            
             .my-events-page .page-header p { font-size: 1rem; }
             .stats-container { grid-template-columns: repeat(2, 1fr); }
             th, td { padding: 15px 10px; }
@@ -472,7 +472,7 @@
             .table-container { box-shadow: none; border: 1px solid #ddd; }
             table { min-width: auto; }
         }
-</style>
+    </style>
 @endpush
 
 @section('content')

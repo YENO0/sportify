@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\EventJoined;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Services\EventStatusService;
@@ -22,7 +23,8 @@ class EventJoinedController extends Controller
         }
 
         // Only students can register for events
-        if (!Auth::user()?->isStudent()) {
+        $user = Auth::user();
+        if (!($user instanceof User) || !$user->isStudent()) {
             return $this->errorResponse($request, 'Only students can register for events.', 403);
         }
 

@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\FacilityMaintenance;
 use App\Services\EventService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -247,7 +248,7 @@ protected $eventService;
 
                 Booking::create([
                     'facility_id' => $facilityId,
-                    'user_id' => auth()->id() ?? $data['committee_id'],
+                    'user_id' => Auth::id() ?? $data['committee_id'],
                     'start_time' => $bookingStart,
                     'end_time' => $bookingEnd,
                     'status' => 'approved', // Auto-approve bookings for events
@@ -521,7 +522,7 @@ protected $eventService;
 
                 Booking::create([
                     'facility_id' => $facilityId,
-                    'user_id' => auth()->id() ?? $event->committee_id,
+                    'user_id' => Auth::id() ?? $event->committee_id,
                     'start_time' => $bookingStart,
                     'end_time' => $bookingEnd,
                     'status' => 'approved',
@@ -729,7 +730,7 @@ protected $eventService;
     public function approved(Request $request)
     {
         // Use authenticated student id when available
-        $studentId = auth()->id() ?? 1;
+        $studentId = Auth::id() ?? 1;
 
         // Keep lifecycle/registration statuses current before listing
         EventStatusService::syncAll();
@@ -744,7 +745,8 @@ protected $eventService;
             ]);
 
         // Filter by time period
-        $filter = $request->get('filter', 'all');
+        // Default to "this_week" instead of "all"
+        $filter = $request->get('filter', 'this_week');
         $now = now();
         
         if ($filter === 'this_week') {
@@ -781,7 +783,7 @@ protected $eventService;
     {
         $event = EventStatusService::sync($event);
         // Hardcoded IDs - replace with authenticated user when auth is implemented
-        $studentId = auth()->id() ?? 1;
+        $studentId = Auth::id() ?? 1;
         $committeeId = 1;
         $isAdmin = $request->routeIs('admin.*') || $request->has('admin'); // Check if admin route or query param
 

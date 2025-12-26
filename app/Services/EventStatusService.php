@@ -19,6 +19,8 @@ class EventStatusService
             'upcoming' => 'Upcoming',
             'ongoing' => 'Ongoing',
             'completed' => 'Completed',
+            // Backward/seed compatibility: some older seed data used "Past"
+            'past' => 'Completed',
             'cancelled' => 'Cancelled',
         ];
         $normalizedRegistration = [

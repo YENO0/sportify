@@ -394,12 +394,12 @@
                     @php
                         $user = auth()->user();
                     @endphp
-
+                    
                     {{-- Events - Students can see --}}
                     @if($user->isStudent() && Route::has('events.approved'))
                         <a href="{{ route('events.approved') }}">Events</a>
                     @endif
-
+                    
                     {{-- Students: My Events --}}
                     @if($user->isStudent() && Route::has('payments.my-events'))
                         <a href="{{ route('payments.my-events') }}">My Events</a>
@@ -414,7 +414,7 @@
                             <a href="{{ route('payments.transaction-history') }}">Transactions</a>
                         @endif
                     @endif
-
+                    
                     {{-- Admin: Events, Facilities, Users --}}
                     @if($user->isAdmin())
                         @if(Route::has('admin.events.index'))
@@ -427,7 +427,7 @@
                             <a href="{{ route('admin.users.index') }}">Users</a>
                         @endif
                     @endif
-
+                    
                     {{-- Notifications - All authenticated users --}}
                     @if(Route::has('notifications.index'))
                         <a href="{{ route('notifications.index') }}" class="notification-link">

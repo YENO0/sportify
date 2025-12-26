@@ -7,104 +7,94 @@ use App\Models\Event;
 use App\Models\User;
 use App\Models\Facility;
 use Carbon\Carbon;
+use Faker\Factory as Faker;
 
 class EventSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Get committee users
+        $faker = Faker::create();
+
+        // Committees (fallback to first user)
         $committees = User::where('role', User::ROLE_COMMITTEE)->get();
         if ($committees->isEmpty()) {
-            $committees = collect([User::first()]);
+            $committees = collect([User::first()])->filter();
         }
 
-        // Get admin for approval
         $admin = User::where('role', User::ROLE_ADMIN)->first();
-
-        // Get facilities
         $facilities = Facility::all();
 
-        $events = [
-            [
-                'event_name' => 'Annual Sports Gala',
-                'event_description' => 'A celebration of athletic achievements with multiple sports competitions',
-                'event_start_date' => Carbon::now()->addDays(30),
-                'event_end_date' => Carbon::now()->addDays(31),
-                'event_start_time' => '09:00',
-                'event_end_time' => '18:00',
-                'registration_due_date' => Carbon::now()->addDays(25),
-                'max_capacity' => 200,
-                'price' => 25.00,
-                'facility_id' => $facilities->first()?->id,
-                'committee_id' => $committees->first()?->id,
-                'status' => 'approved',
-                'registration_status' => 'Open',
-                'event_status' => 'Upcoming',
-                'approved_by' => $admin?->id,
-                'approved_at' => Carbon::now()->subDays(5),
-            ],
-            [
-                'event_name' => 'Inter-Club Basketball Tournament',
-                'event_description' => 'Competitive basketball tournament between different clubs',
-                'event_start_date' => Carbon::now()->addDays(45),
-                'event_end_date' => Carbon::now()->addDays(47),
-                'event_start_time' => '10:00',
-                'event_end_time' => '17:00',
-                'registration_due_date' => Carbon::now()->addDays(40),
-                'max_capacity' => 100,
-                'price' => 15.00,
-                'facility_id' => $facilities->skip(1)->first()?->id,
-                'committee_id' => $committees->first()?->id,
-                'status' => 'approved',
-                'registration_status' => 'Open',
-                'event_status' => 'Upcoming',
-                'approved_by' => $admin?->id,
-                'approved_at' => Carbon::now()->subDays(3),
-            ],
-            [
-                'event_name' => 'Tennis Championship',
-                'event_description' => 'Singles and doubles tennis championship',
-                'event_start_date' => Carbon::now()->addDays(60),
-                'event_end_date' => Carbon::now()->addDays(62),
-                'event_start_time' => '08:00',
-                'event_end_time' => '20:00',
-                'registration_due_date' => Carbon::now()->addDays(55),
-                'max_capacity' => 50,
-                'price' => 20.00,
-                'facility_id' => $facilities->skip(2)->first()?->id,
-                'committee_id' => $committees->first()?->id,
-                'status' => 'pending',
-                'registration_status' => 'NotOpen',
-                'event_status' => 'Upcoming',
-            ],
-            [
-                'event_name' => 'Swimming Competition',
-                'event_description' => 'Various swimming events and races',
-                'event_start_date' => Carbon::now()->addDays(20),
-                'event_end_date' => Carbon::now()->addDays(20),
-                'event_start_time' => '14:00',
-                'event_end_time' => '18:00',
-                'registration_due_date' => Carbon::now()->addDays(15),
-                'max_capacity' => 80,
-                'price' => 10.00,
-                'facility_id' => null,
-                'committee_id' => $committees->first()?->id,
-                'status' => 'approved',
-                'registration_status' => 'Open',
-                'event_status' => 'Upcoming',
-                'approved_by' => $admin?->id,
-                'approved_at' => Carbon::now()->subDays(2),
-            ],
-        ];
+        $now = Carbon::now();
+        $batchTag = $now->format('YmdHis');
 
-        foreach ($events as $event) {
-            Event::updateOrCreate(
-                ['event_name' => $event['event_name']],
-                $event
-            );
+        // 7 Upcoming (approved)
+        for ($i = 1; $i <= 7; $i++) {
+            $startDate = $now->copy()->addDays(rand(1, 60));
+            $endDate = $startDate->copy()->addDays(rand(0, 2));
+
+            $startHour = rand(8, 16);
+            $startTime = sprintf('%02d:00', $startHour);
+            $endTime = sprintf('%02d:00', min(20, $startHour + rand(1, 4)));
+
+            $committee = $committees->random();
+            $facilityId = $facilities->isNotEmpty() ? $facilities->random()->id : null;
+
+            Event::create([
+                'event_name' => "Seed Upcoming {$batchTag} #{$i}",
+                'event_description' => $faker->paragraphs(2, true),
+                'event_start_date' => $startDate->toDateString(),
+                'event_end_date' => $endDate->toDateString(),
+                'event_start_time' => $startTime,
+                'event_end_time' => $endTime,
+                'registration_due_date' => $startDate->copy()->subDays(rand(1, 7))->toDateString(),
+                'max_capacity' => rand(30, 300),
+                'price' => $faker->randomFloat(2, 0, 50),
+                'facility_id' => $facilityId,
+                'committee_id' => $committee?->id,
+
+                'status' => 'approved',
+                'event_status' => 'Upcoming',
+                'registration_status' => 'Open',
+
+                'approved_by' => $admin?->id,
+                'approved_at' => $now->copy()->subDays(rand(1, 10)),
+                'rejection_remark' => null,
+            ]);
+        }
+
+        // 3 Past (still approved) -> use Completed so it’s consistent with EventStatusService
+        for ($i = 1; $i <= 3; $i++) {
+            $startDate = $now->copy()->subDays(rand(1, 30));
+            $endDate = $startDate->copy()->addDays(rand(0, 2));
+
+            $startHour = rand(8, 16);
+            $startTime = sprintf('%02d:00', $startHour);
+            $endTime = sprintf('%02d:00', min(20, $startHour + rand(1, 4)));
+
+            $committee = $committees->random();
+            $facilityId = $facilities->isNotEmpty() ? $facilities->random()->id : null;
+
+            Event::create([
+                'event_name' => "Seed Past {$batchTag} #{$i}",
+                'event_description' => $faker->paragraphs(2, true),
+                'event_start_date' => $startDate->toDateString(),
+                'event_end_date' => $endDate->toDateString(),
+                'event_start_time' => $startTime,
+                'event_end_time' => $endTime,
+                'registration_due_date' => $startDate->copy()->subDays(rand(1, 7))->toDateString(),
+                'max_capacity' => rand(30, 300),
+                'price' => $faker->randomFloat(2, 0, 50),
+                'facility_id' => $facilityId,
+                'committee_id' => $committee?->id,
+
+                'status' => 'approved',
+                'event_status' => 'Completed',
+                'registration_status' => 'Closed',
+
+                'approved_by' => $admin?->id,
+                'approved_at' => $now->copy()->subDays(rand(10, 60)),
+                'rejection_remark' => null,
+            ]);
         }
     }
 }

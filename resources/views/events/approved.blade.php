@@ -429,21 +429,21 @@
     </header>
 
     <div class="content-area">
-        <div class="events-header">
-            <div class="events-tabs">
-                <a href="{{ route('events.approved', ['filter' => 'all']) }}" class="events-tab {{ ($filter ?? 'all') === 'all' ? 'active' : '' }}">
-                    All
-                </a>
-                <a href="{{ route('events.approved', ['filter' => 'this_week']) }}" class="events-tab {{ ($filter ?? 'all') === 'this_week' ? 'active' : '' }}">
-                    This week
-                </a>
-                <a href="{{ route('events.approved', ['filter' => 'this_month']) }}" class="events-tab {{ ($filter ?? 'all') === 'this_month' ? 'active' : '' }}">
-                    This month
-                </a>
-            </div>
+    <div class="events-header">
+        <div class="events-tabs">
+            <a href="{{ route('events.approved', ['filter' => 'all']) }}" class="events-tab {{ ($filter ?? 'all') === 'all' ? 'active' : '' }}">
+                All
+            </a>
+            <a href="{{ route('events.approved', ['filter' => 'this_week']) }}" class="events-tab {{ ($filter ?? 'all') === 'this_week' ? 'active' : '' }}">
+                This week
+            </a>
+            <a href="{{ route('events.approved', ['filter' => 'this_month']) }}" class="events-tab {{ ($filter ?? 'all') === 'this_month' ? 'active' : '' }}">
+                This month
+            </a>
         </div>
+    </div>
 
-        @if($events->count() > 0)
+    @if($events->count() > 0)
         <div class="events-grid">
             @foreach($events as $event)
                 @php
@@ -544,13 +544,13 @@
                 </a>
             @endforeach
         </div>
-        @else
+    @else
         <div class="empty-state">
             <h3>No events available</h3>
             <p>No approved events available at the moment.</p>
             <p style="margin-top: 10px; font-size: 14px;">Check back later for new events!</p>
         </div>
-        @endif
+    @endif
     </div>
 </div>
 

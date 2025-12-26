@@ -43,35 +43,112 @@
     }
     .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
         gap: 1.5rem;
+        align-items: stretch;
+    }
+
+    /* Make the whole card clickable and equal-height per grid row */
+    .grid-container > a {
+        display: block;
+        height: 100%;
+    }
+
+    @media (max-width: 1200px) {
+        .grid-container {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 900px) {
+        .grid-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 600px) {
+        .grid-container {
+            grid-template-columns: 1fr;
+        }
     }
     .info-card {
         background: #ffffff; /* White background */
-        border: 1px solid rgba(0, 0, 0, 0.1); /* Lighter border */
-        padding: 1.5rem;
+        border: 1px solid transparent; /* no visible border until hover */
+        padding: 0;
         border-radius: 0.75rem;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Lighter shadow */
+        box-shadow: none; /* shadow only on hover */
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%; /* fill grid row */
+        min-height: 300px; /* keep all cards consistent size */
     }
     .info-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* Lighter hover shadow */
+        border-color: rgba(0, 0, 0, 0.10);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* show shadow on hover */
+    }
+    .event-image {
+        width: 100%;
+        height: 170px;
+        object-fit: cover;
+        background: #f3f4f6;
+        display: block;
+    }
+    .event-image-placeholder {
+        width: 100%;
+        height: 170px;
+        background: #f3f4f6;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    .card-body {
+        padding:0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1;
+        justify-content: flex-start; /* align content to top */
     }
     .info-card h3 {
         font-size: 1.2rem;
         font-weight: 600;
         color: #1f2937; /* Darker text */
-        margin-bottom: 0.5rem;
+        margin: 0;
+        line-height: 1.3;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
     }
     .info-card .date {
         font-size: 0.8rem;
         color: #4b5563; /* Darker text */
-        margin-bottom: 1rem;
+        margin: 0;
     }
     .info-card p {
         font-size: 0.9rem;
         color: #4b5563; /* Darker text */
+        margin: 0;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4;
+        line-clamp: 4;
+    }
+    .empty-message {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 0.75rem;
+        padding: 1.25rem 1.5rem;
+        color: #4b5563;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     .activity-item {
          background: #ffffff; /* White background */
@@ -122,41 +199,66 @@
 
 <div class="content-area">
     <h2 class="section-title">Upcoming Events</h2>
-    <div class="grid-container">
-        <div class="info-card">
-            <h3>Annual Sports Gala</h3>
-            <div class="date">Date: 2026-01-15</div>
-            <p>A celebration of athletic achievements throughout the year. Don't miss out!</p>
+    @if(($upcomingEvents ?? collect())->count() > 0)
+        <div class="grid-container">
+            @foreach($upcomingEvents as $event)
+                <a href="{{ route('events.show', $event) }}" style="text-decoration:none;color:inherit;">
+                    <div class="info-card">
+                        @if(!empty($event->event_poster))
+                            <img class="event-image" src="{{ asset('storage/' . $event->event_poster) }}" alt="{{ $event->event_name }}">
+                        @else
+                            <div class="event-image-placeholder">No Image</div>
+                        @endif
+                        <div class="card-body">
+                            <h3>{{ $event->event_name }}</h3>
+                            <div class="date">
+                                Date:
+                                {{ \Carbon\Carbon::parse($event->event_start_date)->format('Y-m-d') }}
+                                @if(!empty($event->event_end_date))
+                                    - {{ \Carbon\Carbon::parse($event->event_end_date)->format('Y-m-d') }}
+                                @endif
+                            </div>
+                            <p>{{ \Illuminate\Support\Str::words(strip_tags($event->event_description ?? ''), 30, ' ...') }}</p>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
         </div>
-        <div class="info-card">
-            <h3>Inter-Club Basketball Tournament</h3>
-            <div class="date">Date: 2026-02-20</div>
-            <p>The most anticipated basketball tournament of the semester. Register your team now!</p>
-        </div>
-        <div class="info-card">
-            <h3>Friendly Football Match</h3>
-            <div class="date">Date: 2026-02-22</div>
-            <p>A casual football match between students. All skill levels are welcome!</p>
-        </div>
-    </div>
+    @else
+        <div class="empty-message">No upcoming events at the moment.</div>
+    @endif
 </div>
 
 <div class="content-area" style="padding-top: 0;">
-    <h2 class="section-title">Recent Activities</h2>
-    <div class="grid-container" style="gap: 1rem;">
-        <div class="activity-item">
-            <p>Logged 2 hours of basketball practice.</p>
-            <div class="time">2 days ago</div>
+    <h2 class="section-title">Recent Events</h2>
+    @if(($recentEvents ?? collect())->count() > 0)
+        <div class="grid-container">
+            @foreach($recentEvents as $event)
+                <a href="{{ route('events.show', $event) }}" style="text-decoration:none;color:inherit;">
+                    <div class="info-card">
+                        @if(!empty($event->event_poster))
+                            <img class="event-image" src="{{ asset('storage/' . $event->event_poster) }}" alt="{{ $event->event_name }}">
+                        @else
+                            <div class="event-image-placeholder">No Image</div>
+                        @endif
+                        <div class="card-body">
+                            <h3>{{ $event->event_name }}</h3>
+                            <div class="date">
+                                Date:
+                                {{ \Carbon\Carbon::parse($event->event_start_date)->format('Y-m-d') }}
+                                @if(!empty($event->event_end_date))
+                                    - {{ \Carbon\Carbon::parse($event->event_end_date)->format('Y-m-d') }}
+                                @endif
+                            </div>
+                            <p>{{ \Illuminate\Support\Str::words(strip_tags($event->event_description ?? ''), 30, ' ...') }}</p>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
         </div>
-        <div class="activity-item">
-            <p>Attended the weekly sports committee meeting.</p>
-            <div class="time">5 days ago</div>
-        </div>
-         <div class="activity-item">
-            <p>Updated profile with new achievements.</p>
-            <div class="time">1 week ago</div>
-        </div>
-    </div>
+    @else
+        <div class="empty-message">No recent events in the past month.</div>
+    @endif
 </div>
 
 <footer class="main-footer">

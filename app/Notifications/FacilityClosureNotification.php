@@ -44,7 +44,7 @@ class FacilityClosureNotification extends Notification
     {
         $facilityName = $this->facility->name;
         $status = $this->closureReason;
-        $rebookLink = route('bookings.index'); // Changed to bookings.index
+        $rebookLink = route('/events/create'); // Changed to bookings.index
 
         return (new MailMessage)
                     ->from(config('mail.from.address'), 'System')
