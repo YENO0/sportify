@@ -243,7 +243,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('facilities/maintenance')->nam
 // Facility Management Routes
 // All authenticated users can view facilities
 Route::get('facilities', [FacilityController::class, 'index'])->name('facilities.index');
-Route::get('facilities/{facility}', [FacilityController::class, 'show'])->name('facilities.show');
+// Constrain {facility} to numeric IDs so it doesn't swallow /facilities/create
+Route::get('facilities/{facility}', [FacilityController::class, 'show'])
+    ->whereNumber('facility')
+    ->name('facilities.show');
 Route::get('facility-photos/{filename}', [FacilityController::class, 'getFacilityPhoto'])->name('facilities.photo');
 Route::get('facility-timetable', [FacilityTimetableController::class, 'index'])->name('facilities.timetable');
 
