@@ -22,7 +22,7 @@ class PaymentFacade
      */
     public function createStripePayment(Event $event, int $studentId)
     {
-        // Capacity check
+        // 1. Capacity check
         $registeredCount = $event->eventJoined()
             ->where('status', 'registered')
             ->count();
@@ -31,7 +31,7 @@ class PaymentFacade
             throw new \Exception('Event is full.');
         }
 
-        // Prevent duplicate registration
+        // 2. Prevent duplicate registration
         $alreadyJoined = EventJoined::where('eventID', $event->eventID)
             ->where('studentID', $studentId)
             ->exists();
@@ -40,19 +40,34 @@ class PaymentFacade
             throw new \Exception('You have already registered for this event.');
         }
 
-        // Stripe config check
+        // 3. Handle FREE event (price = 0)
+        if ($event->price <= 0) {
+            EventJoined::create([
+                'eventID'   => $event->eventID,
+                'studentID' => $studentId,
+                'status'    => 'registered',
+            ]);
+
+            return [
+                'type'    => 'free',
+                'message' => 'Successfully registered for free event.',
+            ];
+        }
+
+        // 4. Stripe config check
         if (!config('services.stripe.secret')) {
             throw new \Exception('Stripe configuration missing.');
         }
 
+        // 5. Create Stripe PaymentIntent for PAID event
         Stripe::setApiKey(config('services.stripe.secret'));
 
         return PaymentIntent::create([
-            'amount' => (int) round($event->price * 100),
+            'amount'   => (int) round($event->price * 100), // MYR in cents
             'currency' => 'myr',
             'metadata' => [
                 'event_id'   => $event->eventID,
-                'student_id' => $studentId
+                'student_id' => $studentId,
             ],
         ]);
     }

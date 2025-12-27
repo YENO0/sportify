@@ -42,6 +42,19 @@ class PaymentController extends Controller
             $paymentIntent = $this->paymentFacade
                 ->createStripePayment($event, $studentId);
 
+            // Check if it's a free event (returns array) or paid event (returns PaymentIntent object)
+            if (is_array($paymentIntent) && isset($paymentIntent['type']) && $paymentIntent['type'] === 'free') {
+                // Free event - redirect to my events page with success message
+                Log::info('Free event registration completed', [
+                    'event_id' => $event->eventID,
+                    'student_id' => $studentId,
+                ]);
+                
+                return redirect()->route('payments.my-events')
+                    ->with('success', $paymentIntent['message'] ?? 'Successfully registered for free event.');
+            }
+
+            // Paid event - show payment page
             Log::info('Payment page loaded', [
                 'event_id' => $event->eventID,
                 'student_id' => $studentId,
@@ -280,7 +293,6 @@ class PaymentController extends Controller
                 'invoice'
             ])
             ->where('studentID', $studentId)
-            ->whereHas('payment')
             ->where('status', 'registered')
             ->orderBy('joinedDate', 'desc')
             ->get();

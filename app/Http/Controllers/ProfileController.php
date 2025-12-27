@@ -14,6 +14,7 @@ class ProfileController extends Controller
      */
     public function show()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         return view('profile.show', compact('user'));
     }
@@ -23,6 +24,7 @@ class ProfileController extends Controller
      */
     public function edit()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         return view('profile.edit', compact('user'));
     }
@@ -32,6 +34,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         // Check if email is being changed
